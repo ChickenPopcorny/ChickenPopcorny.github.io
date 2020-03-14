@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>这是一个神奇的主题</title>
+    <link rel="stylesheet" href="/css/chicken.css">
+    <link rel="stylesheet" href="/css/iconfont.css">
+    <link rel="stylesheet" href="/css/atom-one-dark.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css" integrity="sha384-zB1R0rpPzHqg7Kpt0Aljp8JPLqbXI3bhnPWROx27a9N0Ll6ZP/+DiW/UqRcLbRjq" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/5.12.1/css/all.min.css">
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+    <header>
+    <div class="container">
+        <div class="site-title"><a href="/">小鸡米花的知识库</a></div>
+        <nav>
+            <a class="nav-item " href="/">主页</a>
+            <a class="nav-item " href="/archives">时光轴</a>
+        </nav>
+    </div>
+</header>
+    <div id="write">
+    <div class="container">
+        <div class="post-info">
+            <ul class="tag-list">
+                
+                    <a class="tag-list-item" href="/tags/MongoDB/">MongoDB</a>
+                
+            </ul>
+        </div>
+        <div class="post-content"><h1 id="🔐-MongoDB"><a href="#🔐-MongoDB" class="headerlink" title="🔐 MongoDB"></a>🔐 MongoDB</h1><blockquote>
+<p>施工中… 修改时间</p>
+</blockquote>
+<p>MongoDB 与传统的关系型数据库区别在于，它不需要设计表结构，存取数据更加灵活。它保存的不是表，而是一种称为 BSON 的数据结构，它与 JSON 非常相似，但是比 JSON 强大的一点在于，它可以保存二进制数据，其它与 JSON 区别不大。正是由于这一点，MongoDB 的一些概念与关系型数据库有所不同：</p>
+<table>
+<thead>
+<tr>
+<th>SQL</th>
+<th>MongoDB</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>database</td>
+<td>database</td>
+<td>数据库</td>
+</tr>
+<tr>
+<td>table</td>
+<td>collection</td>
+<td>表 / 集合</td>
+</tr>
+<tr>
+<td>row</td>
+<td>document</td>
+<td>行 / 文档</td>
+</tr>
+</tbody></table>
+<h2 id="安装与配置"><a href="#安装与配置" class="headerlink" title="安装与配置"></a>安装与配置</h2><p>在<a href="https://www.mongodb.com/download-center/community" target="_blank" rel="noopener">官网</a>可以下载社区版（非企业级商用）的 MongoDB，安装比较简单，在自定义安装下可以修改路径，除此之外没有其它配置。安装的过程中会提示安装 MongoDB Compass 图形化界面，但是这个并不好用，建议直接使用 Navicat（最新版本支持 MongoDB）。</p>
+<p>安装完成后，将安装路径下的<code>bin</code>路径配置到环境变量中（如<code>C:\MongoDB\Server\bin</code>），以便命令行调用。</p>
+<p>系统服务下的<code>MongoDB Server</code>为 MongoDB 的服务，在使用 MongoDB 之前记得先启动它。</p>
+<p>开启 CMD 输入<code>mongo</code>即可进入 MongoDB 的命令行工具。在命令行工具中输入<code>show databases</code>查看所有的数据库，如果能正常显示，则说明连接成功。</p>
+<p>安装目录下的<code>data</code>文件夹保存了数据库文件，如果要修改保存位置，需要打开<code>bin\mongod.cfg</code>，修改其中的<code>dbPath</code>一项。该文件是数据库的配置文件，很多选项都可以在这里修改。</p>
+<h2 id="操作数据库和集合"><a href="#操作数据库和集合" class="headerlink" title="操作数据库和集合"></a>操作数据库和集合</h2><p>使用<code>use 数据库名</code>可以切换当前使用的数据库。注意，即使这个数据库不存在，也是可以直接切换的。因为 MongoDB 中的<strong>数据库和集合不需要手动创建</strong>，在第一次向集合中插入文档时，对应的数据库和集合会自动创建。</p>
+<pre><code class="js">use test</code></pre>
+<p>使用<code>show collections</code>可以查看当前数据库中的所有集合。由于数据库都还没有创建，因此此时的数据库肯定也是空的。</p>
+<h2 id="CRUD"><a href="#CRUD" class="headerlink" title="CRUD"></a>CRUD</h2><p>使用<code>db.集合名</code>可以调用下列方法，进行数据库的 CRUD 操作。其中<code>db</code>指向当前数据库名，类似于<code>this</code>；而集合名类似于表名，可以自定义。注意，这些方法仅适用于控制台，而不是供后端语言调用。</p>
+<h3 id="查询操作符"><a href="#查询操作符" class="headerlink" title="查询操作符"></a>查询操作符</h3><p><a href="https://docs.mongodb.com/manual/reference/operator/query/" target="_blank" rel="noopener">官方文档</a></p>
+<pre><code class="js">// 查询 name 为 &#39;Enter the Gungeon&#39; 的文档
+Game.find({ name: &#39;Enter the Gungeon&#39; })
+// 查询 name 为 &#39;Resident Evil&#39; ，且 type 为 &#39;AVG&#39; 的文档
+Game.find({ name: &#39;Resident Evil&#39;, type: &#39;AVG&#39; })
+// 查询 age 大于 15 小于 30 的文档
+User.find({ age: { $gt: 15, $lt: 30 }})
+// 查询 age 不等于 20 的文档
+User.find({ age: { $ne: 20 }})
+// 查询 age 为 10 或 14 或 20 的文档 
+User.find({ age: { $in: [10, 14, 20] }})
+// 查询全部文档
+Game.find()</code></pre>
+<h3 id="insert"><a href="#insert" class="headerlink" title="insert()"></a>insert()</h3><p>向集合中插入若干条文档。</p>
+<ul>
+<li>参数①：对象或数组，表示插入的数据</li>
+</ul>
+<pre><code class="js">// 插入一条文档
+db.students.insert({ name:&#39;御坂美琴&#39;, age: 16 })
+// 插入多条文档
+db.students.insert([
+    { name: &#39;JOJO&#39;, age: 17 },
+    { name: &#39;Wendy&#39;, age: 14 }
+])</code></pre>
+<p>此时使用<code>show databases</code>和<code>show collections</code>就可以看到自动创建的数据库和集合了。</p>
+<p>注意，可以看到每一条文档前自动添加了一个<code>_id</code>字段。它用来作为文档的唯一标识，但是其类型为比较特殊的<code>ObjectId</code>，该类型并不是普通的字符串，而是一个自定义对象，因此在其它语言查询数据库时，需要额外的处理。</p>
+<h3 id="find-findOne"><a href="#find-findOne" class="headerlink" title="find() / findOne()"></a>find() / findOne()</h3><p>查询集合中的一条 / 多条文档。</p>
+<ul>
+<li>参数①：对象，表示查询条件</li>
+<li>返回值：以数组 / 对象形式返回符合条件的文档</li>
+</ul>
+<pre><code class="js">// 查询所有文档
+db.students.find()
+// 查询符合单个条件的文档，注意这里根据 id 查询数据的方式
+db.students.find({ _id: ObjectId(&#39;5de238bbb52000002c000d74&#39;) })
+// 查询同时符合多个条件的文档
+db.students.find({ name:&#39;JOJO&#39;, age: 17 })
+// 查询第一条符合条件的文档
+db.students.findOne({ age: 17 })</code></pre>
+<p>如果使用返回的结果继续调用<code>count()</code>，可以获取查询的结果数。</p>
+<pre><code class="js">db.students.find().count() // =&gt; 5</code></pre>
+<h3 id="updateOne-updateMany"><a href="#updateOne-updateMany" class="headerlink" title="updateOne() / updateMany()"></a>updateOne() / updateMany()</h3><p>更新文档需要使用<strong>更新操作符</strong>，它用来对本次更新操作进行一些配置，例如可以更新字段名、可以更新字段值或者移除一个字段等。</p>
+<p>修改集合中的一条 / 多条文档。</p>
+<blockquote>
+<ul>
+<li>参数①：对象，表示查询条件</li>
+<li>参数②：包含更新操作符的对象</li>
+</ul>
+</blockquote>
+<pre><code class="js">// 将第一条 age 为 14 的数据的 age 属性值更新为 23
+db.students.updateOne({ age: 14 }, {
+    $set: { age: 23 } // $set 操作符用来更新属性值
+})</code></pre>
+<h3 id="deleteOne-deleteMany"><a href="#deleteOne-deleteMany" class="headerlink" title="deleteOne() / deleteMany()"></a>deleteOne() / deleteMany()</h3><p>删除集合中的一条 / 多条文档。</p>
+<blockquote>
+<ul>
+<li>参数①：对象，表示查询条件</li>
+</ul>
+</blockquote>
+<pre><code class="js">// 将 _id 为 5de238bbb52000002c000d74 的文档删除
+db.students.deleteOne({ _id: ObjectId(&#39;5de238bbb52000002c000d74&#39;) })</code></pre>
+</div>
+    </div>
+</div>
+
+<div class="toc"></div>
+    <footer>
+    <p>© 2020</p>
+    <p>Theme chicken by 小鸡米花, Powered by Hexo</p>
+</footer>
+    <a class="back-to-top" href="javascript:;"></a>
+    
+    <script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js" integrity="sha384-y23I5Q6l+B6vatafAwxRu/0oK/79VlbSz7Q9aiSZUvyWYIYsd+qj+o24G5ZU2zJz" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous"
+    onload="renderMathInElement(document.body, { strict: false, delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}] });"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+    <script src="/scripts/highlight.pack.js"></script>
+    <script src="/scripts/chicken.js"></script>
+    <!-- 
+        添加控制台，测试移动端
+        <script src="http://cdn.jsdelivr.net/npm/eruda"></script>
+        <script>eruda.init();</script>
+    -->
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/pio.model.json"},"display":{"position":"right","width":300,"height":600},"mobile":{"show":false},"react":{"opacity":1},"log":false});</script></body>
+</html>

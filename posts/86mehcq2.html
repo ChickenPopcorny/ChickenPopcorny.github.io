@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>这是一个神奇的主题</title>
+    <link rel="stylesheet" href="/css/chicken.css">
+    <link rel="stylesheet" href="/css/iconfont.css">
+    <link rel="stylesheet" href="/css/atom-one-dark.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css" integrity="sha384-zB1R0rpPzHqg7Kpt0Aljp8JPLqbXI3bhnPWROx27a9N0Ll6ZP/+DiW/UqRcLbRjq" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/5.12.1/css/all.min.css">
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+    <header>
+    <div class="container">
+        <div class="site-title"><a href="/">小鸡米花的知识库</a></div>
+        <nav>
+            <a class="nav-item " href="/">主页</a>
+            <a class="nav-item " href="/archives">时光轴</a>
+        </nav>
+    </div>
+</header>
+    <div id="write">
+    <div class="container">
+        <div class="post-info">
+            <ul class="tag-list">
+                
+                    <a class="tag-list-item" href="/tags/CSS/">CSS</a>
+                
+            </ul>
+        </div>
+        <div class="post-content"><h1 id="大前端笔记之07-🎨-CSS-背景"><a href="#大前端笔记之07-🎨-CSS-背景" class="headerlink" title="大前端笔记之07 🎨 CSS 背景"></a>大前端笔记之07 🎨 CSS 背景</h1><p>元素可以通过下面的属性设置背景颜色或图片。</p>
+<h2 id="背景颜色"><a href="#背景颜色" class="headerlink" title="背景颜色"></a>背景颜色</h2><p>使用<code>background-color</code>设置元素的背景颜色。</p>
+<table>
+<thead>
+<tr>
+<th>适用于</th>
+<th>继承性</th>
+<th>默认值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>所有元素</td>
+<td>不可继承</td>
+<td><code>transparent</code></td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>可选值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>transparent</code></td>
+<td>透明背景</td>
+</tr>
+<tr>
+<td>颜色值</td>
+<td>设置具体的背景颜色</td>
+</tr>
+</tbody></table>
+<h2 id="背景图片"><a href="#背景图片" class="headerlink" title="背景图片"></a>背景图片</h2><p>使用<code>background-image</code>设置元素的背景图片。</p>
+<table>
+<thead>
+<tr>
+<th>适用于</th>
+<th>继承性</th>
+<th>默认值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>所有元素</td>
+<td>不可继承</td>
+<td><code>none</code></td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>可选值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>none</code></td>
+<td>没有背景图片</td>
+</tr>
+<tr>
+<td><code>url()</code></td>
+<td>图片的 URL</td>
+</tr>
+<tr>
+<td><code>linear-gradient()</code></td>
+<td>设置<a href="/posts/qvto1gxk.html">渐变</a>背景</td>
+</tr>
+</tbody></table>
+<p>如果同时设置了背景颜色和图片，那么<strong>图片永远在最上层</strong>，只有图片没有覆盖的区域才会显示为背景色。</p>
+<p>如果要同时添加多个背景图片，只要将路径使用逗号隔开即可。此时<strong>最左边的图片层叠优先级最高</strong>，向右依次递减：</p>
+<pre><code class="css">div { background-image: url(&quot;bg01.png&quot;), url(&quot;bg02.gif&quot;); }</code></pre>
+<h2 id="背景平铺"><a href="#背景平铺" class="headerlink" title="背景平铺"></a>背景平铺</h2><p>使用<code>background-repeat</code>设置背景的平铺方式。</p>
+<table>
+<thead>
+<tr>
+<th>适用于</th>
+<th>继承性</th>
+<th>默认值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>所有元素</td>
+<td>不可继承</td>
+<td><code>repeat</code></td>
+</tr>
+</tbody></table>
+<p>下面的四个值可以出现最多两次，以空格隔开，分别设置水平和垂直方向的平铺方式。如果省略了其中一个，表示该值同时作用于两个方向。</p>
+<table>
+<thead>
+<tr>
+<th>可选值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>repeat</code></td>
+<td>在水平和垂直方向平铺</td>
+</tr>
+<tr>
+<td><code>no-repeat</code></td>
+<td>不平铺</td>
+</tr>
+<tr>
+<td><code>space</code></td>
+<td>根据元素的宽高自动调整背景平铺的数量，图片不会被裁切或压缩，多余的空间会被平分为图片的间隔。例如，背景图片宽为<code>300px</code>，元素宽度为<code>800px</code>，那么会显示两张图片，其余的<code>200px</code>作为背景的间隔</td>
+</tr>
+<tr>
+<td><code>round</code></td>
+<td>根据元素的宽高自动调整背景平铺的数量，图片会被压缩，因此不会产生多余空间。例如，背景图片宽为<code>300px</code>，元素宽度为<code>800px</code>，那么会显示三张图片，每张图片宽度调整为<code>266.67px</code></td>
+</tr>
+</tbody></table>
+<p>下面的两个值只能出现一次，表示仅在某个方向平铺，而另外一个方向不平铺。</p>
+<table>
+<thead>
+<tr>
+<th>可选值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>repeat-x</code></td>
+<td>仅在水平方向平铺</td>
+</tr>
+<tr>
+<td><code>repeat-y</code></td>
+<td>仅在垂直方向平铺</td>
+</tr>
+</tbody></table>
+<pre><code class="css">div { 
+    background-repeat: repeat no-repeat;
+    /* 相当于 */
+    background-repeat: repeat-x;
+}</code></pre>
+<h2 id="背景位置"><a href="#背景位置" class="headerlink" title="背景位置"></a>背景位置</h2><p>使用<code>background-position</code>设置背景在元素中的位置。</p>
+<table>
+<thead>
+<tr>
+<th>适用于</th>
+<th>继承性</th>
+<th>默认值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>所有元素</td>
+<td>不可继承</td>
+<td><code>0% 0%</code></td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>可选值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>长度值</td>
+<td>表示以元素<strong>左上角</strong>为起始点的偏移量，可以为负值</td>
+</tr>
+<tr>
+<td><code>top</code>/<code>right</code>/<code>bottom</code>/<code>left</code>/<code>center</code></td>
+<td>表示背景紧靠该方向</td>
+</tr>
+<tr>
+<td>百分比值</td>
+<td>相对的值为<strong>元素的宽高 - 背景的宽高</strong>，因此左上角为<code>0% 0%</code>，右下角为<code>100% 100%</code>，居中则是<code>50% 50%</code></td>
+</tr>
+</tbody></table>
+<p>上述可选值根据数量不同，表示的含义也不同：</p>
+<table>
+<thead>
+<tr>
+<th>值的数量</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1 个长度值</td>
+<td>该值表示水平方向，垂直方向为<code>center</code></td>
+</tr>
+<tr>
+<td>2 个长度值</td>
+<td>前者表示水平方向，后者表示垂直方向</td>
+</tr>
+<tr>
+<td>1 个关键字</td>
+<td>表示背景紧靠该方向，另外一个方向为<code>center</code></td>
+</tr>
+<tr>
+<td>2 个关键字</td>
+<td>分别表示水平和垂直方向，顺序并不重要，只要方向不冲突即可</td>
+</tr>
+<tr>
+<td>1 个关键字 + 1 个长度值</td>
+<td>前者表示水平方向，后者表示垂直方向。如果前面的值不为水平方向关键字，后面的值不为垂直方向关键字，那么该值无效</td>
+</tr>
+<tr>
+<td>4 个值</td>
+<td>1 个关键字和 1 个长度表示<strong>与这个方向的距离</strong></td>
+</tr>
+</tbody></table>
+<pre><code class="css">div {
+    background-position: 10px;                      /* 距离左侧 10px，垂直方向居中 */
+    background-position: 10px 20px;                 /* 距离左侧 10px，距离上方 20px */
+    background-position: bottom;                    /* 垂直方向位于底部，水平方向居中 */
+    background-position: bottom left;               /* 位于左下 */
+    background-position: left 10px;                 /* 水平方向位于左侧，垂直方向距离上方 10px */
+    background-position: right 10px bottom 5px;     /* 距离右侧 10px，距离底部 15px */
+}</code></pre>
+<h2 id="背景固定"><a href="#背景固定" class="headerlink" title="背景固定"></a>背景固定</h2><p>使用<code>background-attachment</code>设置背景相对于浏览器窗口定位。此时只有当元素位于背景的位置时，背景才能显示出来。即使两个背景的位置重合也没有关系，只要元素覆盖到自己的背景之上，那么背景就会显示出来。</p>
+<p>注意，该属性会导致<code>background-position</code>相对于浏览器窗口设置位置，而非元素本身。</p>
+<table>
+<thead>
+<tr>
+<th>适用于</th>
+<th>继承性</th>
+<th>默认值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>所有元素</td>
+<td>不可继承</td>
+<td><code>scroll</code></td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>可选值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>scroll</code></td>
+<td>背景跟随元素滚动</td>
+</tr>
+<tr>
+<td><code>fixed</code></td>
+<td>背景固定，将元素背景以浏览器窗口作为参照物，而不是元素</td>
+</tr>
+</tbody></table>
+<h2 id="背景区域"><a href="#背景区域" class="headerlink" title="背景区域"></a>背景区域</h2><p>使用<code>background-clip</code>设置背景的<strong>显示区域</strong>。如果一个元素包含<code>padding</code>，而显示区域设置为<code>content-box</code>，那么背景会显示不全。</p>
+<table>
+<thead>
+<tr>
+<th>适用于</th>
+<th>继承性</th>
+<th>默认值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>所有元素</td>
+<td>不可继承</td>
+<td><code>border-box</code></td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>可选值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>border-box</code></td>
+<td>背景显示在<code>border</code>、<code>padding</code>和<code>content</code>区域</td>
+</tr>
+<tr>
+<td><code>padding-box</code></td>
+<td>背景显示在<code>padding</code>和<code>content</code>区域</td>
+</tr>
+<tr>
+<td><code>content-box</code></td>
+<td>背景显示在<code>content</code>区域</td>
+</tr>
+</tbody></table>
+<p>使用<code>background-origin</code>设置背景的<strong>定位区域</strong>，它可以修改图片渲染的<strong>起始点</strong>，但是不代表其它部分不渲染，只是起始点变了而已。</p>
+<table>
+<thead>
+<tr>
+<th>适用于</th>
+<th>继承性</th>
+<th>默认值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>所有元素</td>
+<td>不可继承</td>
+<td><code>padding-box</code></td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>可选值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>padding-box</code></td>
+<td>从<code>padding</code>区域开始绘制</td>
+</tr>
+<tr>
+<td><code>border-box</code></td>
+<td>从<code>border</code>区域开始绘制</td>
+</tr>
+<tr>
+<td><code>content-box</code></td>
+<td>从<code>content</code>区域开始绘制</td>
+</tr>
+</tbody></table>
+<p><img src="https://pic.superbed.cn/item/5dfb1cca76085c3289c2e79d.jpg" alt=""></p>
+<h2 id="背景尺寸"><a href="#背景尺寸" class="headerlink" title="背景尺寸"></a>背景尺寸</h2><p>使用<code>background-size</code>设置背景尺寸。</p>
+<table>
+<thead>
+<tr>
+<th>适用于</th>
+<th>继承性</th>
+<th>默认值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>所有元素</td>
+<td>不可继承</td>
+<td><code>auto auto</code></td>
+</tr>
+</tbody></table>
+<p>下面的值可以出现一至两次，以空格隔开，分别设置水平和垂直方向。如果只有一个值，那么它表示水平方向，垂直方向自动设置为<code>auto</code>。</p>
+<table>
+<thead>
+<tr>
+<th>可选值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>auto</code></td>
+<td>使用图片本身的尺寸，如果其中一个方向尺寸被改变了，那么<code>auto</code>表示等比例缩放</td>
+</tr>
+<tr>
+<td>长度值</td>
+<td>设置固定的背景尺寸</td>
+</tr>
+<tr>
+<td>百分比值</td>
+<td>相对于<code>background-origin</code>区域的宽度或高度</td>
+</tr>
+<tr>
+<td><code>cover</code></td>
+<td>表示背景图片在<strong>保持比例</strong>的前提下填充满元素，超出的部分不会显示</td>
+</tr>
+<tr>
+<td><code>contain</code></td>
+<td>表示背景图片在<strong>保持比例</strong>的前提下完整的显示，多余的部分以空白填充</td>
+</tr>
+</tbody></table>
+<h2 id="背景属性简写"><a href="#背景属性简写" class="headerlink" title="背景属性简写"></a>背景属性简写</h2><p>使用<code>background</code>简写上述所有属性。将这些值以空格隔开，它们的顺序并不重要，也可以随意省略。不过注意<code>background-position</code>必须与<code>background-size</code>用<code>/</code>隔开。</p>
+<pre><code class="css">div {
+    background: 
+        orange              /* background-color */
+        url(&quot;img.png&quot;)      /* background-image */
+        no-repeat           /* background-repeat */
+        fixed               /* background-attachment */
+        center center / 50% /* background-position / background-size */
+        content-box         /* background-origin */
+        content-box;        /* background-clip */
+}</code></pre>
+</div>
+    </div>
+</div>
+
+<div class="toc"></div>
+    <footer>
+    <p>© 2020</p>
+    <p>Theme chicken by 小鸡米花, Powered by Hexo</p>
+</footer>
+    <a class="back-to-top" href="javascript:;"></a>
+    
+    <script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js" integrity="sha384-y23I5Q6l+B6vatafAwxRu/0oK/79VlbSz7Q9aiSZUvyWYIYsd+qj+o24G5ZU2zJz" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous"
+    onload="renderMathInElement(document.body, { strict: false, delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}] });"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+    <script src="/scripts/highlight.pack.js"></script>
+    <script src="/scripts/chicken.js"></script>
+    <!-- 
+        添加控制台，测试移动端
+        <script src="http://cdn.jsdelivr.net/npm/eruda"></script>
+        <script>eruda.init();</script>
+    -->
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/pio.model.json"},"display":{"position":"right","width":300,"height":600},"mobile":{"show":false},"react":{"opacity":1},"log":false});</script></body>
+</html>

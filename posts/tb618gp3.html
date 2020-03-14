@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>这是一个神奇的主题</title>
+    <link rel="stylesheet" href="/css/chicken.css">
+    <link rel="stylesheet" href="/css/iconfont.css">
+    <link rel="stylesheet" href="/css/atom-one-dark.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css" integrity="sha384-zB1R0rpPzHqg7Kpt0Aljp8JPLqbXI3bhnPWROx27a9N0Ll6ZP/+DiW/UqRcLbRjq" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/5.12.1/css/all.min.css">
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+    <header>
+    <div class="container">
+        <div class="site-title"><a href="/">小鸡米花的知识库</a></div>
+        <nav>
+            <a class="nav-item " href="/">主页</a>
+            <a class="nav-item " href="/archives">时光轴</a>
+        </nav>
+    </div>
+</header>
+    <div id="write">
+    <div class="container">
+        <div class="post-info">
+            <ul class="tag-list">
+                
+                    <a class="tag-list-item" href="/tags/Node-js/">Node.js</a>
+                
+            </ul>
+        </div>
+        <div class="post-content"><h1 id="大前端支线笔记之06-😨-Node-js-原生构建网络服务"><a href="#大前端支线笔记之06-😨-Node-js-原生构建网络服务" class="headerlink" title="大前端支线笔记之06 😨 Node.js 原生构建网络服务"></a>大前端支线笔记之06 😨 Node.js 原生构建网络服务</h1><blockquote>
+<p>施工中，修改时间</p>
+</blockquote>
+<h3 id="创建服务器"><a href="#创建服务器" class="headerlink" title="创建服务器"></a>创建服务器</h3><p>下面的代码可以创建一个最简单的服务器：</p>
+<pre><code class="js">const http = require(&#39;http&#39;) // 引入模块
+const app = http.createServer() // 创建服务器
+app.listen(3000, function() { // 监听端口
+    console.log(&#39;服务器启动成功，正在监听 3000 端口&#39;)
+})</code></pre>
+<h3 id="接收请求"><a href="#接收请求" class="headerlink" title="接收请求"></a>接收请求</h3><p>当服务器接收的请求时会触发服务器对象的<code>request</code>事件，Node.js 也是通过<code>on()</code>方法监听事件，该方法定义在<code>Events</code>模块中。</p>
+<pre><code class="js">app.on(&#39;request&#39;, (req, res) =&gt; { // req 和 res 分别为请求对象与响应对象
+  // 处理请求
+})</code></pre>
+<p>请求行和请求头可以通过请求对象获取：</p>
+<pre><code class="js">app.on(&#39;request&#39;, (req, res) =&gt; {
+    req.method  // 请求方式，值为 &#39;GET&#39; 或 &#39;POST&#39;
+    req.url     // 请求 URL 的 path 部分，如 /index?id=233，使用 URL 模块可以提取出 GET 方式传递的参数
+    req.headers // 请求头的信息，使用方括号传入键名可以获取对应的值
+})</code></pre>
+<p>请求体（比如<code>POST</code>方式传递的参数）的获取比较麻烦，因为它是通过流的方式传递的。</p>
+<p>当流接收到新的缓存<code>Buffer</code>时会触发<code>data</code>事件，但是这时的内容可能并不完全，当流接收到全部内容时，会触发<code>end</code>事件。因此最好是在<code>data</code>事件中将缓存数组拼接起来，然后在<code>end</code>事件中输出：</p>
+<pre><code class="js">app.on(&#39;request&#39;, (req, res) =&gt; {
+    let reqBody = &#39;&#39; // 声明一个变量，表示请求体数据
+    req.on(&#39;data&#39;, temp =&gt; reqBody += temp) // 拼接获取的缓冲
+    req.on(&#39;end&#39;, () =&gt; reqBody) // 传输完毕后获取请求体
+})</code></pre>
+<h3 id="返回响应"><a href="#返回响应" class="headerlink" title="返回响应"></a>返回响应</h3><p>当请求处理完毕后，应当给客户端返回响应，否则客户端会一直处于等待状态（浏览器转圈）。</p>
+<p>不过在此之前，可以先通过<code>writeHead()</code>方法设置一下响应行和响应头。因为默认情况下，服务器响应的数据为 UTF-8 编码，但是如果没有在响应头中声明，或者在 HTML 文件中使用<code>&lt;meta charset=&quot;UTF-8&quot;&gt;</code>告知浏览器的话，那么浏览器会采用当前操作系统的编码即 GBK 来解析，会出现乱码问题。</p>
+<blockquote>
+<ul>
+<li>参数①：HTTP 状态码</li>
+<li>参数②：可选，响应头信息的键值对</li>
+<li>返回值：调用它的响应对象，可以链式编程</li>
+</ul>
+</blockquote>
+<pre><code class="js">app.on(&#39;request&#39;, (req, res) =&gt; {
+    res.writeHead(200, { // 第一个参数为响应行的状态码，第二个参数为响应头的键值对
+        &#39;content-type&#39;: &#39;text/html;charset=utf8&#39; // 设置响应头中的资源类型和编码
+    })
+})</code></pre>
+<p>最后，通过<code>end()</code>方法为客户端返回响应，同时设置响应体。</p>
+<blockquote>
+<ul>
+<li>参数①：字符串类型的响应体，如果是复杂数据不要忘记转换成 JSON</li>
+</ul>
+</blockquote>
+<pre><code class="js">app.on(&#39;request&#39;, (req, res) =&gt; {
+    res.end(&#39;&lt;h1&gt;hello&lt;/h1&gt;&#39;) // 响应内容
+})</code></pre>
+<h3 id="页面路由"><a href="#页面路由" class="headerlink" title="页面路由"></a>页面路由</h3><p>然而此时无论用户访问任何地址，服务器都只能响应相同的内容。如果希望实现用户请求不同路径，返回对应内容，首先要根据请求对象的<code>url</code>解析出<code>pathname</code>部分（使用 url 模块），然后根据不同的<code>pathname</code>返回对应的内容。</p>
+<p>下面的代码实现了简单的页面路由，可以看出，<strong>用户请求的路径与实际返回的内容是完全没有关系的</strong>，全凭服务器如何处理。</p>
+<pre><code class="js">const url = require(&#39;url&#39;)
+
+app.on(&#39;request&#39;, (req, res) =&gt; {
+    // req.url 是包含参数的，如 /index?id=233，使用 parse() 可以提取出 /index 部分
+    let pathname = url.parse(req.url).pathname
+
+     // 根据请求路径返回对应内容
+    switch (pathname) {
+        case &#39;/&#39;:
+        case &#39;/index&#39;:
+            res.end(&#39;欢迎来到主页&#39;)
+            break
+        case &#39;/list&#39;:
+            res.end(&#39;欢迎来到列表页&#39;)
+            break
+        default:
+            res.end(&#39;您访问的页面不存在&#39;)
+            break
+    }
+})</code></pre>
+<blockquote>
+<p><em>参考资料</em></p>
+<ul>
+<li>《深入浅出 Node.js》</li>
+</ul>
+</blockquote>
+</div>
+    </div>
+</div>
+
+<div class="toc"></div>
+    <footer>
+    <p>© 2020</p>
+    <p>Theme chicken by 小鸡米花, Powered by Hexo</p>
+</footer>
+    <a class="back-to-top" href="javascript:;"></a>
+    
+    <script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js" integrity="sha384-y23I5Q6l+B6vatafAwxRu/0oK/79VlbSz7Q9aiSZUvyWYIYsd+qj+o24G5ZU2zJz" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous"
+    onload="renderMathInElement(document.body, { strict: false, delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}] });"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+    <script src="/scripts/highlight.pack.js"></script>
+    <script src="/scripts/chicken.js"></script>
+    <!-- 
+        添加控制台，测试移动端
+        <script src="http://cdn.jsdelivr.net/npm/eruda"></script>
+        <script>eruda.init();</script>
+    -->
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/pio.model.json"},"display":{"position":"right","width":300,"height":600},"mobile":{"show":false},"react":{"opacity":1},"log":false});</script></body>
+</html>

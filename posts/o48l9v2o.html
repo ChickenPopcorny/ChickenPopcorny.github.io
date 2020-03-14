@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>这是一个神奇的主题</title>
+    <link rel="stylesheet" href="/css/chicken.css">
+    <link rel="stylesheet" href="/css/iconfont.css">
+    <link rel="stylesheet" href="/css/atom-one-dark.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css" integrity="sha384-zB1R0rpPzHqg7Kpt0Aljp8JPLqbXI3bhnPWROx27a9N0Ll6ZP/+DiW/UqRcLbRjq" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/5.12.1/css/all.min.css">
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+    <header>
+    <div class="container">
+        <div class="site-title"><a href="/">小鸡米花的知识库</a></div>
+        <nav>
+            <a class="nav-item " href="/">主页</a>
+            <a class="nav-item " href="/archives">时光轴</a>
+        </nav>
+    </div>
+</header>
+    <div id="write">
+    <div class="container">
+        <div class="post-info">
+            <ul class="tag-list">
+                
+                    <a class="tag-list-item" href="/tags/Node-js/">Node.js</a>
+                
+            </ul>
+        </div>
+        <div class="post-content"><h1 id="大前端笔记之20-⚙️-Node-js"><a href="#大前端笔记之20-⚙️-Node-js" class="headerlink" title="大前端笔记之20 ⚙️ Node.js"></a>大前端笔记之20 ⚙️ Node.js</h1><p>Node.js 是一个类似于 Chrome V8 引擎的 JavaScript 运行环境，它使得 JavaScript 可以工作在服务器端，实现操作文件、构建网络服务等功能。</p>
+<h2 id="安装与配置"><a href="#安装与配置" class="headerlink" title="安装与配置"></a>安装与配置</h2><p>首先在<a href="https://nodejs.org/en/download/" target="_blank" rel="noopener">官网</a>选择对应的版本下载安装。然后打开 CMD 输入<code>node -v</code>命令，如果安装成功，则会显示当前 Node.js 的版本号。</p>
+<blockquote>
+<p>Node.js 安装版会自动配置环境变量，如果没有，则需要自行配置。</p>
+</blockquote>
+<p>新建一个 JavaScript 文件（如<code>app.js</code>），在其中写入 JavaScript 代码。保存后，在 CMD 输入<code>node app.js</code>，即可执行该文件。可见，虽然现在的宿主环境由之前的浏览器变成了 Node.js，但是 ECMAScript 的基本语法与之前是完全一样的，只不过缺少了 DOM 和 BOM 等浏览器提供的接口，取而代之的是 Node.js 提供的服务器相关接口。</p>
+<h2 id="模块化"><a href="#模块化" class="headerlink" title="模块化"></a>模块化</h2><p>虽然 <a href="/posts/j5h1kgw7.html#模块化">ES6</a> 已经提出了模块化相关的功能，但是 Node.js 在创建早期就已经实现了自己特有的模块化方式 CommonJS，并且由于历史原因，即使是最新版本（v12.14.1）的 Node.js 也无法原生支持 ES6 模块化的语法，必须通过 Babel 转换后才可以使用，因此这里依然需要使用 CommonJS。</p>
+<p>与 ES6 模块化一样，每个单独的 JavaScript 文件被称为一个模块。</p>
+<h3 id="导入模块"><a href="#导入模块" class="headerlink" title="导入模块"></a>导入模块</h3><p>首先，使用<code>require()</code>方法可以导入一个模块并<strong>自动执行其中的代码</strong>。</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>字符串</td>
+<td>模块路径或名称</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>返回值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>对象</td>
+<td><code>module.exports</code>对象，用于接收模块导出的变量，见下文</td>
+</tr>
+</tbody></table>
+<p>根据传入的参数不同，查找模块的方式也略有不同。</p>
+<p>如果传入的是一个路径，则：</p>
+<ul>
+<li>如果是完整路径，则直接查找该文件</li>
+<li>如果省略了后缀名，那么会先查找同名的<code>.js</code>文件，再查找同名文件夹</li>
+<li>如果找到了文件夹，则找其中的<code>index.js</code>文件</li>
+<li>如果没有找到，则找其中的<code>package.json</code>文件，寻找<code>main</code>属性配置的入口文件</li>
+<li>如果没有找到配置文件或入口文件，则报错</li>
+</ul>
+<p>如果传入的是一个名称，那么引擎会认为这是一个系统模块或第三方模块，并在当前的<code>node_modules</code>文件夹中先查找同名文件，再查找同名文件夹，之后的步骤与上面一样。</p>
+<p>因此，如果要加载的是当前路径下的模块，必须要传入<code>./</code>表示当前路径，否则会被识别成模块名。</p>
+<pre><code class="js">// hello.js
+require(&#39;./includes.js&#39;) // 加载自定义模块</code></pre>
+<h3 id="导出属性和方法"><a href="#导出属性和方法" class="headerlink" title="导出属性和方法"></a>导出属性和方法</h3><p>模块之间通过<code>module.exports</code>对象进行信息传递，它默认是一个空对象<code>{}</code>，可以为其添加属性和方法，如果只有一个要导出的值，也可以直接将其覆盖。</p>
+<pre><code class="js">// includes.js
+const msg = &#39;这是要传递的信息啦&#39;
+
+module.exports = msg // 覆盖了 module.exports 对象
+module.exports.msg = msg // 或者将变量添加到 module.exports 对象中</code></pre>
+<p>通过<code>require()</code>方法的返回值可以获取<code>module.exports</code>对象，从而调用其中的属性或方法：</p>
+<pre><code class="js">// hello.js
+var includes = require(&#39;./includes&#39;) // 引入模块
+
+// 如果是直接导出的，那么该对象就是导出的值
+includes // =&gt; &#39;这是要传递的信息啦&#39;
+
+// 如果属性和方法在对象中，那么也要先取出才能访问
+includes // =&gt; { msg: &#39;这是要传递的信息啦&#39; }
+includes.msg // =&gt; &#39;这是要传递的信息啦&#39;</code></pre>
+<h2 id="系统模块"><a href="#系统模块" class="headerlink" title="系统模块"></a>系统模块</h2><p>Node.js 将很多系统功能也封装成了单独的模块，需要时再加载即可。</p>
+<h3 id="全局属性和方法"><a href="#全局属性和方法" class="headerlink" title="全局属性和方法"></a>全局属性和方法</h3><p>与浏览器环境不同，Node.js 中的全局对象不再是<code>window</code>，而是<code>global</code>。它也包含类似于定时器的全局方法，注意不要与<code>window</code>混淆。</p>
+<h4 id="dirname"><a href="#dirname" class="headerlink" title="__dirname"></a>__dirname</h4><p>当前模块的物理路径。注意它有单独的实现方式，并不是位于<code>global</code>中，但是可以在全局任意位置直接调用。</p>
+<pre><code class="js">// 当前文件路径为 D:\htdocs\test.js
+__dirname // =&gt; D:\htdocs</code></pre>
+<h3 id="Path"><a href="#Path" class="headerlink" title="Path"></a>Path</h3><p><code>Path</code>模块提供了与路径相关的功能。</p>
+<pre><code class="js">const path = require(&#39;path&#39;)</code></pre>
+<h4 id="join"><a href="#join" class="headerlink" title="join()"></a>join()</h4><p>拼接路径。将需要拼接的部分作为参数传入，它会自动忽略掉每个部分两端的路径分隔符，并使用<strong>当前系统环境的分隔符</strong>将其拼接起来。</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>字符串若干</td>
+<td>要拼接的文件夹、文件名或路径</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>返回值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>字符串</td>
+<td>拼接后的路径</td>
+</tr>
+</tbody></table>
+<pre><code class="js">path.join(__dirname, &#39;dist&#39;, &#39;index.html&#39;) // =&gt; D:\htdocs\dist\index.html</code></pre>
+<h4 id="resolve"><a href="#resolve" class="headerlink" title="resolve()"></a>resolve()</h4><p>将若干路径片段拼接成绝对路径。</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>字符串若干</td>
+<td>要拼接的路径片段</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>返回值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>字符串</td>
+<td>拼接后的绝对路径</td>
+</tr>
+</tbody></table>
+<p>给出的路径参数会从右向左解析并拼接，一旦发现了绝对路径（开头为<code>/</code>），则停止解析。</p>
+<pre><code class="js">path.resolve(&#39;foo&#39;, &#39;/src&#39;, &#39;dist&#39;) // =&gt; D:\src\dist</code></pre>
+<p>如果没有发现绝对路径，那么以当前工作目录（命令行的执行位置）作为绝对路径拼接。</p>
+<pre><code class="js">// 当前命令行指向 D:\WorkSpace\test
+path.resolve(&#39;dist&#39;) // =&gt; D:\WorkSpace\test\dist</code></pre>
+<h3 id="URL"><a href="#URL" class="headerlink" title="URL"></a>URL</h3><p><code>URL</code>模块提供了与 URL 相关的功能。</p>
+<pre><code class="js">const url = require(&#39;url&#39;)</code></pre>
+<h4 id="parse"><a href="#parse" class="headerlink" title="parse()"></a>parse()</h4><p>解析一个 URL。</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>字符串</td>
+<td>要解析的 URL</td>
+</tr>
+<tr>
+<td>布尔值</td>
+<td>默认为<code>false</code>，表示以字符串获取<code>query</code>部分。如果为<code>true</code>则以对象方式获取</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>返回值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>对象</td>
+<td>解析后的对象</td>
+</tr>
+</tbody></table>
+<pre><code class="js">let myURL = url.parse(&#39;https://user:pass@sub.example.com:8080/p/a/t/h?id=233#hash&#39;)
+let port = myURL.port // =&gt; 8080
+// { protocol: &#39;https:&#39;,
+//   slashes: true,
+//   auth: &#39;user:pass&#39;,
+//   host: &#39;sub.example.com:8080&#39;,
+//   port: &#39;8080&#39;,
+//   hostname: &#39;sub.example.com&#39;,
+//   hash: &#39;#hash&#39;,
+//   search: &#39;?id=233&#39;,
+//   query: &#39;id=233&#39;,
+//   pathname: &#39;/p/a/t/h&#39;,
+//   path: &#39;/p/a/t/h?id=233&#39;,
+//   href: &#39;https://user:pass@sub.example.com:8080/p/a/t/h?id=233#hash&#39; }
+
+let myURL = url.parse(&#39;https://sub.example.com:8080?id=233&#39;, true)
+myURL.query // =&gt; {id: 233}</code></pre>
+<h3 id="File-System"><a href="#File-System" class="headerlink" title="File System"></a>File System</h3><p><code>fs</code>模块提供了与文件操作相关的功能。</p>
+<pre><code class="js">const fs = require(&#39;fs&#39;)</code></pre>
+<h4 id="readFile"><a href="#readFile" class="headerlink" title="readFile()"></a>readFile()</h4><p>读取文件的内容。</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>字符串</td>
+<td>文件路径</td>
+</tr>
+<tr>
+<td>字符串</td>
+<td>可选，文件的编码类型，默认为当前系统的编码，可以设置为<code>utf8</code></td>
+</tr>
+<tr>
+<td>函数</td>
+<td>回调函数，该函数包含两个参数，第一个参数表示错误对象，如果没有错误则为<code>null</code>，第二个参数表示读取的文件内容，如果发生错误则为<code>null</code></td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>返回值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>对象</td>
+<td>解析后的对象</td>
+</tr>
+</tbody></table>
+<pre><code class="js">fs.readFile(&#39;./test.txt&#39;, &#39;utf8&#39;, function(err, content) {
+    if (err) {
+        console.log(err) // 如果出现错误，则输出错误信息
+    } else {
+        console.log(content) // 否则输出文件内容
+    }
+})</code></pre>
+<h4 id="writeFile"><a href="#writeFile" class="headerlink" title="writeFile()"></a>writeFile()</h4><p>向文件写入内容。</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>字符串</td>
+<td>文件路径，如果文件不存在则自动创建</td>
+</tr>
+<tr>
+<td>字符串</td>
+<td>要写入的文件内容</td>
+</tr>
+<tr>
+<td>函数</td>
+<td>回调函数，该函数包含一个参数表示错误对象，如果没有错误则为<code>null</code></td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>返回值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>对象</td>
+<td>解析后的对象</td>
+</tr>
+</tbody></table>
+<pre><code class="js">fs.writeFile(&#39;./test.txt&#39;, &#39;这里是文件内容啦&#39;, function(err) {
+    if (err) {
+        console.log(err) // 如果出现错误，则输出错误信息
+    } else {
+        console.log(&#39;文件写入成功！&#39;)
+    }
+})</code></pre>
+<h3 id="Util"><a href="#Util" class="headerlink" title="Util"></a>Util</h3><p><code>util</code>模块提供了各种常用的功能。</p>
+<pre><code class="js">const util = require(&#39;util&#39;)</code></pre>
+<h4 id="promisify"><a href="#promisify" class="headerlink" title="promisify()"></a>promisify()</h4><p>将 Node.js 中原本的异步任务改造成返回<code>Promise</code>对象的函数。</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>函数</td>
+<td>普通的异步函数</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>返回值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>函数</td>
+<td>包装后的新函数，返回<code>Promise</code>对象</td>
+</tr>
+</tbody></table>
+<pre><code class="js">const readFile = require(&#39;util&#39;).promisify(fs.readFile) // 包装后的异步任务
+readFile().then() // 调用后返回 Promise 对象</code></pre>
+<h2 id="npm"><a href="#npm" class="headerlink" title="npm"></a>npm</h2><p>Node.js 也有很多其它开发者提供的第三方功能，由于这些功能通常由多个模块组成，因此将它们统称为包。Node.js 内置了一个称为 <a href="https://www.npmjs.com/" target="_blank" rel="noopener">npm</a>（Node Package Manager）的包管理工具，使用它输入命令后可以在公共平台上自动下载安装这些第三方包。</p>
+<p>使用<code>npm install</code>命令（可以简写为<code>i</code>）可以在<strong>命令行的当前路径</strong>安装对应的包。如果在后面添加<code>-g</code>参数，则表示全局安装，也就是在任何项目下都可以使用该包。</p>
+<pre><code class="powershell">npm install 包名称
+npm i 包名称
+npm i 包名称 -g</code></pre>
+<p>在当前项目安装的包，会保存到项目根目录下的<code>node_modules</code>文件夹下，在下载包时该文件夹会自动生成，无需手动创建。</p>
+<p>模块分为<strong>项目依赖</strong>和<strong>开发依赖</strong>。项目依赖表示开发和实际环境都需要使用的模块（比如 jQuery），这也是上述默认的安装方式；而开发依赖仅需要在开发时使用，与实际运行无关（比如之后的 Gulp 等自动化构建工具），需要在安装命令后添加<code>--save-dev</code>参数。</p>
+<pre><code class="powershell">npm i 包名称 --save-dev</code></pre>
+<p>使用<code>npm uninstall</code>命令可以卸载已经安装的包。</p>
+<pre><code class="powershell">npm uninstall 包名称</code></pre>
+<h3 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h3><p>但是如果需要将项目拷贝给其它人时，单凭这一个文件夹很难判断出项目依赖的模块和对应的版本，并且由于包文件很多，也会影响拷贝的速度。</p>
+<p>因此，使用<code>npm init</code>命令可以生成一个配置文件<code>package.json</code>，它保存了项目的版本号、依赖模块等信息。</p>
+<pre><code class="powershell">npm init        # 按回车表示使用默认值
+npm init -y     # 全部使用默认值</code></pre>
+<p>项目运行时依赖的模块会保存在配置文件的<code>dependencies</code>属性中，而开发依赖的模块保存到<code>devDependencies</code>属性中。当模块下载或更新后，这些属性自动也会同步更新。</p>
+<p>要拷贝项目时，只需要将源代码和该文件复制到新的工作路径，然后使用<code>npm install</code>命令就会自动根据配置文件下载对应的模块。</p>
+<pre><code class="powershell">npm install
+npm i               # 简写形式
+npm i --production  # 实际部署项目时使用，只下载项目依赖模块，不下载开发依赖模块</code></pre>
+<h3 id="常用的全局包"><a href="#常用的全局包" class="headerlink" title="常用的全局包"></a>常用的全局包</h3><p>下面安装几个常用的全局包。它们均是方便开发的命令行工具，因此使用全局安装。</p>
+<h4 id="nodemon"><a href="#nodemon" class="headerlink" title="nodemon"></a>nodemon</h4><p>nodemon 可以监控文件保存状态，并自动重新运行文件。</p>
+<pre><code class="powershell">npm i nodemon -g</code></pre>
+<p>安装成功后，不需要使用<code>node</code>，而是使用<code>nodemon</code>执行当前目录下的文件，可以看到命令行窗口多出了一些<code>[nodemon]</code>开头的信息，而且当执行完毕后，并没有将控制台释放给系统，依然是等待的状态。如果修改了文件，可以看到控制台中自动输出了更改后的信息。</p>
+<p>如果要断开链接，可以连续按下两次<kbd>CTRL + C</kbd>。</p>
+<h4 id="nrm"><a href="#nrm" class="headerlink" title="nrm"></a>nrm</h4><p>nrm 可以切换默认的下载节点。由于 npm 默认的下载站点在国外，因此下载速度可能会比较慢。</p>
+<pre><code class="powershell">npm i nrm -g</code></pre>
+<p>安装完成后，使用<code>nrm ls</code>命令可以列出所有的下载节点，前面的<code>*</code>表示当前正在使用的节点：</p>
+<p><img src="https://ae01.alicdn.com/kf/H9e2aab62e7a74fc4961ca7e095435719o.jpg" alt=""></p>
+<p>然后，使用<code>nrm use taobao</code>将下载节点切换为国内的淘宝。此时继续使用<code>npm</code>下载包时，会自动使用国内的镜像站，速度应该有明显提升。</p>
+<h3 id="npx"><a href="#npx" class="headerlink" title="npx"></a>npx</h3><p>npm 从 5.2 版本开始提供了<code>npx</code>命令，使用该命令可以方便地调用项目内部安装的模块。例如，在项目中安装了本地（非全局）的 webpack，如果需要在命令行中使用 webpack，那么必须要手动在<code>node_modules</code>中找到 webpack 的可执行文件，因为<strong>只要是在终端直接运行的命令，它会去全局环境中寻找</strong>。由于这里使用了局部安装，因此直接使用<code>webpack</code>命令自然是找不到的。</p>
+<pre><code class="powershell">./node_modules/.bin/webpack</code></pre>
+<blockquote>
+<p><code>.bin</code>是<code>node_modules</code>目录下的一个文件夹，里面保存着模块的可执行文件，不是什么特殊的指令~</p>
+</blockquote>
+<p>如果使用 npx，那么只需要在项目中调用如下命令即可。它的原理非常简单，也就是自动到项目的<code>node_modules/.bin</code>以及环境变量中寻找命令是否存在。</p>
+<pre><code class="powershell">npx webpack</code></pre>
+<blockquote>
+<p><em>参考资料</em></p>
+<p><a href="https://www.ruanyifeng.com/blog/2019/02/npx.html" target="_blank" rel="noopener">npx 使用教程</a></p>
+</blockquote>
+<h3 id="npm-scripts"><a href="#npm-scripts" class="headerlink" title="npm scripts"></a>npm scripts</h3><p>npm 允许在项目中<code>package.json</code>中，使用<code>scripts</code>属性定义脚本命令。例如，我们需要将<code>less</code>目录中的<code>test.less</code>编译为<code>css</code>目录中的<code>test.css</code>文件：</p>
+<pre><code class="powershell">lessc ./less/test.less ./css/test.css</code></pre>
+<p>但是这样写太麻烦了，于是可以在<code>package.json</code>中添加这样一个属性：</p>
+<pre><code class="json">// ...
+&quot;scripts&quot;: {
+    &quot;test&quot;: &quot;echo \&quot;Error: no test specified\&quot; &amp;&amp; exit 1&quot;,
+    &quot;less&quot;: &quot;lessc ./less/test.less ./css/test.css&quot;
+},
+// ...</code></pre>
+<p>这样，只需要使用<code>npm run 属性名</code>命令就可以执行这段脚本：</p>
+<pre><code class="powershell">npm run less</code></pre>
+<p>注意，与在终端中直接运行命令不同的是，npm scripts 会<strong>优先从本地寻找该命令</strong>，如果找不到才会去全局环境中寻找。所以，除了使用<code>npx webpack</code>可以运行本地 webpack 以外，也可以在 npm scripts 中先定义好运行 webpack 的脚本，然后使用<code>npm run build</code>即可运行本地的 webpack。</p>
+<pre><code class="json">&quot;scripts&quot;: {
+    &quot;build&quot;: &quot;webpack&quot;
+},</code></pre>
+<blockquote>
+<p><em>参考资料</em></p>
+<p><a href="https://www.ruanyifeng.com/blog/2016/10/npm_scripts.html" target="_blank" rel="noopener">npm scripts 使用指南</a></p>
+</blockquote>
+<h2 id="构建网络服务"><a href="#构建网络服务" class="headerlink" title="构建网络服务"></a>构建网络服务</h2><p>Node.js 不需要像 PHP 一样依赖于 Apache 等服务器软件，它内置了多个模块如<code>Net</code>、<code>Dgram</code>、<code>HTTP</code>和<code>HTTPS</code>分别来处理 TCP、UDP、HTTP 和 HTTPS 的网络请求。</p>
+<p>由于诸如 Express 这样的主流框架已经对这些功能进行了高级封装，实际应用中也几乎不可能自己去实现一个服务器，所以如果希望了解原理，请参考<a href="/posts/tb618gp3.html">另一篇文章</a>，本文直接使用<a href="https://expressjs.com/" target="_blank" rel="noopener">Express</a>构建网络服务。</p>
+<pre><code class="powershell">npm i express</code></pre>
+<h3 id="创建服务器"><a href="#创建服务器" class="headerlink" title="创建服务器"></a>创建服务器</h3><p>使用下面的代码可以创建一个最简单的服务器，Express 会帮你自动设置 MIME 类型、编码和状态码（见<a href="/posts/dzta2ga7.html#HTTP">HTTP 协议</a>一节）。对于没有配置的路径，也会自动返回<code>404</code>状态码和错误页面。</p>
+<pre><code class="js">const express = require(&#39;express&#39;) // 引入模块
+const app = express() // 创建服务器对象
+const port = 3000 // 端口号
+
+// 监听端口
+app.listen(port, function() {
+    console.log(`服务器启动成功，正在监听 ${port} 端口`)
+})</code></pre>
+<h3 id="页面路由"><a href="#页面路由" class="headerlink" title="页面路由"></a>页面路由</h3><p>创建服务器后，需要根据用户请求的路径来返回相应的内容，这被称之为页面路由（Routing）。这里的内容通常来说是一个 HTML 页面，但是也可以是一个普通字符串、一段 JSON 等等。</p>
+<p>使用<code>METHOD()</code>方法设置当客户端以特定方式（如<code>GET</code>、<code>POST</code>等）请求特定路径时所返回的内容。这里的<code>METHOD</code>需要替换成具体的方式，其详细列表见<a href="https://expressjs.com/en/4x/api.html#app.METHOD" target="_blank" rel="noopener">官网</a>。</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>字符串或正则表达式</td>
+<td>要匹配的请求路径</td>
+</tr>
+<tr>
+<td>函数</td>
+<td>匹配后的处理函数，该函数包含两个参数，分别为请求对象和响应对象</td>
+</tr>
+</tbody></table>
+<p>匹配成功后，可以使用响应对象的<code>send()</code>方法返回响应内容，否则客户端会一直停留在等待状态。</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>字符串 / 数组 / 对象</td>
+<td>当参数为字符串时，返回的<code>Content-Type</code>为<code>text/html</code>，否则为<code>application/json</code></td>
+</tr>
+</tbody></table>
+<pre><code class="js">app.get(&#39;/&#39;, function(req, res) {
+    res.send(&#39;欢迎来到首页！&#39;)
+})
+
+app.post(&#39;/login&#39;, function(req, res) {
+    res.send(&#39;登录成功！&#39;)
+})
+
+app.post(/a/, function(req, res) { // 正则表达式，表示任何包含字符 a 的路径
+    res.send(&#39;嗯？&#39;)
+})</code></pre>
+<h4 id="页面重定向"><a href="#页面重定向" class="headerlink" title="页面重定向"></a>页面重定向</h4><p>通过<code>res</code>对象的<code>redirect()</code>方法可以实现页面重定向，Express 会自动返回<code>302</code>状态码，并使客户端跳转到重定向后的页面。</p>
+<pre><code class="js">res.redirect(&#39;/admin/login&#39;)</code></pre>
+<h4 id="模块化路由"><a href="#模块化路由" class="headerlink" title="模块化路由"></a>模块化路由</h4><blockquote>
+<p>模块化路由需要使用中间件，可以先跳过本节，看完下文的中间件之后再回来。</p>
+</blockquote>
+<p>如果一个网站页面比较多，那么将所有的路由写到<code>app.js</code>中会使其难以维护。为此 Express 提供了模块化路由，通过它可以将一级路径与路由对象绑定，然后在路由对象中继续定义二级路由，相当于创建了一个小型的<code>app</code>对象。这样的方式可以将二级路由放到单独的模块中，并返回路由对象，在<code>app.js</code>中只需要引入模块并获取路由对象，然后将其绑定即可。</p>
+<p>使用<code>express</code>对象的<code>Router()</code>方法可以创建一个路由对象，然后使用<code>use()</code>中间件将路由对象与一级路径匹配，就表示这个一级路径下的所有请求都交给该路由对象处理，然后再通过路由对象创建二级路由即可。</p>
+<pre><code class="js">// blog.js 单独的路由模块
+const blog = express.Router() // 创建路由对象
+
+blog.get(&#39;/list&#39;, (req, res) =&gt; { // blog 下的二级路由，匹配 /blog/list
+    res.send(&#39;欢迎来到博客列表页&#39;)
+})
+
+module.exports = blog</code></pre>
+<pre><code class="js">// app.js 主模块
+const blog = require(&#39;./blog.js&#39;)
+
+app.use(&#39;/blog&#39;, blog) // 将所有 /blog 交给路由对象处理</code></pre>
+<p>注意，在其它路由模块中不需要重复创建<code>app</code>对象，使用请求对象<code>req.app</code>也可以获取到<code>app</code>对象。</p>
+<h3 id="接收参数"><a href="#接收参数" class="headerlink" title="接收参数"></a>接收参数</h3><h4 id="GET-请求参数"><a href="#GET-请求参数" class="headerlink" title="GET 请求参数"></a>GET 请求参数</h4><p>使用请求对象的<code>query</code>属性可以获取<code>GET</code>请求参数。</p>
+<pre><code class="js">// localhost/index?name=daisy&amp;age=18
+app.get(&#39;/index&#39;, function(req, res) {
+    req.query // =&gt; {name: daisy, age: 18}
+}) </code></pre>
+<h4 id="POST-请求参数"><a href="#POST-请求参数" class="headerlink" title="POST 请求参数"></a>POST 请求参数</h4><p>要获取 POST 请求参数，需要先安装一个 Express 的扩展模块<a href="https://www.npmjs.com/package/express-formidable" target="_blank" rel="noopener">express-formidable</a>。然后使用中间件（见下文）拦截所有请求：</p>
+<pre><code>npm install express-formidable</code></pre><pre><code class="js">const formidable = require(&#39;express-formidable&#39;)
+
+// 中间件：获取并处理请求参数
+app.use(formidable())
+
+app.post(&#39;/add&#39;, function(req, res) {
+    req.fields // POST 请求参数
+})</code></pre>
+<h4 id="路由参数"><a href="#路由参数" class="headerlink" title="路由参数"></a>路由参数</h4><p>路由参数是另一种传递 GET 参数的方式，它使参数看起来像是路由的一部分，而不是问号引导的形式。目前主流的前端框架也都实现了这种传递参数的方式，使路径看起来更加的友好。</p>
+<p>要使用路由参数，需要在路由后面使用<code>/:参数</code>作为占位符，当服务器接收到这样的请求时，就会将占位符的部分作为参数了。注意，路由参数的获取需要使用<code>req.params</code>属性，而不是普通<code>GET</code>请求方式的<code>req.query</code>。</p>
+<pre><code class="js">// 当请求路径为 localhost/user/add/233，那么 233 就会被识别为 id 参数
+// 注意，如果是路径为 localhost/user/add，那么不会匹配到该路由
+app.get(&#39;/add/:id&#39;, function(req, res) {
+    req.params // =&gt; { id: 233 }
+})</code></pre>
+<h3 id="中间件"><a href="#中间件" class="headerlink" title="中间件"></a>中间件</h3><p>中间件指的是位于接收请求和发送响应之间的处理模块，它们通常不会用来处理请求和响应。可以理解成污水到最终排放之间，需要经过层层过滤和处理，这个过程就需要若干个中间件来完成。</p>
+<p>使用<code>use()</code>可以创建一个中间件，拦截服务器接收的请求。注意，中间件会拦截所有以某路径<strong>开头</strong>的路由，而不仅仅是当前指定的路由。如配置的拦截参数是<code>/test</code>，那么它会拦截所有<code>/test/a</code>、<code>/test/a/b</code>等所有子路由。</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>字符串或正则表达式</td>
+<td>要拦截的请求路径</td>
+</tr>
+<tr>
+<td>函数</td>
+<td>匹配后的处理函数，该函数包含三个参数，分别为请求对象、响应对象和函数<code>next()</code></td>
+</tr>
+</tbody></table>
+<p>一旦中间件拦截成功，那么默认不会执行下面匹配的其它中间件。如果需要继续匹配，那么需要手动调用<code>next()</code>函数。</p>
+<pre><code class="js">app.use(&#39;/test&#39;, function (req, res) { // 拦截了 /test 的请求
+    console.log(&#39;被拦截了！&#39;)
+    // next() // 除非调用 next()
+})
+
+app.get(&#39;/test&#39;, function (req, res) { // 虽然这个路由也匹配，但是不会执行
+    res.send(&#39;hello&#39;)
+})</code></pre>
+<p>反之，如果将上述两个函数调换位置，那么中间件也永远不会被执行，因为路由函数<code>get()</code>表示该路由已经处理完毕，也没有<code>next()</code>函数可供调用。</p>
+<h3 id="静态资源"><a href="#静态资源" class="headerlink" title="静态资源"></a>静态资源</h3><p>但是很多情况下，并不是所有的请求都需要额外处理，比如客户端请求一个 CSS / JS 文件、一张图片等等，如果要将这些请求都手动进行路由，那么实在有些过于繁琐了。而 Express 提供了<code>static()</code>方法可以直接访问这些<strong>静态资源</strong>。我们通常将静态资源目录命名为<code>public</code>，将其与根目录拼接即可获得物理路径。</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>字符串</td>
+<td>静态资源目录的路径</td>
+</tr>
+</tbody></table>
+<p>这是一个中间件函数，它需要放到<code>use()</code>中才可以正确执行。</p>
+<pre><code class="js">app.use(express.static(path.join(__dirname, &#39;public&#39;))) // 托管的目录相当于 D:\WorkSpace\Test\public</code></pre>
+<p>它会自动根据静态资源目录下的文件生成路由。例如，现在的项目目录结构如下，其中<code>public</code>是放置静态资源的目录。那么当配置静态资源托管之后，Express 会自动拦截如<code>/300.png</code>、<code>/css/a.css</code>、<code>/index.html</code>这些路由，并自动返回静态资源的目录下对应的文件。</p>
+<pre><code>Test
+├─ app.js
+├─ node_modules
+├─ public
+│    ├─ 300.png
+│    ├─ css
+│    │    └─ layout.css
+└─   └─ index.html</code></pre><p>因此如果需要链接一个 CSS 文件，那么可以写作：</p>
+<pre><code class="html">&lt;link rel=&quot;stylesheet&quot; href=&quot;/css/layout.css&quot;&gt;
+&lt;!-- 自动返回 /public/css/layout.css 文件 --&gt;</code></pre>
+<h3 id="模板引擎"><a href="#模板引擎" class="headerlink" title="模板引擎"></a>模板引擎</h3><p>实际当中，我们很少将内容完全固定的页面直接返回，而通常是先从数据库查询出需要的数据，然后填充到页面结构中，再将整个页面响应给客户端。与 PHP、JSP 等语言不同，Node.js 并没有这类将前端页面和后端语言结合的语法，因此需要借助模板引擎来实现这一功能。</p>
+<p>也就是说，我们不再写直接交给客户端的 HTML 页面，而是按照模板引擎的语法写出页面，将其交给模板引擎。模板引擎会根据其中的代码进行数据拼接等操作，然后将其处理成最终的页面响应给客户端。</p>
+<p>或者，如果你采用了「前后端分离」的开发模式（前端只通过接口获取 JSON 数据，而不是直接获取渲染后的页面），那么也可以将模板引擎部署在浏览器端。否则必须通过 JavaScript 动态创建元素，将数据存放在元素中，再追加到页面上。而这样并不利于文档结构的维护，因此同样需要借助模板引擎拼接 HTML 和数据。</p>
+<p>模板引擎有很多种，比如<a href="https://ejs.co/" target="_blank" rel="noopener">EJS</a>、<a href="http://www.nooong.com/docs/jade_chinese.htm" target="_blank" rel="noopener">Jade</a>等等，它们的用法大同小异，这里使用的是国内制作的<a href="/posts/3q4y7l2d.html">art-template</a>。</p>
+<pre><code class="powershell">npm install express-art-template art-template</code></pre>
+<p>使用下面的代码在 Express 中部署 art-template 模板引擎。这些参数均为 Express 中<a href="http://expressjs.com/en/5x/api.html#app.set" target="_blank" rel="noopener">要求配置的参数</a>，并不属于 art-template 模板引擎，因此其它模板引擎配置的方式也基本一样。</p>
+<pre><code class="js">// 根据要渲染的文件后缀名（也就是下面 render() 文件的后缀名），来引入相应的模板引擎，必须设置
+app.engine(&#39;html&#39;, require(&#39;express-art-template&#39;))
+
+// 设置模板的存放目录，默认值为 process.cwd() + &#39;/views&#39;，process.cwd() 为当前 Node.js 的进程工作目录，也就是项目根目录下的 views 文件夹
+app.set(&#39;views&#39;, path.join(__dirname, &#39;views&#39;))
+
+// 设置要渲染的文件后缀名省略时，默认补充的后缀
+app.set(&#39;view engine&#39;, &#39;html&#39;)
+
+// 使用 render() 方法响应模板内容，后面传入数据参数
+// 如果 views 下面还有子目录 home，那么要使用 res.render(&#39;home/index.html&#39;)，不要在 home 前添加斜杠了
+app.get(&#39;/&#39;, (req, res) =&gt; {
+    res.render(&#39;index.html&#39;, { name: &#39;aui&#39;, age: 18 }) // 这里使用了后缀名，如果省略，则根据 view engine 的配置自动补充
+})</code></pre>
+<p>对于每个模板都需要使用的公共数据，可以将其配置到<code>app.locals</code>对象中，这样每个模板都能直接获取到该数据。</p>
+<pre><code class="js">app.locals.user = { name: &#39;啦啦啦&#39;, age: 18 } // 在模板中，直接使用`user`即可获取到该对象</code></pre>
+<h3 id="Session"><a href="#Session" class="headerlink" title="Session"></a>Session</h3><p>在我们浏览网站时，经常会见到这样一些功能：如果用户登录成功了，那么在某段时间内，用户不再需要重复登录。或者，用户只有在登录之后才能访问特定的页面。</p>
+<p>这些需求看似常见，然而并不容易实现。因为 <strong>HTTP 协议是无状态的</strong>，当客户端与服务器的一次请求结束后，服务器就不再认识客户端了。也就是说，虽然用户本次登录成功了，但是服务器无法知道本次与下次登录的是不是同一个用户，只能当作一个新用户来要求其重新登录。或者，如果用户直接访问登录后的页面，那么服务器也无法判断这个用户是否已经登录成功。</p>
+<blockquote>
+<p>为了理解这个问题，可以看生活中的一个例子：有一家烤鸭店搞活动，只要一个顾客购买 5 只烤鸭，就可以免费再获得 1 只。但是客人这么多，烤鸭店要如何记住每一个客人呢？店铺可以制作一些带有卡号的会员卡，然后在店里准备一个记录本，将顾客的会员卡号与购买的烤鸭数记录下来。这样，当顾客购买烤鸭前，先出示一下会员卡，这样店铺就知道顾客之前购买过几只烤鸭了，从而判断是否要赠送烤鸭。</p>
+</blockquote>
+<p>其实解决方案与上述例子很相似，为了使服务器（烤鸭店）记住客户端（顾客），那么也要准备一个记录本和会员卡，记录本是服务器的 session 对象，以 sessionID 识别用户，它可以位于服务器内存、文件、数据库，甚至专门的服务器集群中；而会员卡是客户端的本地存储 cookie。当用户首次登录（购物）后，服务器会生成一个随机的 sessionID（卡号），记录到客户端的 cookie 中（会员卡）。</p>
+<p>当客户端再次发送 HTTP 请求时，会将本地<strong>同域</strong>的 cookie 携带在请求头中，一同发送到服务器（出示会员卡）。于是服务器可以检查 session 中（记录本）是否包含之前生成的 sessionID（卡号），如果找到了，则说明用户之前登录成功过（购买过烤鸭）。</p>
+<blockquote>
+<p>session 的本义是「会话」，而无论是服务端的 session 对象，还是 cookie 中记录的 sessionID，都是 session 的<strong>具体实现</strong>。session 的实现并不一定需要依赖于 cookie，只不过 cookie 是目前最简单有效的实现方式之一。</p>
+</blockquote>
+<p>在 Node.js 中要实现服务端 session，需要安装扩展包<a href="https://www.npmjs.com/package/express-session" target="_blank" rel="noopener">express-session</a>。</p>
+<pre><code>npm install express-session</code></pre><pre><code class="js">const session = require(&#39;express-session&#39;)</code></pre>
+<p><code>session</code>的构造函数是一个中间件函数，它可以传入一个对象，进行初始化配置：</p>
+<pre><code class="js">app.use(session({ 
+    secret: &#39;open-sesame&#39;, // 增加生成 sessionID 的强度，防止被篡改，类似于盐值
+    resave: false, // cookie 过期之前，客户端再次访问是否重复保存 session，建议 false
+    saveUninitialized: false // 是否保存未添加实际内容的 session，建议 false,
+    cookie: { 
+        maxAge: 24 * 60 * 60 * 1000, // 默认关闭浏览器就会清除，因此要设置 cookie 过期时间，单位为毫秒，这里表示的是一天
+    } 
+}))</code></pre>
+<p>当客户端登录成功后，可以在 session 中记录一个变量（如登录的用户名），如果设置了<code>saveUninitialized: false</code>，那么此时服务器会将同时生成的 sessionID 保存到客户端的 cookie 中：</p>
+<pre><code class="js">app.post(&#39;/login&#39;, function (req, res) {
+    if (isValid) { // 如果登录成功
+        req.session.username = result.username // 在 session 中记录用户名，或者其它值
+        // 跳转到登录后页面
+    }
+})</code></pre>
+<p><img src="https://ae01.alicdn.com/kf/H714549ade3d8483bb2d87b604fb6a11df.jpg" alt=""></p>
+<p>之后在其它页面只需要先验证该变量是否存在，然后根据情况返回不同页面即可。</p>
+<pre><code class="js">app.get(&#39;/user&#39;, function (req, res) {
+    req.session.username ? res.render(&#39;admin/user.html&#39;) : res.render(&#39;admin/login.html&#39;)
+})</code></pre>
+<p>使用响应对象的<code>clearCookie()</code>可以清除当前客户端保存的 cookie，该方法要求传入一个 cookie 名称。</p>
+<pre><code class="js">app.get(&#39;/&#39;, function (req, res) {
+    res.clearCookie(&#39;connect.sid&#39;) // 清除客户端保存的 sessionID
+})</code></pre>
+<h2 id="数据库"><a href="#数据库" class="headerlink" title="数据库"></a>数据库</h2><p>Node.js 与其它后端语言一样，都可以与数据库进行交互。由于 MongoDB 是直接操作 JSON 数据，因此与 Node.js 结合使用会更加方便。</p>
+<p>MongoDB 本身提供了连接 Node.js 的一系列接口，但是原生代码一向比较复杂。因此与 Express 一样，这里直接使用第三方模块<a href="https://mongoosejs.com/" target="_blank" rel="noopener">Mongoose</a> 操作 MongoDB，对于 MongoDB 本身的安装与使用，请查看<a href="/posts/e6q2910w.html">另一篇文章</a>。</p>
+<pre><code class="powershell">npm install mongoose</code></pre>
+<pre><code class="js">const mongoose = require(&#39;mongoose&#39;)</code></pre>
+<h3 id="连接数据库"><a href="#连接数据库" class="headerlink" title="连接数据库"></a>连接数据库</h3><p>首先，使用<code>mongoose</code>对象的<code>connect()</code>方法连接数据库。由于 MongoDB 不需要手动创建数据库，因此这里的数据库名称可以随意填写，之后创建文档后会自动创建。</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>字符串</td>
+<td>数据库地址</td>
+</tr>
+<tr>
+<td>对象</td>
+<td>配置参数</td>
+</tr>
+</tbody></table>
+<pre><code class="js">// 参数均是清除一些警告信息，需要的时候加上即可
+mongoose.connect(&#39;mongodb://localhost/test&#39;, { useNewUrlParser: true, useUnifiedTopology: true })
+// 如果数据库有密码
+mongoose.connect(&#39;mongodb://admin:123456@localhost/test&#39;, { useNewUrlParser: true, useUnifiedTopology: true })</code></pre>
+<h3 id="Schema"><a href="#Schema" class="headerlink" title="Schema"></a>Schema</h3><p>由于 MongoDB 本身对存入的数据没有任何约束，因此即便传入错误的数据（甚至是某些字段没有传入），MongoDB 也都会将它们保存起来。为了解决这一问题，Mongoose 引入了规则（Schema）这一概念，它类似于表结构，规定了一个集合（表）的字段类型。</p>
+<p>使用<code>mongoose.Schema()</code>构造函数可以创建一个规则，它的参数为一个对象，其属性为各个字段的名称，而属性值为该字段的类型。字段的类型有很多，而且针对于不同的类型，还可以进一步作出约束。</p>
+<p>常用的字段类型如下：</p>
+<ul>
+<li><code>String</code>：字符串，如果传入了一个非字符串值，那么 Mongoose 会自动调用<code>toString()</code>方法尝试自动转换</li>
+<li><code>Number</code>：数值，如果传入了一个非数值，那么 Mongoose 会尝试自动转换<ul>
+<li><code>null</code>、<code>undefined</code>不会被转换</li>
+<li><code>NaN</code>、没有<code>valueOf()</code>的数组或对象会导致转换错误</li>
+</ul>
+</li>
+<li><code>Date</code>：日期</li>
+<li><code>Boolean</code>：布尔值，除了下列值以外，其它任何值都会导致转换错误<ul>
+<li>被转换成<code>true</code>的值：<code>&#39;true&#39;</code>、<code>1</code>、<code>&#39;1&#39;</code>、<code>yes</code></li>
+<li>被转换成<code>false</code>的值：<code>&#39;false&#39;</code>、<code>0</code>、<code>&#39;0&#39;</code>、<code>no</code></li>
+</ul>
+</li>
+<li><code>ObjectId</code>：由于 MongoDB 中的<code>id</code>并不是一个简单的字符串，因此 Mongoose 提供了这样一个单独的类型</li>
+</ul>
+<pre><code class="js">// 创建了一个 游戏 的规则
+const GameSchema = new mongoose.Schema({
+    id: mongoose.ObjectId, // ID
+    name: String, // 游戏名称
+    type: String, // 游戏类型
+    isPublished: Boolean, // 是否发售
+    publishDate: Date, // 发售日期
+    endings: Number // 结局数量
+})</code></pre>
+<p>如果需要更详细的约束，那么属性的值可以为一个对象。这里只列出较为常见的约束，全部类型详见<a href="https://mongoosejs.com/docs/schematypes.html" target="_blank" rel="noopener">官方文档</a>。</p>
+<ul>
+<li>所有的类型都可以包含的约束：<ul>
+<li><code>required</code>：布尔值，非空约束。要求该字段必须提供，且值不能为<code>null</code>、<code>undefined</code>、<code>&#39;&#39;</code></li>
+<li><code>default</code>：任意类型，如果<strong>插入文档</strong>（更新文档无效）时该字段为<code>undefined</code>（对<code>null</code>或<code>&#39;&#39;</code>无效），所使用的默认值</li>
+<li><code>validate</code>：对象，自定义验证规则，包含<code>validator</code>和<code>message</code>两个属性。前者为一个函数，其返回值为验证规则；后者为字符串，表示自定义的错误信息</li>
+<li><code>get</code>：函数，获取数据时，对数据进行自定义处理</li>
+<li><code>set</code>：函数，传入数据时，对数据进行自定义处理</li>
+</ul>
+</li>
+<li>只有字符串类型可以包含的约束：<ul>
+<li><code>lowercase</code>：布尔值，是否调用<code>toLowerCase()</code>将传入值转换成小写</li>
+<li><code>uppercase</code>：布尔值，是否调用<code>toUppercase()</code>将传入值转换成大写</li>
+<li><code>trim</code>：布尔值，是否调用<code>trim()</code>去除传入值两端的空格</li>
+<li><code>match</code>：正则表达式，验证传入值是否匹配</li>
+<li><code>enum</code>：数组，验证传入值是否为其中之一</li>
+<li><code>minlength</code>：数值，验证传入值的长度是否符合条件</li>
+<li><code>maxlength</code>：数值，验证传入值的长度是否符合条件</li>
+</ul>
+</li>
+<li>只有数值类型可以包含的约束：<ul>
+<li><code>min</code>：数值，验证传入值的长度是否符合条件</li>
+<li><code>max</code>：数值，验证传入值的长度是否符合条件</li>
+<li><code>enum</code>：数组，验证传入值是否为其中之一，对于<code>null</code>和<code>undefined</code>无效</li>
+</ul>
+</li>
+</ul>
+<pre><code class="js">const GameSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true,             // 不能为空
+        default: &#39;Resident Evil&#39;,   // 默认值
+        minlength: 2,               // 最小字符数，汉字也算 1 个字符
+        maxlength: 50,              // 最大字符数
+        trim: true,                 // 自动去除字符串两端空格
+    },
+    type: {
+        type: String,
+        enum: [&#39;ACT&#39;, &#39;RPG&#39;]        // 只能是这两个值之一
+    }
+    endings: {
+        validate: {                                    // 自定义验证规则，v 表示要验证的值
+            validator: v =&gt; { return v &gt; 3 },          // 如果传入的值大于 3，表示验证通过
+            message: &#39;什么破游戏, 连 3 个结局都没有!&#39;    // 验证失败时的错误信息
+        },
+        get: v =&gt; Math.round(v),    // 获取或存入数据时，对其进行处理
+        set: v =&gt; Math.round(v),
+        min: 3,                     // 最小值
+        max: 10,                    // 最大值
+    }
+})</code></pre>
+<p>上述<code>required</code>、<code>max</code>、<code>min</code>、<code>enum</code>、<code>match</code>、<code>minlength</code>和<code>maxlength</code>会调用内置的验证器，将这些值放到数组中，并传入第二个字符串元素，可以自定义这些验证器的错误信息。</p>
+<pre><code class="js">const GameSchema = new mongoose.Schema({
+    endings: {
+        max: [99, &#39;最大值不能超过99啦&#39;]
+        enum: [[22, 33], &#39;只能是 22 或者 33&#39;]
+    }
+})</code></pre>
+<p>对于不符合验证规则的数据，Mongoose 会抛出一个错误。在下面增删查改的方法中可以使用<code>Promise</code>的<code>catch()</code>，或者在回调函数中获取这个错误对象。使用<code>错误对象.errors.字段名.message</code>可以获取到错误提示信息。</p>
+<pre><code class="js">const GameSchema = new mongoose.Schema({
+    endings: {
+        validate: {
+            validator: v =&gt; v === 233, // 只能传入 233
+            message: &#39;传的什么鬼东西！&#39;
+        }
+    }
+})
+
+GameModel.create({endings: 666}).catch(function (err) { // err 为错误对象
+    err.errors.endings.message
+})</code></pre>
+<h3 id="Model"><a href="#Model" class="headerlink" title="Model"></a>Model</h3><p>将定义的规则传入<code>model()</code>方法可以创建一个模型（Model），模型是 Mongoose 特有的概念，可以理解成集合（表）。</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>字符串</td>
+<td>要操作的集合（表）名称，这里建议采用<strong>首字母大写的单数形式</strong>，然后 Mongoose 会将其转换成<strong>全部小写的复数形式</strong>，与数据库中的集合对应</td>
+</tr>
+<tr>
+<td><code>Schema</code>对象</td>
+<td>之前创建的包含集合规则的对象</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>返回值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Model</code>对象</td>
+<td>模型对象，用来对数据库进行操作</td>
+</tr>
+</tbody></table>
+<pre><code class="js">const GameModel = mongoose.model(&#39;Game&#39;, GameSchema) // 集合名称为 Game，则数据库实际操作的集合名称为 games</code></pre>
+<p>然后，使用模型就可以调用一系列增删查改方法对数据库进行基本操作了。</p>
+<h4 id="create"><a href="#create" class="headerlink" title="create()"></a>create()</h4><p>插入若干条文档。</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>若干对象 / 数组</td>
+<td>要添加的数据</td>
+</tr>
+<tr>
+<td>函数</td>
+<td>可选，回调函数，可以使用<code>Promise</code>替代。第一个参数为错误对象，如果没有错误则为<code>null</code>；之后若干参数为插入的数据，包括自动生成的<code>_id</code></td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>返回值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Promise</code>对象</td>
+<td>可以取代回调函数</td>
+</tr>
+</tbody></table>
+<pre><code class="js">// 参数是若干个单独的对象
+GameModel.create(
+    { name: &#39;Resident Evil&#39;, isPublish: true, endings: 1 },
+    { name: &#39;Enter the Gungeon&#39;, isPublish: true, endings: 8 },
+    function(err, p1, p2) {
+        err // 错误对象
+        p1 // { _id: 5e4687310a6da6283498057d, name: &#39;Resident Evil&#39;, isPublish: true, endings: 1 }
+        p2 // { _id: 5e4687310a6da6283498057d, name: &#39;Enter the Gungeon&#39;, isPublish: true, endings: 8 }
+    }
+)
+
+// 参数是一个对象数组
+GameModel.create([
+    { name: &#39;Resident Evil&#39;, isPublish: true, endings: 1 },
+    { name: &#39;Enter the Gungeon&#39;, isPublish: true, endings: 8 }],
+).then(function(p1, p2) {})
+.catch(function(err) {})</code></pre>
+<h4 id="find"><a href="#find" class="headerlink" title="find()"></a>find()</h4><p>根据条件查询文档。</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>对象</td>
+<td>可选，表示<a href="/posts/e6q2910w.html#查询操作符">查询条件</a>，如果省略则表示查询全部</td>
+</tr>
+<tr>
+<td>函数</td>
+<td>可选，回调函数，可以使用<code>Promise</code>替代。第一个参数为错误对象，如果没有错误则为<code>null</code>；第二个参数为查询结果，无论结果数据是多条、单条还是没有，均为<strong>对象数组</strong></td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>返回值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Query</code>对象</td>
+<td><a href="#Query">查询结果对象</a></td>
+</tr>
+</tbody></table>
+<pre><code class="js">// 查询 name 为 &#39;Enter the Gungeon&#39; 的文档
+GameModel.find({ name: &#39;Enter the Gungeon&#39; })
+// 查询全部文档
+GameModel.find()</code></pre>
+<p>注意，MongoDB 中的<code>_id</code>在 JavaScript 中会表现为<code>Object</code>类型，<strong>并不是字符串</strong>，因此在使用时可以直接使用 Mongoose 自动生成的<code>id</code>属性来获取字符串类型的<code>_id</code>，而不需要手动去调用<code>_id.toString()</code>。</p>
+<h4 id="findOne"><a href="#findOne" class="headerlink" title="findOne()"></a>findOne()</h4><p>根据条件查询一条文档。如果有多个符合条件的文档，只返回其中的第一条。</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>对象</td>
+<td>可选，表示<a href="/posts/e6q2910w.html#查询操作符">查询条件</a>，如果省略则表示查询全部</td>
+</tr>
+<tr>
+<td>函数</td>
+<td>可选，回调函数，可以使用<code>Promise</code>替代。第一个参数为错误对象，如果没有错误则为<code>null</code>；第二个参数为查询结果，如果查询到文档则返回单个对象，如果没有找到文档则返回<code>null</code></td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>返回值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Query</code>对象</td>
+<td><a href="#Query">查询结果对象</a></td>
+</tr>
+</tbody></table>
+<pre><code class="js">// 查询第一条文档
+GameModel.findOne({ name: &#39;Enter the Gungeon&#39; })</code></pre>
+<h4 id="findById"><a href="#findById" class="headerlink" title="findById()"></a>findById()</h4><p>根据文档<code>_id</code>查询一条文档，与<code>findOne({ _id: id })</code>效果相同，如果要实现这一功能，建议使用该方法。</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>字符串</td>
+<td>文档的<code>_id</code></td>
+</tr>
+<tr>
+<td>函数</td>
+<td>可选，回调函数，可以使用<code>Promise</code>替代。第一个参数为错误对象，如果没有错误则为<code>null</code>；第二个参数为查询结果，如果查询到文档则返回单个对象，如果没有找到文档则返回<code>null</code></td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>返回值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Query</code>对象</td>
+<td><a href="#Query">查询结果对象</a></td>
+</tr>
+</tbody></table>
+<pre><code class="js">GameModel.findById(&#39;5db6cbb42b004b2840128f79&#39;)</code></pre>
+<h4 id="countDocuments"><a href="#countDocuments" class="headerlink" title="countDocuments()"></a>countDocuments()</h4><p>获取查询的文档数量。</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>对象</td>
+<td>可选，表示<a href="/posts/e6q2910w.html#查询操作符">查询条件</a>，如果省略则表示查询全部</td>
+</tr>
+<tr>
+<td>函数</td>
+<td>可选，回调函数，可以使用<code>Promise</code>替代。第一个参数为错误对象，如果没有错误则为<code>null</code>；第二个参数为符合条件的文档数量</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>返回值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Query</code>对象</td>
+<td><a href="#Query">查询结果对象</a></td>
+</tr>
+</tbody></table>
+<pre><code class="js">GameModel.countDocuments({ ending: 3 }, function(err, result) {
+    result // 结局数为 3 的游戏数量
+})</code></pre>
+<h4 id="updateOne"><a href="#updateOne" class="headerlink" title="updateOne()"></a>updateOne()</h4><p>根据条件修改一条文档。</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>对象</td>
+<td>可选，表示<a href="/posts/e6q2910w.html#查询操作符">查询条件</a>，如果省略则表示不修改</td>
+</tr>
+<tr>
+<td>对象</td>
+<td>要修改的值组成的对象</td>
+</tr>
+<tr>
+<td>函数</td>
+<td>可选，回调函数，可以使用<code>Promise</code>替代。第一个参数为错误对象，如果没有错误则为<code>null</code>；第二个参数为包含修改条数的结果对象</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>返回值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Query</code>对象</td>
+<td><a href="#Query">查询结果对象</a></td>
+</tr>
+</tbody></table>
+<pre><code class="js">// 将 id 为 5d9f6b147589b70e201eca72 的文档的 name 修改为 &#39;Biohazard&#39;
+GameModel.updateOne({ _id: &#39;5d9f6b147589b70e201eca72&#39; }, { name: &#39;Biohazard&#39; })</code></pre>
+<h4 id="updateMany"><a href="#updateMany" class="headerlink" title="updateMany()"></a>updateMany()</h4><p>根据条件修改多条文档。</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>对象</td>
+<td>可选，表示<a href="/posts/e6q2910w.html#查询操作符">查询条件</a>，如果省略则表示不修改</td>
+</tr>
+<tr>
+<td>对象</td>
+<td>要修改的值组成的对象</td>
+</tr>
+<tr>
+<td>函数</td>
+<td>可选，回调函数，可以使用<code>Promise</code>替代。第一个参数为错误对象，如果没有错误则为<code>null</code>；第二个参数为包含修改条数的结果对象</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>返回值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Query</code>对象</td>
+<td><a href="#Query">查询结果对象</a></td>
+</tr>
+</tbody></table>
+<pre><code class="js">// 将所有 type 为 &#39;AVG&#39; 的文档的 name 修改为 &#39;Biohazard&#39;
+GameModel.updateMany({ type: &#39;AVG&#39; }, { name: &#39;Biohazard&#39; })</code></pre>
+<h4 id="deleteOne"><a href="#deleteOne" class="headerlink" title="deleteOne()"></a>deleteOne()</h4><p>删除符合条件的第一条文档。</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>对象</td>
+<td>可选，表示<a href="/posts/e6q2910w.html#查询操作符">查询条件</a>，如果省略则表示删除全部文档的第一条</td>
+</tr>
+<tr>
+<td>函数</td>
+<td>可选，回调函数，可以使用<code>Promise</code>替代。第一个参数为错误对象，如果没有错误则为<code>null</code>；第二个参数为包含删除条数的结果对象</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>返回值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Query</code>对象</td>
+<td><a href="#Query">查询结果对象</a></td>
+</tr>
+</tbody></table>
+<pre><code class="js">// 删除 endings 为 3 的第一条文档
+GameModel.deleteOne({ endings: 3 })</code></pre>
+<h4 id="deleteMany"><a href="#deleteMany" class="headerlink" title="deleteMany()"></a>deleteMany()</h4><p>删除符合条件的多条文档。</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>对象</td>
+<td>可选，表示<a href="/posts/e6q2910w.html#查询操作符">查询条件</a>，如果省略则表示<strong>不删除</strong></td>
+</tr>
+<tr>
+<td>函数</td>
+<td>可选，回调函数，可以使用<code>Promise</code>替代。第一个参数为错误对象，如果没有错误则为<code>null</code>；第二个参数为包含删除条数的结果对象</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>返回值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Query</code>对象</td>
+<td><a href="#Query">查询结果对象</a></td>
+</tr>
+</tbody></table>
+<pre><code class="js">// 删除 endings 为 3 的所有文档
+GameModel.deleteMany({ endings: 3 })</code></pre>
+<h3 id="Query"><a href="#Query" class="headerlink" title="Query"></a>Query</h3><p><code>Query</code>对象是 Mongoose 提供的一个查询结果对象，其中包含了一些处理查询结果的常用方法，并且封装了<code>then()</code>和<code>catch()</code>，可以当作<code>Promise</code>来使用，但是它并不是真正的<code>Promise</code>。</p>
+<h4 id="select"><a href="#select" class="headerlink" title="select()"></a>select()</h4><p>设置查询的字段。</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>字符串</td>
+<td>要查询的字段。多个字段以空格隔开，字段名前加<code>-</code>表示不查询该字段</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>返回值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Query</code>对象</td>
+<td>调用它的<code>Query</code>对象</td>
+</tr>
+</tbody></table>
+<pre><code class="js">// 仅查询所有文档的 name 和 type 字段
+GameModel.find().select(&#39;name type&#39;).then()
+// 不查询所有文档的 name 字段
+GameModel.find().select(&#39;-name&#39;).then()</code></pre>
+<h4 id="sort"><a href="#sort" class="headerlink" title="sort()"></a>sort()</h4><p>对查询结果排序，默认为升序。</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>字符串</td>
+<td>要排序的字段，字段名前加<code>-</code>表示降序</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>返回值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Query</code>对象</td>
+<td>调用它的<code>Query</code>对象</td>
+</tr>
+</tbody></table>
+<pre><code class="js">// 将查询结果按照结局数 由小到大 排序
+GameModel.find().sort(&#39;endings&#39;)
+// 将查询结果按照结局数 由大到小 排序
+GameModel.find().sort(&#39;-endings&#39;)</code></pre>
+<h4 id="skip"><a href="#skip" class="headerlink" title="skip()"></a>skip()</h4><p>跳过若干条文档。</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>数值</td>
+<td>跳过的文档数量</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>返回值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Query</code>对象</td>
+<td>调用它的<code>Query</code>对象</td>
+</tr>
+</tbody></table>
+<pre><code class="js">// { _id: 5e4685ffd96f66282c100c61, endings: 3 },
+// { _id: 5e468608bc19a50e64ae6263, endings: 233 },
+// { _id: 5e46860c31150e222cd388f1, endings: 0 }
+GameModel.find().skip(1) // 跳过第一条，即没有 endings: 3 这一条</code></pre>
+<h4 id="limit"><a href="#limit" class="headerlink" title="limit()"></a>limit()</h4><p>限制返回的文档数。</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>数值</td>
+<td>限制查询的文档数量</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>返回值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Query</code>对象</td>
+<td>调用它的<code>Query</code>对象</td>
+</tr>
+</tbody></table>
+<pre><code class="js">GameModel.find().limit(1) // 只查询 1 条文档，相当于 findOne()</code></pre>
+</div>
+    </div>
+</div>
+
+<div class="toc"></div>
+    <footer>
+    <p>© 2020</p>
+    <p>Theme chicken by 小鸡米花, Powered by Hexo</p>
+</footer>
+    <a class="back-to-top" href="javascript:;"></a>
+    
+    <script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js" integrity="sha384-y23I5Q6l+B6vatafAwxRu/0oK/79VlbSz7Q9aiSZUvyWYIYsd+qj+o24G5ZU2zJz" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous"
+    onload="renderMathInElement(document.body, { strict: false, delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}] });"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+    <script src="/scripts/highlight.pack.js"></script>
+    <script src="/scripts/chicken.js"></script>
+    <!-- 
+        添加控制台，测试移动端
+        <script src="http://cdn.jsdelivr.net/npm/eruda"></script>
+        <script>eruda.init();</script>
+    -->
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/pio.model.json"},"display":{"position":"right","width":300,"height":600},"mobile":{"show":false},"react":{"opacity":1},"log":false});</script></body>
+</html>

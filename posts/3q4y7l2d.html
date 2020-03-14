@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>这是一个神奇的主题</title>
+    <link rel="stylesheet" href="/css/chicken.css">
+    <link rel="stylesheet" href="/css/iconfont.css">
+    <link rel="stylesheet" href="/css/atom-one-dark.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css" integrity="sha384-zB1R0rpPzHqg7Kpt0Aljp8JPLqbXI3bhnPWROx27a9N0Ll6ZP/+DiW/UqRcLbRjq" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/5.12.1/css/all.min.css">
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+    <header>
+    <div class="container">
+        <div class="site-title"><a href="/">小鸡米花的知识库</a></div>
+        <nav>
+            <a class="nav-item " href="/">主页</a>
+            <a class="nav-item " href="/archives">时光轴</a>
+        </nav>
+    </div>
+</header>
+    <div id="write">
+    <div class="container">
+        <div class="post-info">
+            <ul class="tag-list">
+                
+                    <a class="tag-list-item" href="/tags/%E6%A8%A1%E6%9D%BF%E5%BC%95%E6%93%8E/">模板引擎</a>
+                
+            </ul>
+        </div>
+        <div class="post-content"><h1 id="📄-art-template"><a href="#📄-art-template" class="headerlink" title="📄 art-template"></a>📄 art-template</h1><p>施工中，修改时间</p>
+<p><a href="http://aui.github.io/art-template/zh-cn/docs/" target="_blank" rel="noopener">art-template</a>是一款国内开发的模板引擎，由于有中文文档，并且语法简单容易上手，非常适合初学者使用。</p>
+<pre><code class="powershell">npm install art-template</code></pre>
+<pre><code class="js">const template = require(&#39;art-template&#39;)</code></pre>
+<h3 id="拼接模板和数据"><a href="#拼接模板和数据" class="headerlink" title="拼接模板和数据"></a>拼接模板和数据</h3><p>首先通过<code>template()</code>方法将模板和数据拼接起来。</p>
+<blockquote>
+<ul>
+<li>参数①：模板的路径</li>
+<li>参数②：要拼接的数据，必须是对象</li>
+<li>返回值：拼接后的 HTML 代码</li>
+</ul>
+</blockquote>
+<pre><code class="js">resPage = template(&#39;/list.html&#39;, { name: &#39;御坂美琴&#39;, age: 16 }) // =&gt; 我是御坂美琴，今年16岁啦！</code></pre>
+<p>接下来，在模板中使用特定的语法即可使用传入的数据。</p>
+<pre><code class="ejs">我是 {{ name }}，今年 {{ age }} 岁啦！</code></pre>
+<h2 id="基本语法"><a href="#基本语法" class="headerlink" title="基本语法"></a>基本语法</h2><h3 id="输出"><a href="#输出" class="headerlink" title="输出"></a>输出</h3><p>使用下面的方式可以直接取出对象或数组中的值进行输出，并且支持简单的表达式运算。注意，模板引擎会自动将 HTML 标记进行转义处理，不会进行解析。</p>
+<pre><code class="js">template(tplPath, { 
+    name: &#39;御坂美琴&#39;, 
+    age: 16, 
+    hobbies: [&#39;打人&#39;, &#39;放电&#39;], 
+    friend: { name: &#39;白井黑子&#39; } 
+})</code></pre>
+<pre><code>{{ name }} // =&gt; 御坂美琴
+{{ hobbies[0] }} // =&gt; 打人，通常用下面的循环来遍历数组
+{{ friend.name }} // =&gt; 白井黑子
+{{ age > 18 ? '已成年' : '未成年' }} // =&gt; 未成年，注意其中显示的值要用单引号包裹</code></pre><h3 id="条件"><a href="#条件" class="headerlink" title="条件"></a>条件</h3><p>根据数据可以判断某些 HTML 是否出现。</p>
+<pre><code>{{if age > 18}} 我要上网吧！{{/if}}
+
+{{if price < 10}}
+    这个好便宜
+{{else if price < 20}}
+    还可以
+{{else}}
+    太贵了！
+{{/if}}</code></pre><h3 id="循环"><a href="#循环" class="headerlink" title="循环"></a>循环</h3><p>通过循环可以遍历数组和对象。在循环中使用<code>$value</code>和<code>$index</code>可以获取当前元素的值和索引。</p>
+<pre><code>{{ each hobbies }}
+    当前为 {{ $index }} 号元素，值为{{ $value }}
+{{ /each }}</code></pre><p>如果只需要遍历指定的次数（比如循环输出分页按钮），那么只能使用原始语法：</p>
+<pre><code class="ejs">&lt;% for(var i = 0; i &lt; totalPage; i++){ %&gt;
+    &lt;li class=&quot;page-item&quot;&gt;&lt;a class=&quot;page-link&quot; href=&quot;/admin/user/?page={{ i }}&quot;&gt; {{ i }} &lt;/a&gt;&lt;/li&gt;
+&lt;% } %&gt;</code></pre>
+<h3 id="子模板"><a href="#子模板" class="headerlink" title="子模板"></a>子模板</h3><p>通过子模板可以将页面公共的部分抽离出来，方便统一维护。注意这里的路径使用相对路径即可，它相对的是当前模板，而不是调用它的 JavaScript 文件。</p>
+<pre><code>{{ include './list.art' }} </code></pre><h3 id="模板继承"><a href="#模板继承" class="headerlink" title="模板继承"></a>模板继承</h3><p>通过模板继承可以使多个页面模板继承共同的一个 HTML 骨架，对于每个页面独有的内容，可以在骨架页面中预留位置，子模板只需要设置预留位置的内容即可。</p>
+<p>下面的骨架模板中通过双标记<code>{{block}}</code>预留了两个位置，为了区分它们，可以在其中自定义一个名称。</p>
+<pre><code>// 骨架模板 layout.art
+&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+    &lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;ie=edge&quot;&gt;
+    {{block 'title'}} {{/block}}
+&lt;/head&gt;
+&lt;body&gt;
+    {{block 'content'}} {{/block}}
+&lt;/body&gt;
+&lt;/html&gt;</code></pre><p>接下来，在子模板中使用<code>extend</code>引入骨架，并设置预留内容。</p>
+<pre><code>{{extend './layout.art'}}
+
+{{block 'title'}}
+    &lt;title&gt;首页&lt;/title&gt;
+{{/block}}
+
+{{block 'content'}}
+    &lt;p&gt;这里是首页啦&lt;/p&gt;
+{{/block}}</code></pre><h2 id="配置选项"><a href="#配置选项" class="headerlink" title="配置选项"></a>配置选项</h2><p>配置选项通过<code>template.defaults</code>对象设置。</p>
+<h3 id="extname"><a href="#extname" class="headerlink" title="extname"></a>extname</h3><p>模板默认的后缀名是<code>.art</code>，如果传入路径参数时省略了后缀名，那么模板引擎会自动补充。</p>
+<pre><code class="js">template.defaults.extname = &#39;.html&#39;</code></pre>
+<h3 id="root"><a href="#root" class="headerlink" title="root"></a>root</h3><p>模板通常会放到统一的文件夹中，使用该属性可以修改模板的根目录。</p>
+<pre><code class="js">template.defaults.root = path.join(__dirname, &#39;views&#39;)
+// 引入模板时，可以省略拼接路径和后缀了
+template(&#39;index&#39;, data)</code></pre>
+<h2 id="浏览器环境"><a href="#浏览器环境" class="headerlink" title="浏览器环境"></a>浏览器环境</h2><p>前台的模板语法不能直接写在页面上，因为其中的语法部分会被浏览器当做普通文本呈现出来。为了避免这个问题，可以将模板放入<code>&lt;script&gt;</code>标签中，它的内容默认会被浏览器隐藏，而且只要将其设置为<code>type=&quot;text/html&quot;</code>就能将其中的 HTML 元素正常着色。</p>
+<pre><code class="html">&lt;script id=&quot;tpl-users&quot; type=&quot;text/html&quot;&gt;&lt;/script&gt;</code></pre>
+<p>然后，依然使用模板引擎的<code>template()</code>方法，将模板与数据联系起来。</p>
+<blockquote>
+<ul>
+<li>参数①：模板元素的<code>id</code></li>
+<li>参数②：要拼接的数据，必须是对象</li>
+<li>返回值：拼接后的 HTML 代码</li>
+</ul>
+</blockquote>
+<pre><code class="js">let html = template(&#39;tpl-users&#39;, { name: &#39;御坂美琴&#39;, age: 16 })</code></pre>
+<p>接下来，通过模板引擎的语法在模板中解析数据：</p>
+<pre><code class="html">&lt;script id=&quot;tpl-users&quot; type=&quot;text/html&quot;&gt;
+    我是{{ name }}，今年{{ age }}岁啦！
+&lt;/script&gt;</code></pre>
+<p>最后，将<code>template()</code>方法返回的拼接字符串追加到页面元素中即可。</p>
+<pre><code class="js">$(&#39;.msg&#39;).html(html)</code></pre>
+</div>
+    </div>
+</div>
+
+<div class="toc"></div>
+    <footer>
+    <p>© 2020</p>
+    <p>Theme chicken by 小鸡米花, Powered by Hexo</p>
+</footer>
+    <a class="back-to-top" href="javascript:;"></a>
+    
+    <script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js" integrity="sha384-y23I5Q6l+B6vatafAwxRu/0oK/79VlbSz7Q9aiSZUvyWYIYsd+qj+o24G5ZU2zJz" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous"
+    onload="renderMathInElement(document.body, { strict: false, delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}] });"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+    <script src="/scripts/highlight.pack.js"></script>
+    <script src="/scripts/chicken.js"></script>
+    <!-- 
+        添加控制台，测试移动端
+        <script src="http://cdn.jsdelivr.net/npm/eruda"></script>
+        <script>eruda.init();</script>
+    -->
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/pio.model.json"},"display":{"position":"right","width":300,"height":600},"mobile":{"show":false},"react":{"opacity":1},"log":false});</script></body>
+</html>

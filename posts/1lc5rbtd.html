@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>这是一个神奇的主题</title>
+    <link rel="stylesheet" href="/css/chicken.css">
+    <link rel="stylesheet" href="/css/iconfont.css">
+    <link rel="stylesheet" href="/css/atom-one-dark.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css" integrity="sha384-zB1R0rpPzHqg7Kpt0Aljp8JPLqbXI3bhnPWROx27a9N0Ll6ZP/+DiW/UqRcLbRjq" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/5.12.1/css/all.min.css">
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+    <header>
+    <div class="container">
+        <div class="site-title"><a href="/">小鸡米花的知识库</a></div>
+        <nav>
+            <a class="nav-item " href="/">主页</a>
+            <a class="nav-item " href="/archives">时光轴</a>
+        </nav>
+    </div>
+</header>
+    <div id="write">
+    <div class="container">
+        <div class="post-info">
+            <ul class="tag-list">
+                
+                    <a class="tag-list-item" href="/tags/CSS/">CSS</a>
+                
+            </ul>
+        </div>
+        <div class="post-content"><h1 id="大前端笔记之03-🔍-CSS-选择器"><a href="#大前端笔记之03-🔍-CSS-选择器" class="headerlink" title="大前端笔记之03 🔍 CSS 选择器"></a>大前端笔记之03 🔍 CSS 选择器</h1><p>要修改元素的样式，那么首先要将这些元素找出来。CSS 提供了丰富的选择器用来选择想要修饰的元素。</p>
+<h2 id="简单选择器"><a href="#简单选择器" class="headerlink" title="简单选择器"></a>简单选择器</h2><p>下面是一些最为基础的选择器。</p>
+<h3 id="元素选择器"><a href="#元素选择器" class="headerlink" title="元素选择器"></a>元素选择器</h3><p>元素选择器也称为类型选择器，它通过 HTML 元素的名称选择对应的元素。</p>
+<pre><code class="css">div {}</code></pre>
+<h3 id="类选择器"><a href="#类选择器" class="headerlink" title="类选择器"></a>类选择器</h3><p>类选择器由一个点<code>.</code>后跟元素的类名称构成，类名称对应的是 HTML 元素中<code>class</code>属性的值。多个元素可以拥有相同的类名称，而一个元素也可以拥有多个类名称，多个类名称之间在<code>class</code>属性中使用空格隔开。</p>
+<p>如果类选择器的名称包含多个单词，应该使用短横线命名法。</p>
+<pre><code class="html">&lt;button class=&quot;btn btn-danger&quot;&gt;&lt;/button&gt;</code></pre>
+<pre><code class="css">.btn-danger {}</code></pre>
+<h3 id="ID-选择器"><a href="#ID-选择器" class="headerlink" title="ID 选择器"></a>ID 选择器</h3><p>ID 选择器是由一个<code>#</code>符号后跟元素的 ID 构成的，ID 对应的是 HTML 元素中<code>id</code>属性的值。元素的<code>id</code>属性在当前文档中必须是唯一的，主要供 JavaScript 脚本使用。</p>
+<p>如果 ID 选择器的名称包含多个单词，应该使用驼峰命名法。</p>
+<pre><code class="html">&lt;div id=&quot;toolBar&quot;&gt;&lt;/div&gt;</code></pre>
+<pre><code class="css">#toolBar {}</code></pre>
+<h3 id="通配选择器"><a href="#通配选择器" class="headerlink" title="通配选择器"></a>通配选择器</h3><p>通配选择器用一个星号<code>*</code>表示，它可以用来选择页面上所有的元素。对于页面元素不多的页面，可以使用它来清除默认样式。但是，该选择器容易意外地将一些元素设置样式，并且在页面元素非常多的情况下可能会产生性能下降问题（虽然以目前的机器性能来说几乎可以忽略不计），所以最好还是不要滥用。</p>
+<pre><code class="css">* {
+    margin: 0;
+    padding: 0;
+}</code></pre>
+<h2 id="组选择器"><a href="#组选择器" class="headerlink" title="组选择器"></a>组选择器</h2><p>有时单个选择器可能无法完成比较复杂的选择，因此它们也可以组合使用。</p>
+<h3 id="交集选择器"><a href="#交集选择器" class="headerlink" title="交集选择器"></a>交集选择器</h3><p>将多个选择器直接合并到一起（只要语法不产生歧义即可），可以选择同时符合这些选择器的元素。</p>
+<pre><code class="css">div.box {}</code></pre>
+<h3 id="并集选择器"><a href="#并集选择器" class="headerlink" title="并集选择器"></a>并集选择器</h3><p>将多个选择器使用逗号<code>,</code>隔开，可以同时使用这些选择器选择不同的元素。为了方便阅读，逗号后最好换行再写下一个选择器。</p>
+<pre><code class="css">h1,
+h2 {}</code></pre>
+<h3 id="后代选择器"><a href="#后代选择器" class="headerlink" title="后代选择器"></a>后代选择器</h3><p>将多个选择器之间使用空格隔开，可以选择父元素中所有符合条件的后代元素。</p>
+<pre><code class="css">div span {} /* 选择 &lt;div&gt; 中所有的 &lt;span&gt; */</code></pre>
+<h3 id="子选择器"><a href="#子选择器" class="headerlink" title="子选择器"></a>子选择器</h3><p>将多个选择器之间使用<code>&gt;</code>隔开，可以选择父元素中所有符合条件的子元素。</p>
+<pre><code class="css">div &gt; span {} /* 选择 &lt;div&gt; 中的子元素 &lt;span&gt; */</code></pre>
+<h3 id="相邻后续选择器"><a href="#相邻后续选择器" class="headerlink" title="相邻后续选择器"></a>相邻后续选择器</h3><p>将多个选择器之间使用<code>+</code>隔开，可以选择该元素相邻的<strong>下一个</strong>满足条件的元素，它要求这两个元素必须是同级而且紧邻，中间不能间隔其它元素。</p>
+<pre><code class="html">&lt;span&gt;A&lt;/span&gt;
+&lt;span class=&quot;B&quot;&gt;B&lt;/span&gt;
+&lt;span&gt;C&lt;/span&gt;</code></pre>
+<pre><code class="css">.B + span {} /* 选择 C 元素 */</code></pre>
+<h3 id="所有后续选择器"><a href="#所有后续选择器" class="headerlink" title="所有后续选择器"></a>所有后续选择器</h3><p>将多个选择器之间使用<code>~</code>隔开，可以选择该元素<strong>之后所有</strong>满足条件的元素，只要这些元素是同级即可，中间可以间隔其它元素。</p>
+<pre><code class="html">&lt;span&gt;A&lt;/span&gt;
+&lt;span class=&quot;B&quot;&gt;B&lt;/span&gt;
+&lt;em&gt;hi&lt;/em&gt;
+&lt;span&gt;C&lt;/span&gt;
+&lt;span&gt;C&lt;/span&gt;
+&lt;span&gt;C&lt;/span&gt;</code></pre>
+<pre><code class="css">.B ~ span {} /* 选择三个 C 元素 */</code></pre>
+<h2 id="伪类选择器"><a href="#伪类选择器" class="headerlink" title="伪类选择器"></a>伪类选择器</h2><p>伪类选择器可以选择文档结构以外的元素，它由一个冒号<code>:</code>后接关键字组成。注意，在使用伪选择器（包括下文的伪元素）时，<strong>不要为了美观添加多余的空格</strong>，这会导致触发后代选择器，从而无法得到想要的结果。</p>
+<h3 id="hover"><a href="#hover" class="headerlink" title=":hover"></a>:hover</h3><p>选择鼠标当前悬停的元素。</p>
+<pre><code class="css">div:hover {}</code></pre>
+<h3 id="focus"><a href="#focus" class="headerlink" title=":focus"></a>:focus</h3><p>选择当前获得焦点的元素。</p>
+<pre><code class="css">input:focus {}</code></pre>
+<h3 id="empty"><a href="#empty" class="headerlink" title=":empty"></a>:empty</h3><p>选择没有子元素（包括普通文本、空格和换行，但注释除外）的元素，也包括单标签元素。</p>
+<pre><code class="css">p:emtpy {}</code></pre>
+<h3 id="only-child"><a href="#only-child" class="headerlink" title=":only-child"></a>:only-child</h3><p>选择没有兄弟元素的元素。</p>
+<p>在下面的代码中，由于<code>&lt;span&gt;</code>没有同级的元素，因此可以被选中。</p>
+<pre><code class="html">&lt;p&gt;
+    &lt;span&gt;&lt;/span&gt;
+&lt;/p&gt;</code></pre>
+<pre><code class="css">span:only-child {}</code></pre>
+<h3 id="only-of-type"><a href="#only-of-type" class="headerlink" title=":only-of-type"></a>:only-of-type</h3><p>选择没有<strong>相同类型</strong>兄弟元素的元素。</p>
+<p>在下面的代码中，虽然<code>&lt;span&gt;</code>有兄弟元素，但并不是与之相同类型的<code>&lt;span&gt;</code>，因此可以被选中。</p>
+<pre><code class="html">&lt;p&gt;
+    &lt;span&gt;&lt;/span&gt;
+    &lt;strong&gt;&lt;/strong&gt;
+&lt;/p&gt;</code></pre>
+<pre><code class="css">span:only-of-type {}</code></pre>
+<h3 id="first-child-last-child"><a href="#first-child-last-child" class="headerlink" title=":first-child / :last-child"></a>:first-child / :last-child</h3><p>选择一组兄弟元素中的第一个（或最后一个）。注意，该元素必须是同级元素中的第一个，否则无法被选中。</p>
+<p>在下面的代码中，由于<code>.item</code>并不是同级的<code>&lt;li&gt;</code>中的第一个，所以没有元素被选中。</p>
+<pre><code class="html">&lt;ul&gt;
+    &lt;li&gt;1&lt;/li&gt;
+    &lt;li class=&quot;item&quot;&gt;2&lt;/li&gt;
+    &lt;li class=&quot;item&quot;&gt;3&lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+<pre><code class="css">.item:first-child {}</code></pre>
+<h3 id="first-of-type-last-of-type"><a href="#first-of-type-last-of-type" class="headerlink" title=":first-of-type / :last-of-type"></a>:first-of-type / :last-of-type</h3><p>选择一组<strong>同类型</strong>兄弟元素中的第一个（或最后一个）。注意，该元素必须是同级元素中的第一个，否则无法被选中。</p>
+<p>在下面的代码中，虽然<code>&lt;span&gt;</code>并不是同级元素中的第一个，但它是<code>&lt;span&gt;</code>类型中的第一个，所以可以被选中。</p>
+<pre><code class="html">&lt;div&gt;
+    &lt;p&gt;p&lt;/p&gt;
+    &lt;span&gt;span&lt;/span&gt;
+&lt;/div&gt;</code></pre>
+<pre><code class="css">span:first-of-type {}</code></pre>
+<h3 id="nth-child-nth-last-child"><a href="#nth-child-nth-last-child" class="headerlink" title=":nth-child() / :nth-last-child()"></a>:nth-child() / :nth-last-child()</h3><p>选择一组兄弟元素中的第 n 个（或倒数第 n 个）， n 从<code>1</code>开始，也就是说第 1 个元素索引为<code>1</code>，而不是<code>0</code>。注意，该元素必须是同级元素中的第 n 个，否则无法被选中。</p>
+<p>其中括号的参数可以为：</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>关键字<code>odd</code> / <code>even</code></td>
+<td>表示第奇数 / 偶数个元素</td>
+</tr>
+<tr>
+<td>整数值<code>n</code></td>
+<td>表示第<code>n</code>个元素，最小值为<code>1</code></td>
+</tr>
+<tr>
+<td>表达式<code>An+B</code></td>
+<td>表示第<code>An+B</code>个元素，<code>n</code>为从<code>0</code>开始的自然数，<code>A</code>和<code>B</code>必须为正整数</td>
+</tr>
+</tbody></table>
+<pre><code class="css">:nth-child(odd) {}              /* 选择第奇数个元素，如第 1、3、5、7... 个 */
+:nth-child(even) {}             /* 选择第偶数个元素，如第 2、4、6、8... 个 */
+:nth-child(3) {}                /* 选择第 3 个元素 */
+:nth-child(3n+2) {}             /* 选择第 3n+2 个元素，如第 2、5、8、11... 个 */
+:nth-child(-n+5)                /* 选择第 5、4、3、2、1 个元素，即前 5 个元素 */
+:nth-child(n+3)                 /* 选择第 3、4、5、6... 个元素 */
+:nth-child(-n+5):nth-child(n+3) /* 选择第 3、4、5 个元素 */</code></pre>
+<h3 id="nth-of-type-nth-last-of-type"><a href="#nth-of-type-nth-last-of-type" class="headerlink" title=":nth-of-type() / :nth-last-of-type()"></a>:nth-of-type() / :nth-last-of-type()</h3><p>选择一组<strong>同类型</strong>兄弟元素中的第 n 个（或倒数第 n 个），与上文用法一样，不再赘述。</p>
+<h3 id="not"><a href="#not" class="headerlink" title=":not()"></a>:not()</h3><p>选择不符合指定选择器的元素。</p>
+<pre><code class="css">code:not(.hljs) /* 选择不包含 .hljs 类的所有 &lt;code&gt; 元素 */</code></pre>
+<h2 id="伪元素选择器"><a href="#伪元素选择器" class="headerlink" title="伪元素选择器"></a>伪元素选择器</h2><p>伪元素由两个冒号<code>::</code>后接关键字组成。</p>
+<h3 id="before-after"><a href="#before-after" class="headerlink" title="::before / ::after"></a>::before / ::after</h3><p>创建一个伪元素，将其作为<strong>子元素</strong>追加到匹配元素内部的最前面（或最后面），默认是<strong>行内元素</strong>。注意，必须使用<code>content</code>属性设置伪元素内容才可以使之生效，如果不需要内容，则设置为<code>content: &quot;&quot;</code>。</p>
+<pre><code class="css">div::after { 
+    content: &quot;&quot;;
+}</code></pre>
+<p>注意，<code>&lt;img&gt;</code>和一些表单元素为空元素，不能有任何的子元素，因此它们也不能与<code>::before</code>或<code>::after</code>连用。</p>
+<h3 id="selection"><a href="#selection" class="headerlink" title="::selection"></a>::selection</h3><p>改变选中的元素样式。注意，该选择器仅适用于下面的特定样式属性，其它属性无效。</p>
+<pre><code class="css">a::selection {
+    color: green;
+    background-color: orange;
+    cursor: pointer;
+}</code></pre>
+<h2 id="属性选择器"><a href="#属性选择器" class="headerlink" title="属性选择器"></a>属性选择器</h2><p>根据元素的属性选择元素。属性值最好用双引号<code>&quot;&quot;</code>包裹，并且区分大小写。它的用法包括：</p>
+<table>
+<thead>
+<tr>
+<th>选择器</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>[attr]</code></td>
+<td>选择所有包含<code>attr</code>属性的元素，无论它的值是什么</td>
+</tr>
+<tr>
+<td><code>[attr=&quot;val&quot;]</code></td>
+<td>选择所有包含<code>attr</code>属性的元素，但是值必须完全是<code>val</code></td>
+</tr>
+<tr>
+<td><code>[attr|=&quot;val&quot;]</code></td>
+<td>选择所有包含<code>attr</code>属性的元素，但是值必须完全是<code>val</code>或者以<code>val-</code>开头（注意短横线）</td>
+</tr>
+<tr>
+<td><code>[attr^=&quot;val&quot;]</code></td>
+<td>选择所有包含<code>attr</code>属性的元素，但是值必须以<code>val</code>开头</td>
+</tr>
+<tr>
+<td><code>[attr$=&quot;val&quot;]</code></td>
+<td>选择所有包含<code>attr</code>属性的元素，但是值必须以<code>val</code>结尾</td>
+</tr>
+<tr>
+<td><code>[attr~=&quot;val&quot;]</code></td>
+<td>选择所有包含<code>attr</code>属性的元素，但是值必须包含<code>val</code>，且必须与其它值以<strong>空格</strong>隔开，不能连在一起</td>
+</tr>
+<tr>
+<td><code>[attr*=&quot;val&quot;]</code></td>
+<td>选择所有包含<code>attr</code>属性的元素，但是值必须包含<code>val</code>作为子字符串（例如<code>cat</code>是<code>caterpillar</code>的子字符串）</td>
+</tr>
+</tbody></table>
+<pre><code class="html">&lt;p&gt;0&lt;/p&gt;
+&lt;p data-fruit=&quot;&quot;&gt;1&lt;/p&gt;
+&lt;p data-fruit=&quot;apple&quot;&gt;2&lt;/p&gt;
+&lt;p data-fruit=&quot;banana apple&quot;&gt;3&lt;/p&gt;
+&lt;p data-fruit=&quot;apples&quot;&gt;4&lt;/p&gt;
+&lt;p data-fruit=&quot;apple-bad&quot;&gt;5&lt;/p&gt;</code></pre>
+<pre><code class="css">[data-fruit] {}              /* 选择除 0 号以外的元素  */
+[data-fruit = &quot;apple&quot;] {}    /* 选择 2 号元素 */
+[data-fruit ~= &quot;apple&quot;] {}   /* 选择 2、3 号元素 */
+[data-fruit |= &quot;apple&quot;] {}   /* 选择 2、5 号元素 */
+[data-fruit ^= &quot;apple&quot;] {}   /* 选择 2、4、5 号元素 */
+[data-fruit $= &quot;les&quot;] {}     /* 选择 4 号元素 */
+[data-fruit *= &quot;apple&quot;] {}   /* 选择 2、3、4、5 号元素 */</code></pre>
+</div>
+    </div>
+</div>
+
+<div class="toc"></div>
+    <footer>
+    <p>© 2020</p>
+    <p>Theme chicken by 小鸡米花, Powered by Hexo</p>
+</footer>
+    <a class="back-to-top" href="javascript:;"></a>
+    
+    <script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js" integrity="sha384-y23I5Q6l+B6vatafAwxRu/0oK/79VlbSz7Q9aiSZUvyWYIYsd+qj+o24G5ZU2zJz" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous"
+    onload="renderMathInElement(document.body, { strict: false, delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}] });"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+    <script src="/scripts/highlight.pack.js"></script>
+    <script src="/scripts/chicken.js"></script>
+    <!-- 
+        添加控制台，测试移动端
+        <script src="http://cdn.jsdelivr.net/npm/eruda"></script>
+        <script>eruda.init();</script>
+    -->
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/pio.model.json"},"display":{"position":"right","width":300,"height":600},"mobile":{"show":false},"react":{"opacity":1},"log":false});</script></body>
+</html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>这是一个神奇的主题</title>
+    <link rel="stylesheet" href="/css/chicken.css">
+    <link rel="stylesheet" href="/css/iconfont.css">
+    <link rel="stylesheet" href="/css/atom-one-dark.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css" integrity="sha384-zB1R0rpPzHqg7Kpt0Aljp8JPLqbXI3bhnPWROx27a9N0Ll6ZP/+DiW/UqRcLbRjq" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/5.12.1/css/all.min.css">
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+    <header>
+    <div class="container">
+        <div class="site-title"><a href="/">小鸡米花的知识库</a></div>
+        <nav>
+            <a class="nav-item " href="/">主页</a>
+            <a class="nav-item " href="/archives">时光轴</a>
+        </nav>
+    </div>
+</header>
+    <div id="write">
+    <div class="container">
+        <div class="post-info">
+            <ul class="tag-list">
+                
+                    <a class="tag-list-item" href="/tags/CSS/">CSS</a>
+                
+            </ul>
+        </div>
+        <div class="post-content"><h1 id="大前端支线笔记之04-🌈-CSS-渐变"><a href="#大前端支线笔记之04-🌈-CSS-渐变" class="headerlink" title="大前端支线笔记之04 🌈 CSS 渐变"></a>大前端支线笔记之04 🌈 CSS 渐变</h1><p>渐变的<strong>本质是图片</strong>，因此只要是允许使用图片路径<code>url()</code>的属性，都可以使用渐变。CSS 中的渐变分为两种，线性渐变和径向渐变。</p>
+<h2 id="线性渐变"><a href="#线性渐变" class="headerlink" title="线性渐变"></a>线性渐变</h2><p>使用<code>linear-gradient()</code>设置线性渐变，它可以包含下面三个参数，参数之间使用逗号隔开。</p>
+<h3 id="渐变方向"><a href="#渐变方向" class="headerlink" title="渐变方向"></a>渐变方向</h3><p>第一个参数是渐变方向，它的可选值为：</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>to top</code>/<code>to right</code>/<code>to bottom</code>/<code>to left</code></td>
+<td>表示<strong>朝某个方向</strong>渐变</td>
+</tr>
+<tr>
+<td>角度值</td>
+<td><code>0deg</code>表示从元素的正下方开始渐变，然后顺时针旋转，度数随之增加，如<code>90deg</code>表示从左到右渐变</td>
+</tr>
+</tbody></table>
+<pre><code class="css">div { background-image: linear-gradient(to right); }</code></pre>
+<h3 id="色标"><a href="#色标" class="headerlink" title="色标"></a>色标</h3><p>第二个参数是色标，分别表示渐变的起始色和终止色。</p>
+<p>默认情况下，第一个色标的位置为<code>0%</code>，最后一个色标的位置为<code>100%</code>，色标所在的位置也就是该颜色（纯色）的位置。如下面左图中，元素的最右侧即<code>100%</code>的位置正好是正黄色。如果有多个色标，那么它们会<strong>平均分布</strong>（右图）。</p>
+<pre><code class="css">div {
+    background-image: linear-gradient(90deg, #66ccff, yellow); /* 两个色标 */
+    background-image: linear-gradient(90deg, #66ccff, yellow, orange); /* 三个色标 */
+}</code></pre>
+<p><img src="https://pic1.superbed.cn/item/5dfb118176085c3289c102f3.jpg" alt=""></p>
+<p>如果要修改色标的位置，可以在颜色值后面添加一个长度值或者百分比值（相对于元素大小）。</p>
+<p>此时由于渐变并不足以铺满整个元素，因此到<code>50%</code>的位置就结束了，<strong>剩余的位置以最后的色标来填充</strong>。如果渐变的距离大于元素，那么多余的渐变也会被直接截掉。</p>
+<pre><code class="css">div {
+    background-image: linear-gradient(90deg, #66ccff, yellow 25%, orange 50%);
+}</code></pre>
+<p><img src="https://pic3.superbed.cn/item/5dfb132376085c3289c14bef.jpg" alt=""></p>
+<p>如果两个色标的位置相同，那么它们之间不会有渐变的效果。</p>
+<pre><code class="css">div {
+    background-image: linear-gradient(90deg, #66ccff, yellow 50%, orange 50%);
+}</code></pre>
+<p><img src="https://pic1.superbed.cn/item/5dfb142a76085c3289c17c47.jpg" alt=""></p>
+<h3 id="中色点"><a href="#中色点" class="headerlink" title="中色点"></a>中色点</h3><p>在两个色标参数之间还可以插入一个百分比值，作为第三个参数中色点。默认情况下，两种颜色之间的渐变，中间<code>50%</code>的位置正好是两个颜色的中点。如果设置了中色点，那么这个中间颜色就会向前 / 向后推移。</p>
+<pre><code class="css">div {
+    background-image: linear-gradient(90deg, #66ccff, 25%, orange);
+}</code></pre>
+<p><img src="http://q45cwniav.bkt.clouddn.com/superbed/2020/01/23/5e29c1a02fb38b8c3c4cd3f1.jpg" alt=""></p>
+<h2 id="径向渐变"><a href="#径向渐变" class="headerlink" title="径向渐变"></a>径向渐变</h2><p>径向渐变<code>radial-gradient()</code>的语法与线性渐变基本一致，但是不需要设置方向，取而代之的是形状、尺寸和位置。</p>
+<h3 id="形状"><a href="#形状" class="headerlink" title="形状"></a>形状</h3><p>径向渐变的形状可选值为圆形<code>circle</code>和椭圆<code>ellipse</code>，默认与元素的形状一致。如果设置一个正方形的元素为椭圆形状的渐变，那么也不会看出效果，因为即便是椭圆，它的长和宽也是一样的。</p>
+<pre><code class="css">div {
+    width: 200px;
+    height: 100px;
+    background-image: radial-gradient(ellipse, orange, #333); /* 左图 */
+    background-image: radial-gradient(circle, orange, #333);  /* 右图 */
+}</code></pre>
+<p><img src="https://pic3.superbed.cn/item/5dfb2a9176085c3289c5b705.jpg" alt=""></p>
+<h3 id="尺寸"><a href="#尺寸" class="headerlink" title="尺寸"></a>尺寸</h3><p>在形状的后面还可以添加长度值表示渐变的大小。1 个值同时表示水平和垂直方向，只能用于圆形；2 个值则前者表示水平，后者表示垂直方向，只能用于椭圆。</p>
+<pre><code class="css">div {
+    width: 200px;
+    height: 200px;
+    background-image: radial-gradient(100px, orange, #333); /* 左图 */
+    background-image: radial-gradient(50px 200px, orange, #333); /* 右图 */
+}</code></pre>
+<p><img src="https://pic3.superbed.cn/item/5dfb2abe76085c3289c5c33b.jpg" alt=""></p>
+<h3 id="位置"><a href="#位置" class="headerlink" title="位置"></a>位置</h3><p>默认情况下，径向渐变圆心的位置为元素的中心，在尺寸值的后面（如果有的话）添加<code>at 位置</code>可以设置圆心的位置。位置参数与背景<code>background-position</code>属性的值完全一样，区别在于位置参数的默认值不是<code>0% 0%</code>，而是<code>center</code>。</p>
+<pre><code class="css">div {
+    width: 200px;
+    height: 200px;
+    background-image: radial-gradient(100px at left bottom, orange, #333);
+}</code></pre>
+<p><img src="https://pic3.superbed.cn/item/5dfb2d9276085c3289c64dea.jpg" alt=""></p>
+</div>
+    </div>
+</div>
+
+<div class="toc"></div>
+    <footer>
+    <p>© 2020</p>
+    <p>Theme chicken by 小鸡米花, Powered by Hexo</p>
+</footer>
+    <a class="back-to-top" href="javascript:;"></a>
+    
+    <script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js" integrity="sha384-y23I5Q6l+B6vatafAwxRu/0oK/79VlbSz7Q9aiSZUvyWYIYsd+qj+o24G5ZU2zJz" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js" integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous"
+    onload="renderMathInElement(document.body, { strict: false, delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}] });"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.4.2/tocbot.min.js"></script>
+    <script src="/scripts/highlight.pack.js"></script>
+    <script src="/scripts/chicken.js"></script>
+    <!-- 
+        添加控制台，测试移动端
+        <script src="http://cdn.jsdelivr.net/npm/eruda"></script>
+        <script>eruda.init();</script>
+    -->
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"debug":false,"model":{"jsonPath":"/live2dw/assets/pio.model.json"},"display":{"position":"right","width":300,"height":600},"mobile":{"show":false},"react":{"opacity":1},"log":false});</script></body>
+</html>
