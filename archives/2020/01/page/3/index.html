@@ -6,13 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>这是一个神奇的主题</title>
-    <!-- <link rel="stylesheet" href="/css/chicken.css"> -->
-    <link rel="stylesheet" href="//cdn.yesuanzao.cn/chicken.css">
-    <link rel="stylesheet" href="/css/iconfont.css">
+    <link rel="stylesheet" href="//cdn.yesuanzao.cn/blog/chicken.css">
     <link rel="stylesheet" href="//cdn.yesuanzao.cn/blog/atom-one-dark.css">
     <link rel="stylesheet" href="https://cdn.staticfile.org/KaTeX/0.11.1/katex.min.css">
     <link rel="stylesheet" href="https://cdn.staticfile.org/tocbot/4.10.0/tocbot.css">
     <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/5.12.1/css/all.min.css">
+    <!-- 本地静态文件测试 -->
+    <!-- <link rel="stylesheet" href="/css/chicken.css"> -->
 <meta name="generator" content="Hexo 4.2.0"></head>
 
 <body>
@@ -95,7 +95,7 @@
 
     <script>
         // 为标签追加字体图标
-        $('.tag-list-item').prepend('<span class="iconfont icon-biaoqian"></span>')
+        $('.tag-list-item').prepend('<i class="fas fa-tag"></i>')
 
         // 回到顶部的猫
         $('.back-to-top').click(function () {
@@ -132,7 +132,7 @@
             $("<link>").attr({ href: "//cdn.yesuanzao.cn/blog/live2d/waifu.min.css", rel: "stylesheet", type: "text/css" }).appendTo('head');
             $('body').append('<div class="waifu"><div class="waifu-tips"></div><canvas id="live2d" class="live2d"></canvas><div class="waifu-tool"><span class="fui-home"></span> <span class="fui-chat"></span> <span class="fui-eye"></span> <span class="fui-user"></span> <span class="fui-photo"></span> <span class="fui-info-circle"></span> <span class="fui-cross"></span></div></div>');
             $.ajax({ url: '//cdn.yesuanzao.cn/blog/live2d/waifu-tips.js', dataType: "script", cache: true, async: false });
-            $.ajax({ url: '//cdn.yesuanzao.cn/blog/live2d/live2d.min.js', dataType: "script", cache: true, async: false, complete: function() {
+            $.ajax({ url: '//cdn.yesuanzao.cn/blog/live2d/live2d.min.js', dataType: "script", cache: true, async: false, success: function() {
                 initModel('//cdn.yesuanzao.cn/blog/live2d/waifu-tips.json');
             } });
         } catch (err) { console.log(err) }
