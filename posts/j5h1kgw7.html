@@ -623,6 +623,7 @@ export default { num }</code></pre>
         onload="renderMathInElement(document.body, { strict: false, delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}] });"></script>
     <script src="https://cdn.staticfile.org/tocbot/4.10.0/tocbot.min.js"></script>
     <script src="https://cdn.staticfile.org/highlight.js/9.18.1/highlight.min.js"></script>
+    <script src="/css/autoload.js"></script>
 
     <script>
         // 为标签追加字体图标
@@ -662,9 +663,10 @@ export default { num }</code></pre>
         try {
             $("<link>").attr({ href: "//cdn.yesuanzao.cn/blog/live2d/waifu.min.css", rel: "stylesheet", type: "text/css" }).appendTo('head');
             $('body').append('<div class="waifu"><div class="waifu-tips"></div><canvas id="live2d" class="live2d"></canvas><div class="waifu-tool"><span class="fui-home"></span> <span class="fui-chat"></span> <span class="fui-eye"></span> <span class="fui-user"></span> <span class="fui-photo"></span> <span class="fui-info-circle"></span> <span class="fui-cross"></span></div></div>');
-            $.ajax({ url: '//cdn.yesuanzao.cn/blog/live2d/waifu-tips.js', dataType: "script", cache: true, async: false });
-            $.ajax({ url: '//cdn.yesuanzao.cn/blog/live2d/live2d.min.js', dataType: "script", cache: true, async: false });
-            initModel('//cdn.yesuanzao.cn/blog/live2d/waifu-tips.json');
+            $.ajax({ url: '//cdn.yesuanzao.cn/blog/live2d/waifu-tips.js', dataType: "script", cache: false, async: false });
+            $.ajax({ url: '//cdn.yesuanzao.cn/blog/live2d/live2d.min.js', dataType: "script", cache: false, async: false, complete: function() {
+                initModel('//cdn.yesuanzao.cn/blog/live2d/waifu-tips.json');
+            } });
         } catch (err) { console.log(err) }
     </script>
     <!-- 
