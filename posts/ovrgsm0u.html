@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>这是一个神奇的主题</title>
-    <link rel="stylesheet" href="//cdn.yesuanzao.cn/blog/chicken.css">
+    <!-- <link rel="stylesheet" href="/css/chicken.css"> -->
+    <link rel="stylesheet" href="//cdn.yesuanzao.cn/chicken.css">
     <link rel="stylesheet" href="/css/iconfont.css">
     <link rel="stylesheet" href="//cdn.yesuanzao.cn/blog/atom-one-dark.css">
     <link rel="stylesheet" href="https://cdn.staticfile.org/KaTeX/0.11.1/katex.min.css">
@@ -34,52 +35,36 @@
             </ul>
         </div>
         <div class="post-content"><h1 id="大前端笔记之-21-🍀-Vue-js"><a href="#大前端笔记之-21-🍀-Vue-js" class="headerlink" title="大前端笔记之 21 🍀 Vue.js"></a>大前端笔记之 21 🍀 Vue.js</h1><p><a href="https://cn.vuejs.org/v2/guide/installation.html" target="_blank" rel="noopener">Vue.js</a>是目前国内最流行的前端渐进式框架，所谓渐进式指的是，你不需要一开始就学会 Vue 的全部功能特性，就可以将项目一点点引入 Vue。也就是说，它可以作为一个普通的 JavaScript 库用来提交表单、管理 DOM；也可以在大型项目中用来管理路由、实现组件化开发。随着项目的不断发展，以及对于 Vue 了解的不断加深，每个人所使用的侧重点也是不同的。</p>
-<p>如果只是在浏览器端简单使用，则可通过 CDN 的方式在页面直接引入，后期则会采用其它的使用方式。</p>
-<pre><code class="html">&lt;script src=&quot;https://cdn.jsdelivr.net/npm/vue/dist/vue.js&quot;&gt;&lt;/script&gt;</code></pre>
-<h2 id="基本语法"><a href="#基本语法" class="headerlink" title="基本语法"></a>基本语法</h2><p>引入 Vue.js 之后，首先通过<code>Vue()</code>实例化一个对象，它的参数也是一个对象，其中的属性值有很多，会在接下来逐一了解到：</p>
+<p>Vue 可以通过<code>&lt;script&gt;</code>直接引用，也可以使用 npm 导入为模块。</p>
+<h2 id="基本语法"><a href="#基本语法" class="headerlink" title="基本语法"></a>基本语法</h2><p>引入 Vue.js 之后，首先实例化一个<code>Vue()</code>对象，其中的属性值有很多，会在接下来逐一了解到：</p>
 <pre><code class="js">const vue = new Vue({
-    el: &#39;#app&#39;, // 挂载数据的元素选择器，表示只有在这个元素下才能使用 Vue 的语法
-    data: {
-        // 数据对象，通常从服务器接口获取，这里临时模拟
-        msg: &#39;你好呀~&#39;
+    el: &#39;#app&#39;, // 挂载数据的元素选择器，只有在这个元素下才能使用 Vue 的语法
+    data: { // 数据对象
+        msg: &#39;你好呀~&#39; 
     }
 })</code></pre>
-<p>然后在页面上要准备一个对应的<code>#app</code>元素。其中可以使用双大括号（插值表达式）语法，将要渲染的数据名称写在里面，Vue 就会自动在实例中寻找相应的数据，将其替换成数据的值。当然，也可以在其中进行一些简单的表达式运算。</p>
+<p>在页面上准备一个对应的<code>#app</code>元素作为模板，Vue 会对其进行解析并渲染。模板中最常见的语法是插值表达式（双大括号包裹），将要渲染的数据名称写在里面，Vue 就会自动在实例中寻找相应的数据，将其替换成数据的值。当然，也可以在其中进行一些简单的表达式运算。</p>
 <pre><code class="html">&lt;div id=&quot;app&quot;&gt;
     &lt;span&gt;{{ msg }}&lt;/span&gt;
     &lt;span&gt;{{ 'Hello，' + msg }}&lt;/span&gt;
-    &lt;!-- 拼接了字符串 --&gt;
 &lt;/div&gt;</code></pre>
-<p>如果此时通过<code>vue.msg = &#39;好个毛&#39;</code>修改<code>msg</code>的值，那么会发现页面中的值也发生了变化，这是因为 Vue 默认会一直监听渲染后的数据，只要数据发生改变，那么相应的 DOM 也会被改变。</p>
-<blockquote>
-<p>注意，所有的<code>data</code>数据可以直接使用实例本身调用，不需要<code>vue.data.msg</code>。</p>
-</blockquote>
-<h3 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h3><p>方法<code>methods</code>可以像<code>data</code>一样保存数据，区别在于<code>data</code>存储的是值，而<code>methods</code>存储的是方法。</p>
-<p>在下面的代码中，为元素<a href="#绑定事件">绑定了事件</a>，当触发事件时，会调用相应的<code>show()</code>方法。</p>
-<pre><code class="html">&lt;button @click=&quot;show&quot;&gt;点我&lt;/button&gt;</code></pre>
-<pre><code class="js">var vue = new Vue({
-    methods: {
-        show() {
-            console.log(&#39;hello&#39;)
-        }
-    }
-})</code></pre>
-<p>如果需要在方法中访问<code>data</code>中的值，则需要使用<code>this</code>。这里的<code>this</code>指代的是实例化的<code>Vue</code>对象，可以通过<code>this.msg</code>获取到值，因为 Vue 自动在该对象下添加了属性，不需要调用<code>this.data.msg</code>。</p>
-<pre><code class="js">var vue = new Vue({
+<p>注意，所有数据可以直接通过实例本身调用（不需要写<code>vue.data.msg</code>）。此时如果修改了<code>data</code>的值，会发现页面中的值也发生了变化，这是因为 Vue 默认会一直监听渲染后的数据，只要数据发生改变，那么相应的 DOM 也会被改变。</p>
+<p><img src="http://cdn.yesuanzao.cn/superbed/2020/03/15/5e6dcfe5e83c3a1e3acca510.gif" alt=""></p>
+<h3 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h3><p>方法<code>methods</code>可以像<code>data</code>一样保存数据，区别在于<code>data</code>存储的是值，而<code>methods</code>存储的是方法。如果需要在方法中访问<code>data</code>中的值，需要使用<code>this</code>，它指代<code>Vue()</code>实例对象。</p>
+<pre><code class="html">&lt;div id=&quot;app&quot;&gt;
+    &lt;span&gt;{{ show() }}&lt;/span&gt;
+&lt;/div&gt;</code></pre>
+<pre><code class="js">const vue = new Vue({
     data: { msg: &#39;你好呀~&#39; },
     methods: {
-        show() {
-            console.log(this.msg)
-        }
+        show() { console.log(this.msg) }
     }
 })</code></pre>
-<h3 id="计算属性"><a href="#计算属性" class="headerlink" title="计算属性"></a>计算属性</h3><p>计算属性用来抽取一些复杂的插值表达式计算，可以将这些计算定义 Vue 实例中统一管理，而不是直接写在模板上。</p>
-<p>在下面的代码中，需要对书的总价进行计算，并显示在页面上，这时就可以使用计算属性。</p>
+<h3 id="计算属性"><a href="#计算属性" class="headerlink" title="计算属性"></a>计算属性</h3><p>计算属性用来抽取一些复杂的插值表达式计算，简化模板代码。在下面的代码中，需要对书的总价进行计算，就可以使用计算属性。</p>
 <pre><code class="html">&lt;div id=&quot;app&quot;&gt;
     &lt;h1&gt;{{ total }}&lt;/h1&gt;
 &lt;/div&gt;</code></pre>
-<pre><code class="js">var vue = new Vue({
-    el: &#39;#app&#39;,
+<pre><code class="js">const vue = new Vue({
     data: {
         books: [
             { id: 1000, name: &#39;哈利波特&#39;, price: 300 },
@@ -89,29 +74,26 @@
     },
     computed: {
         total() {
-            return this.books.reduce(function(sum, book) {
-                return sum + book.price
-            }, 0)
+            return this.books.reduce((sum, book) =&gt; sum + book.price, 0)
         }
     }
 })</code></pre>
-<p>可以看到，在使用计算属性时，不需要使用圆括号<code>()</code>，直接<strong>当作属性使用</strong>即可。原因是，其实计算属性的值本身也是一个对象，而其中包含两个函数属性，分别为该属性的<code>get()</code>和<code>set()</code>，因此计算属性的完整写法是：</p>
-<pre><code class="js">var vue = new Vue({
+<p>可以看到，在使用计算属性时，不需要圆括号<code>()</code>，直接<strong>当作属性使用</strong>即可。原因是，其实计算属性本身也是一个对象，而不是函数。这个对象中包含两个函数，分别为<code>get()</code>和<code>set()</code>。由于<code>set()</code>方法实际使用很少，因此如果传入的不是对象，而是一个函数，那么就相当于自动调用<code>get()</code>方法。</p>
+<pre><code class="js">const vue = new Vue({
     computed: {
-        total: {
+        total: { // 完整写法
+            set() {}
             get() {}
-            set() {} // 如果修改了 app.total，就会调用 set() 方法
         }
     }
 })</code></pre>
-<p>由于<code>set()</code>方法实际使用很少，因此 Vue 才提供了这种简写方式，如果传入的不是对象，而是一个函数，那么就相当于调用它的<code>get()</code>方法。</p>
 <h3 id="方法与计算属性的区别"><a href="#方法与计算属性的区别" class="headerlink" title="方法与计算属性的区别"></a>方法与计算属性的区别</h3><p>计算属性与<code>methods</code>非常相似，但是两者有一定的区别。其中最重要的一点是，计算属性是具有缓存机制的，而方法并没有。</p>
-<p>在下面的代码中，分别使用计算属性和方法输出了内容，并对数据做了相同的处理，可以看到，计算属性只调用了一次，而方法调用了两次。其原因是，<strong>只要数据没有发生改变</strong>，那么计算属性就会直接读取缓存中计算好的值，不会多次进行计算；而方法是只要被调用，那么就会重新计算一次，因此如果只是希望获取一个计算后的值，那么应该使用计算属性，可以提高性能。</p>
+<p>在下面的代码中，分别使用计算属性和方法输出内容，并对数据做了相同的处理。可以看到，计算属性只调用了一次，而方法调用了两次。其原因是，只要数据没有发生改变，那么计算属性就会直接读取缓存中计算好的值，不会多次计算；而方法只要被调用，就会重新计算一次。因此<strong>如果只是希望获取一个计算后的值，那么应该使用计算属性</strong>。</p>
 <pre><code class="html">&lt;p&gt;{{ getSumComputed }}&lt;/p&gt;
 &lt;p&gt;{{ getSumComputed }}&lt;/p&gt;
 &lt;p&gt;{{ getSumMethod() }}&lt;/p&gt;
 &lt;p&gt;{{ getSumMethod() }}&lt;/p&gt;</code></pre>
-<pre><code class="js">var vue = new Vue({
+<pre><code class="js">const vue = new Vue({
     data: { num1: 233 },
     computed: {
         getSumComputed() {
@@ -126,8 +108,6 @@
         }
     }
 })</code></pre>
-<h3 id="指令"><a href="#指令" class="headerlink" title="指令"></a>指令</h3><p>指令是 Vue 的一种特殊语法，有很多功能都需要指令来实现。它的本质是类似于<code>data-</code>的自定义属性，通常以<code>v-</code>开头，定义在元素标签上。当指令的值发生改变时，Vue 会自动操作相应的 DOM 元素，而不需要手动处理，即<strong>以数据驱动 DOM</strong>，这是 Vue 的重要理念。</p>
-<p>指令的值与插值表达式一样，如果只写名称，没有引号，那么均会当作 Vue 数据处理。同样，也可以对于这些数据进行表达式运算。</p>
 <h3 id="过滤器"><a href="#过滤器" class="headerlink" title="过滤器"></a>过滤器</h3><p>过滤器用于文本格式化显示，它只能使用在<strong>双花括号的插值表达式</strong>和<code>v-bind</code>指令中，分为全局和局部两种。</p>
 <p>使用<code>Vue.filter()</code>方法可以定义一个全局过滤器，注意，全局过滤器只能定义在实例化<code>Vue()</code>之前。</p>
 <table>
@@ -197,87 +177,72 @@ var vue = new Vue({}) // 然后才能实例化 Vue 对象</code></pre>
         console.log(this.msg + &#39;Vue 被创建啦！数据可以使用了！&#39;)
     }
 })</code></pre>
-<h2 id="显示数据"><a href="#显示数据" class="headerlink" title="显示数据"></a>显示数据</h2><p>除了使用插值表达式以外，也可以使用一些特定的指令来显示数据。但是相比于插值表达式，指令方式并没有那么灵活，因此除非是特定的需求，否则尽量还是使用插值表达式。</p>
-<h3 id="v-text"><a href="#v-text" class="headerlink" title="v-text"></a>v-text</h3><p>将指令的值作为数据名称，以纯文本形式，直接渲染到元素中。它的作用与插值表达式基本一致，但是如果需要元素中的部分内容，则必须使用插值表达式语法。</p>
+<h2 id="渲染数据"><a href="#渲染数据" class="headerlink" title="渲染数据"></a>渲染数据</h2><p>除了插值表达式以外，也可以使用一些特定的指令来渲染数据。指令是 Vue 的一种特殊语法，其本质为元素的自定义属性，通常以<code>v-</code>开头。当指令的值发生改变时，Vue 会自动操作相应的 DOM 元素。</p>
+<p>指令的值与插值表达式一样，Vue 也会对其进行解析，而非普通的字符串。对于渲染数据来说，相比于插值表达式，指令方式并没有那么灵活，因此除非是特定的需求，否则尽量还是使用插值表达式。</p>
+<h3 id="v-text"><a href="#v-text" class="headerlink" title="v-text"></a>v-text</h3><p>将指令的值作为数据名称，以纯文本渲染到元素中，与插值表达式的作用基本一致。</p>
 <pre><code class="html">&lt;div v-text=&quot;msg&quot;&gt;&lt;/div&gt;
 &lt;!-- 等价于 --&gt;
 &lt;div&gt;{{ msg }}&lt;/div&gt;</code></pre>
-<pre><code class="js">var vue = new Vue({
-    data: {
-        msg: &#39;你好呀~&#39;
-    }
+<pre><code class="js">const vue = new Vue({
+    data: { msg: &#39;你好呀~&#39; }
 })</code></pre>
-<h3 id="v-html"><a href="#v-html" class="headerlink" title="v-html"></a>v-html</h3><p>将指令的值作为数据名称，以 HTML 形式，渲染到元素中。也就是说，如果数据内容包含 HTML，则会被正确解析。注意，如果数据是外部传入的，则可能会导致遭受恶意攻击。</p>
-<pre><code class="html">&lt;div v-html=&quot;msg&quot;&gt;&lt;/div&gt;</code></pre>
-<pre><code class="js">var vue = new Vue({
-    data: {
-        msg: &#39;&lt;h1&gt;你好呀~&lt;/h1&gt;&#39; // 页面会出现一个 &lt;h1&gt; 标题
-    }
+<h3 id="v-html"><a href="#v-html" class="headerlink" title="v-html"></a>v-html</h3><p>将指令的值作为数据名称，以 HTML 渲染到元素中。也就是说，如果数据内容包含 HTML，也会被正确解析。</p>
+<pre><code class="html">&lt;!-- 被渲染为 &lt;h1&gt; 元素--&gt;
+&lt;div v-html=&quot;msg&quot;&gt;&lt;/div&gt;</code></pre>
+<pre><code class="js">const vue = new Vue({
+    data: { msg: &#39;&lt;h1&gt;你好呀~&lt;/h1&gt;&#39; }
 })</code></pre>
 <h3 id="v-once"><a href="#v-once" class="headerlink" title="v-once"></a>v-once</h3><p>如果不希望 Vue 监听数据的变化，从而改变 DOM，则可以使用<code>v-once</code>指令。使用该指令的元素只会被渲染一次，之后就会变成静态，从而提升页面性能。</p>
 <pre><code class="html">&lt;div v-once&gt;{{ msg }}&lt;/div&gt;</code></pre>
-<pre><code class="js">vue.msg = &#39;好个毛&#39; // 不会改变页面显示</code></pre>
-<h3 id="v-cloak"><a href="#v-cloak" class="headerlink" title="v-cloak"></a>v-cloak</h3><p>当页面使用插值表达式时，由于渲染需要时间，此时页面的双大括号可能会直接显示出来，然后才会被替换成真正的内容，从而导致数据出现闪烁。</p>
-<p>如果为页面元素添加<code>v-cloak</code>指令，并使用 CSS 将其设置为隐藏，那么在内容渲染完成之前，该元素就不会显示。当 Vue 渲染完成后，会自动删除元素上的<code>v-cloak</code>样式，从而避免闪烁。</p>
+<h3 id="v-cloak"><a href="#v-cloak" class="headerlink" title="v-cloak"></a>v-cloak</h3><p>当页面使用插值表达式时，由于渲染需要时间，此时页面的双大括号可能会直接显示出来，然后才会被替换成真正的内容。</p>
+<p>如果为页面元素添加<code>v-cloak</code>指令，并使用 CSS 将其设置为隐藏，那么在内容渲染完成之前，该元素就不会显示。渲染完成后，该属性会被自动移除。</p>
 <pre><code class="html">&lt;span v-cloak&gt;{{ msg }}&lt;/span&gt;</code></pre>
-<pre><code class="css">[v-cloak] {
-    display: none;
-}</code></pre>
+<pre><code class="css">[v-cloak] { display: none; }</code></pre>
 <h2 id="绑定属性"><a href="#绑定属性" class="headerlink" title="绑定属性"></a>绑定属性</h2><p>使用<code>v-bind</code>指令可以绑定元素属性。</p>
-<pre><code class="html">&lt;a v-bind:href=&quot;url&quot;&gt;点我跳转~&lt;/a&gt; &lt;img v-bind:src=&quot;src + &#39;.png&#39;&quot; /&gt;</code></pre>
-<pre><code class="js">var vue = new Vue({
-    data: {
-        url: &#39;https://www.baidu.com&#39;,
-        src: &#39;test&#39;
-    }
+<pre><code class="html">&lt;a v-bind:href=&quot;url&quot;&gt;点我跳转~&lt;/a&gt;</code></pre>
+<pre><code class="js">const vue = new Vue({
+    data: { url: &#39;https://www.baidu.com&#39; }
 })</code></pre>
 <p>该指令提供了语法糖形式，可以将前面的<code>v-bind</code>省略，保留一个冒号<code>:</code>即可。</p>
 <pre><code class="html">&lt;a :href=&quot;url&quot;&gt;点我跳转~&lt;/a&gt;</code></pre>
-<h3 id="class-样式属性"><a href="#class-样式属性" class="headerlink" title="class 样式属性"></a>class 样式属性</h3><p>样式属性是一种比较特殊的元素属性，Vue 提供了专门的语法格式来绑定。如果元素同时拥有本身的类与绑定的类，那么 Vue 会将两者合并，而非简单覆盖。</p>
-<p>如果传入一个字符串数组，那么表示该元素使用这些样式。其中的样式名必须以引号包裹，否则会被解析为数据名。</p>
-<pre><code class="css">.tianyi {
-    color: #66ccff;
-}
-.italic {
-    font-style: italic;
-}
-.thin {
-    font-weight: 200;
-}</code></pre>
+<h3 id="class-样式属性"><a href="#class-样式属性" class="headerlink" title="class 样式属性"></a>class 样式属性</h3><p>样式属性比较特殊，因此 Vue 提供了专门的语法来绑定。注意，如果绑定的元素本身拥有<code>.class</code>，那么 Vue 会将两者合并，而非简单覆盖。</p>
+<p>如果绑定的值是一个字符串数组，那么每个字符串表示一个样式名，并应用到元素上。注意，样式名必须为字符串，否则会被解析为数据。</p>
+<pre><code class="css">.tianyi { color: #66ccff; }
+.italic { font-style: italic; }
+.thin { font-weight: 200; }</code></pre>
 <pre><code class="html">&lt;h1 :class=&quot;className&quot;&gt;注意我要变形了！&lt;/h1&gt;</code></pre>
-<pre><code class="js">var vue = new Vue({
+<pre><code class="js">const vue = new Vue({
     data: {
         className: [&#39;tianyi&#39;, &#39;thin&#39;, &#39;italic&#39;]
     }
 })</code></pre>
-<p>如果数组中的某些元素为对象，那么它表示该类是否起作用。其中对象的属性名为样式名，属性值为布尔值。</p>
-<pre><code class="js">var vue = new Vue({
-    data: {
-        // 对象的属性名可以省略引号哒！这是 JS 语法！和 Vue 没关系！
-        className: [&#39;tianyi&#39;, &#39;thin&#39;, { italic: true }]
-    }
-})</code></pre>
-<p>如果直接传入一个对象，则可以对其中的每个属性进行可用性判断。其中对象的属性名为样式名，属性值为布尔值。</p>
-<pre><code class="js">var vue = new Vue({
+<p>如果绑定的值是一个对象，则可以对每个样式进行可用性判断。</p>
+<pre><code class="js">const vue = new Vue({
     data: {
         className: {
             tianyi: true,
             thin: true,
-            italic: false
+            italic: false // 不会添加 .italic 类
         }
     }
 })</code></pre>
-<h3 id="style-样式属性"><a href="#style-样式属性" class="headerlink" title="style 样式属性"></a>style 样式属性</h3><p>除了类样式以外，也可以为元素绑定内联样式。注意，对于带有连字符<code>-</code>的属性，需要转换成驼峰形式，否则必须使用引号包裹（因为连字符不符合标识符规则）。</p>
-<p>如果绑定的值为对象，那么每个键值对表示一条样式规则。其中属性名为样式名称，属性值为样式值。</p>
-<pre><code class="html">&lt;h1 :style=&quot;s1&quot;&gt;注意我要变形了！&lt;/h1&gt;</code></pre>
+<p>也可以将两种方式结合使用：</p>
 <pre><code class="js">var vue = new Vue({
+    data: {
+        className: [&#39;tianyi&#39;, &#39;thin&#39;, { italic: true }]
+    }
+})</code></pre>
+<h3 id="style-样式属性"><a href="#style-样式属性" class="headerlink" title="style 样式属性"></a>style 样式属性</h3><p>除了绑定类以外，也可以直接为元素绑定内联样式。注意，对于带有连字符<code>-</code>的属性，需要转换成驼峰形式，否则必须使用引号包裹（因为连字符不符合标识符规则）。</p>
+<p>如果绑定的值为单个对象，那么每个键值对表示一条样式规则。</p>
+<pre><code class="html">&lt;h1 :style=&quot;s1&quot;&gt;注意我要变形了！&lt;/h1&gt;</code></pre>
+<pre><code class="js">const vue = new Vue({
     data: {
         s1: { fontWeight: &#39;200&#39;, color: &#39;#66ccff&#39; }
     }
 })</code></pre>
 <p>如果绑定的值为数组，那么可以同时绑定多个样式对象。</p>
 <pre><code class="html">&lt;h1 :style=&quot;[s1, s2]&quot;&gt;注意我要变形了！&lt;/h1&gt;</code></pre>
-<pre><code class="js">var vue = new Vue({
+<pre><code class="js">const vue = new Vue({
     data: {
         s1: { fontWeight: &#39;200&#39;, color: &#39;#66ccff&#39; },
         s2: { fontStyle: &#39;italic&#39; }
@@ -1521,8 +1486,8 @@ export default new Vuex.Store({
         try {
             $("<link>").attr({ href: "//cdn.yesuanzao.cn/blog/live2d/waifu.min.css", rel: "stylesheet", type: "text/css" }).appendTo('head');
             $('body').append('<div class="waifu"><div class="waifu-tips"></div><canvas id="live2d" class="live2d"></canvas><div class="waifu-tool"><span class="fui-home"></span> <span class="fui-chat"></span> <span class="fui-eye"></span> <span class="fui-user"></span> <span class="fui-photo"></span> <span class="fui-info-circle"></span> <span class="fui-cross"></span></div></div>');
-            $.ajax({ url: '//cdn.yesuanzao.cn/blog/live2d/waifu-tips.js', dataType: "script", cache: false, async: false });
-            $.ajax({ url: '//cdn.yesuanzao.cn/blog/live2d/live2d.min.js', dataType: "script", cache: false, async: false, complete: function() {
+            $.ajax({ url: '//cdn.yesuanzao.cn/blog/live2d/waifu-tips.js', dataType: "script", cache: true, async: false });
+            $.ajax({ url: '//cdn.yesuanzao.cn/blog/live2d/live2d.min.js', dataType: "script", cache: true, async: false, complete: function() {
                 initModel('//cdn.yesuanzao.cn/blog/live2d/waifu-tips.json');
             } });
         } catch (err) { console.log(err) }
