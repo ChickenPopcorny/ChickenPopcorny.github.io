@@ -128,6 +128,50 @@ module.exports = {
         }]
     }
 }</code></pre>
+<h3 id="Vue-单文件组件"><a href="#Vue-单文件组件" class="headerlink" title="Vue 单文件组件"></a>Vue 单文件组件</h3><p>虽然通常情况下我们都是使用脚手架<a href="/posts/ovrgsm0u.html#Vue-CLI">Vue-CLI</a>来直接搭建带有 webpack 的 Vue 项目，但是也可以安装<a href="https://vue-loader.vuejs.org/zh/" target="_blank" rel="noopener">Vue Loader</a>来手动配置。</p>
+<pre><code class="powershell">npm install -D vue-loader vue-template-compiler</code></pre>
+<blockquote>
+<p>如果希望组件的<code>&lt;style&gt;</code>生效，还必须安装<a href="#样式文件">渲染样式</a>的 loader。</p>
+</blockquote>
+<pre><code class="js">/* webpack.config.js */
+const { VueLoaderPlugin } = require(&#39;vue-loader&#39;)
+
+module.exports = {
+    module: {
+        rules: [
+            {
+                test: /\.vue$/,
+                loader: &#39;vue-loader&#39;
+            },
+            {
+                test: /\.css$/,
+                use: [&#39;style-loader&#39;, &#39;css-loader&#39;]
+            }
+        ]
+    },
+    plugins: [
+        new VueLoaderPlugin() // 请确保引入这个插件！
+    ]
+}</code></pre>
+<p>注意，此时浏览器可能会报<code>You are using the runtime-only build of Vue...</code>这样的错误，这是因为默认的版本为 runtime-only，而<code>Vue()</code>实例中使用了模板，Vue 无法在运行时将其编译。要修改成完整版，需要在 webpack 中添加一项配置：</p>
+<pre><code class="js">module.exports = {
+    mode: &#39;development&#39;, // 否则 webpack 会隐藏错误信息
+    resolve: {
+        alias: {
+            vue$: &#39;vue/dist/vue.esm.js&#39;
+        }
+    }
+}</code></pre>
+<p>不过最好还是使用<code>render</code>函数来加载模板：</p>
+<pre><code class="js">new Vue({
+    el: &#39;#app&#39;,
+    render: function(h) {
+        return h(app) // 返回值为虚拟 DOM
+    }
+})</code></pre>
+<blockquote>
+<p>如果没有报错信息，但是也没有出现效果，则需要在<code>webpack.config.js</code>中配置<code>mode: &#39;development&#39;</code>，否则 webpack 会将错误信息隐藏。</p>
+</blockquote>
 <h2 id="管理输出"><a href="#管理输出" class="headerlink" title="管理输出"></a>管理输出</h2><h3 id="入口"><a href="#入口" class="headerlink" title="入口"></a>入口</h3><p>使用<code>entry</code>设置项目的起点，默认为<code>./src/index.js</code>。</p>
 <pre><code class="js">module.exports = {
     entry: &#39;./src/main.js&#39; // 修改为 main.js 文件

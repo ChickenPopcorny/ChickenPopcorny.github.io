@@ -248,44 +248,28 @@ var vue = new Vue({}) // 然后才能实例化 Vue 对象</code></pre>
         s2: { fontStyle: &#39;italic&#39; }
     }
 })</code></pre>
-<h2 id="绑定事件"><a href="#绑定事件" class="headerlink" title="绑定事件"></a>绑定事件</h2><p>使用<code>v-on</code>指令可以为元素绑定事件。注意，传入方法时加不加圆括号效果是一样的：</p>
+<h2 id="绑定事件"><a href="#绑定事件" class="headerlink" title="绑定事件"></a>绑定事件</h2><p>使用<code>v-on</code>指令为元素绑定事件。</p>
 <pre><code class="html">&lt;button v-on:click=&quot;show&quot;&gt;点我&lt;/button&gt;
-&lt;!-- 或者 --&gt;
-&lt;button v-on:click=&quot;show()&quot;&gt;点我&lt;/button&gt;</code></pre>
-<pre><code class="js">var vue = new Vue({
+</code></pre>
+<pre><code class="js">const vue = new Vue({
     methods: {
-        show() {
-            alert(&#39;hello&#39;)
-        }
+        show() { alert(&#39;hello&#39;) }
     }
 })</code></pre>
-<p>该指令同样提供了语法糖，可以将前面的<code>v-on:</code>替换成一个<code>@</code>。</p>
+<p>该指令同样提供了语法糖，可以将前面的<code>v-on:</code>替换成一个<code>@</code>：</p>
 <pre><code class="html">&lt;button @click=&quot;show&quot;&gt;点我&lt;/button&gt;</code></pre>
-<p>绑定事件时也可以同时传入参数和事件对象。如果调用时<strong>省略了圆括号</strong>，那么 Vue 会默认传入一个事件对象参数：</p>
-<pre><code class="html">&lt;a href=&quot;https://www.bilibili.com&quot; @click=&quot;show&quot;&gt;点我&lt;/a&gt;</code></pre>
-<pre><code class="js">var app = new Vue({
+<p>绑定的方法也可以选择添加圆括号，如果调用时<strong>省略了圆括号</strong>，那么 Vue 会默认传入一个事件对象参数；如果<strong>手动添加了圆括号</strong>，则必须显式传入一个<code>$event</code>对象才能获取到事件对象（位置不重要），此时也可以传入其它参数作为方法本身的参数：</p>
+<pre><code class="html">&lt;a href=&quot;https://www.bilibili.com&quot; @click=&quot;show1&quot;&gt;点我&lt;/a&gt;
+&lt;a href=&quot;https://www.bilibili.com&quot; @click=&quot;show2()&quot;&gt;点我&lt;/a&gt;
+&lt;a href=&quot;https://www.bilibili.com&quot; @click=&quot;show3($event, 20)&quot;&gt;点我&lt;/a&gt;</code></pre>
+<pre><code class="js">const app = new Vue({
     methods: {
-        // 可以使用原生的事件对象，这里只做演示，使用下面的事件修饰符实现更合理
-        show(e) {
-            e.preventDefault()
-        }
+        show1(e) {} // =&gt; MouseEvent
+        show2(e) {} // =&gt; undefined
+        show3(e, num) {} // =&gt; MouseEvent, 20
     }
 })</code></pre>
-<p>但是，<strong>如果手动添加了圆括号，则必须显式传入一个<code>$event</code>对象才能获取到事件对象</strong>，此时也可以传入其它参数作为方法本身的参数：</p>
-<pre><code class="html">&lt;button @click=&quot;test1(10, $event)&quot;&gt;点我&lt;/button&gt;
-&lt;button @click=&quot;test2()&quot;&gt;点我&lt;/button&gt;</code></pre>
-<pre><code class="js">var app = new Vue({
-    methods: {
-        test1(num, e) {
-            e // =&gt; 原生事件对象
-            num // =&gt; 10
-        },
-        test2(e) {
-            e // =&gt; undefined
-        }
-    }
-})</code></pre>
-<h3 id="事件修饰符"><a href="#事件修饰符" class="headerlink" title="事件修饰符"></a>事件修饰符</h3><p>事件修饰符用来简化类似于阻止默认事件、事件冒泡等常见需求，它们均定义在事件名称后，由一个点<code>.</code>和修饰符名称组成。注意，事件修饰符是可以串联的，根据串联顺序不同结果也可能会有所不同。</p>
+<h3 id="事件修饰符"><a href="#事件修饰符" class="headerlink" title="事件修饰符"></a>事件修饰符</h3><p>事件修饰符用来简化类似于阻止默认事件、事件冒泡等常见需求。注意，事件修饰符是可以串联的，根据串联顺序不同结果也可能会有所不同。</p>
 <table>
 <thead>
 <tr>
@@ -295,7 +279,7 @@ var vue = new Vue({}) // 然后才能实例化 Vue 对象</code></pre>
 </thead>
 <tbody><tr>
 <td><code>.stop</code></td>
-<td>阻止元素冒泡</td>
+<td>定义在内层元素，阻止元素向外层元素冒泡</td>
 </tr>
 <tr>
 <td><code>.prevent</code></td>
@@ -308,114 +292,57 @@ var vue = new Vue({}) // 然后才能实例化 Vue 对象</code></pre>
 </tbody></table>
 <pre><code class="html">&lt;div @click=&quot;outer&quot;&gt;
     &lt;div @click.stop=&quot;inner&quot;&gt;&lt;/div&gt;
-&lt;/div&gt;
-
-&lt;a @click.prevent=&quot;showMsg&quot; href=&quot;https://www.baidu.com&quot;&gt;点我跳转&lt;/a&gt;
-
-&lt;button @click.once=&quot;showMsg&quot;&gt;点我&lt;/button&gt;</code></pre>
-<pre><code class="js">var vue = new Vue({
+&lt;/div&gt;</code></pre>
+<pre><code class="js">const vue = new Vue({
     methods: {
-        outer() {
-            console.log(&#39;外部元素事件被触发啦&#39;)
-        }, // =&gt; 不会被触发
-        inner() {
-            console.log(&#39;内部元素事件被触发啦&#39;)
-        }
+        outer() { console.log(&#39;外部元素事件被触发啦&#39;) }, // 不会被触发
+        inner() { console.log(&#39;内部元素事件被触发啦&#39;) }
     }
 })</code></pre>
 <h3 id="按键修饰符"><a href="#按键修饰符" class="headerlink" title="按键修饰符"></a>按键修饰符</h3><p>使用按键修饰符可以监听具体的按键。Vue 将<a href="https://cn.vuejs.org/v2/guide/events.html#按键码" target="_blank" rel="noopener">常用的按键</a>进行了封装，如果需要的按键不在列表中，可以使用<code>keyCode</code>码作为按键修饰符名称。</p>
-<pre><code class="html">&lt;input type=&quot;text&quot; @keypress.enter=&quot;show&quot; /&gt;
-&lt;input type=&quot;text&quot; @keypress.65=&quot;show&quot; /&gt;&lt;!-- 按下 a 触发 --&gt;</code></pre>
-<pre><code class="js">var vue = new Vue({
-    methods: {
-        show() {
-            alert(&#39;hello&#39;)
-        }
-    }
-})</code></pre>
-<p>使用<code>Vue.config.keyCodes</code>属性可以为<code>keyCode</code>自定义一个名称。</p>
+<pre><code class="html">&lt;input type=&quot;text&quot; @keypress.enter=&quot;show&quot;&gt;
+&lt;input type=&quot;text&quot; @keypress.65=&quot;show&quot;&gt;&lt;!-- 按下 a 触发 --&gt;</code></pre>
+<p>还可以使用<code>Vue.config.keyCodes</code>全局对象为<code>keyCode</code>自定义一个名称。</p>
 <pre><code class="js">Vue.config.keyCodes.a = 65</code></pre>
-<pre><code class="html">&lt;input type=&quot;text&quot; @keypress.a=&quot;show&quot; /&gt;</code></pre>
+<pre><code class="html">&lt;input type=&quot;text&quot; @keypress.a=&quot;show&quot;&gt;</code></pre>
 <h2 id="条件渲染"><a href="#条件渲染" class="headerlink" title="条件渲染"></a>条件渲染</h2><p>使用<code>v-if</code>和<code>v-show</code>指令可以根据条件来判断某个元素是否被渲染。</p>
-<p>两者的区别在于，<code>v-if</code>是通过创建或删除 DOM 元素来实现，而<code>v-show</code>则是通过<code>display</code>属性来实现。因此，如果是需要频繁切换显示隐藏的场景，应该使用<code>v-show</code>；如果一个元素经过判断之后自始至终就不需要显示，那么使用<code>v-if</code>即可，因为元素根本就不会创建，而不是先创建再隐藏。并且，<code>v-show</code>不能用在<code>&lt;template&gt;</code>中，也没有多分支判断。</p>
-<h3 id="v-if"><a href="#v-if" class="headerlink" title="v-if"></a>v-if</h3><p>控制元素的显示或隐藏。如果指令的值为<code>true</code>，则元素正常显示，否则会被隐藏。</p>
-<pre><code class="html">&lt;h1 v-if=&quot;flag&quot;&gt;看不见我！&lt;/h1&gt;</code></pre>
-<pre><code class="js">var vue = new Vue({
-    data: {
-        flag: false // 如果为 true，则元素正常显示
-    }
+<p>两者最重要的一点区别在于，<code>v-if</code>是通过创建或删除 DOM 元素来实现，而<code>v-show</code>则是通过<code>display</code>属性来实现。因此，如果是需要频繁切换显示隐藏的场景，应该使用<code>v-show</code>；如果一个元素经过判断之后自始至终就不需要显示，那么使用<code>v-if</code>即可，因为元素根本就不会创建，而不是先创建再隐藏。</p>
+<pre><code class="html">&lt;h1 v-if=&quot;flag&quot;&gt;看不见我！&lt;/h1&gt;
+&lt;h1 v-show=&quot;flag&quot;&gt;隐藏啦！&lt;/h1&gt;</code></pre>
+<pre><code class="js">const vue = new Vue({
+    data: { flag: false } // 如果为 true，则元素正常显示
 })</code></pre>
-<p>与普通的流程控制一样，它也具有多分支的判断功能：</p>
+<p>与<code>v-show</code>的另外一点不同在于，<code>v-if</code>还具有多分支判断的功能（对于本例来说，最好还是使用计算属性）：</p>
 <pre><code class="html">&lt;h1 v-if=&quot;age &lt; 18&quot;&gt;回家玩去！&lt;/h1&gt;
 &lt;h1 v-else-if=&quot;age &gt;= 18 &amp;&amp; age &lt;= 65&quot;&gt;可以上网吧了！&lt;/h1&gt;
 &lt;h1 v-else&gt;退休以后还来网吧？？&lt;/h1&gt;</code></pre>
-<pre><code class="js">var app = new Vue({
-    data: {
-        age: 18 // =&gt; 显示第二个 &lt;h1&gt;可以上网吧了！&lt;/h1&gt;
-    }
-})</code></pre>
-<blockquote>
-<p>对于本例来说，最好还是使用计算属性。但是如果要控制多个元素是否显示，可以将它们放到一个<code>&lt;template&gt;</code>模板中，然后为模板添加<code>v-if</code>指令，这样其中的元素就会根据条件判断隐藏或显示，但是<code>&lt;template&gt;</code>本身不会被渲染。<code>&lt;template&gt;</code>模板在后面的<a href="#组件">组件</a>一节中会讨论到。</p>
-</blockquote>
-<h4 id="key-属性"><a href="#key-属性" class="headerlink" title="key 属性"></a>key 属性</h4><p>如果将文本框用于判断时，可能会出现一个令人迷惑的现象：虽然文本框组件被切换了，但是用户输入的值却保留着：</p>
-<pre><code class="html">&lt;input v-if=&quot;login == &#39;username&#39;&quot; type=&quot;text&quot; placeholder=&quot;账户名&quot; /&gt;
-&lt;input v-else-if=&quot;login == &#39;email&#39;&quot; type=&quot;text&quot; placeholder=&quot;邮箱&quot; /&gt;</code></pre>
-<pre><code class="js">var vue = new Vue({
-    data: {
-        login: &#39;username&#39; // 修改它会导致文本框发生改变，但是输入值却保留了
-    }
-})</code></pre>
-<p>这是因为 Vue 为了最大化性能采用了虚拟 DOM，在替换元素时 Vue 会对比两个元素之间的差异，由于它们都是文本框元素，因此并不会真正的将前者删除，重新渲染 DOM，而是将它们的属性进行替换，就好像看起来是创建了一个新元素一样，所以之前的输入值才被保留了。</p>
-<p>如果希望 Vue 将它们重新创建，可以添加一个<code>key</code>属性，如果两个元素的<code>key</code>属性不同，则 Vue 会认为它们是两个完全不同的元素。</p>
-<pre><code class="html">&lt;input
-    v-if=&quot;login == &#39;username&#39;&quot;
-    type=&quot;text&quot;
-    placeholder=&quot;账户名&quot;
-    key=&quot;username&quot;
-/&gt;
-&lt;input
-    v-else-if=&quot;login == &#39;email&#39;&quot;
-    type=&quot;text&quot;
-    placeholder=&quot;邮箱&quot;
-    key=&quot;email&quot;
-/&gt;</code></pre>
-<h3 id="v-show"><a href="#v-show" class="headerlink" title="v-show"></a>v-show</h3><p>控制元素的显示或隐藏。如果指令的值为<code>true</code>，则元素正常显示，否则会被隐藏。</p>
-<pre><code class="html">&lt;h1 v-show=&quot;flag&quot;&gt;隐藏啦！&lt;/h1&gt;</code></pre>
-<pre><code class="js">var vue = new Vue({
-    data: {
-        flag: false
-    }
-})</code></pre>
+<p>如果要控制多个元素是否显示，可以将它们放到一个<code>&lt;template&gt;</code>模板中，然后为模板添加<code>v-if</code>指令，这样其中的元素就会根据条件判断隐藏或显示，但是<code>&lt;template&gt;</code>本身不会被渲染。注意，<code>v-show</code>不能用在<code>&lt;template&gt;</code>中。</p>
+<pre><code class="html">&lt;template v-if=&quot;flag&quot;&gt;
+    &lt;h1&gt;一起被隐藏了！&lt;/h1&gt;
+    &lt;h1&gt;一起被隐藏了！&lt;/h1&gt;
+&lt;/template&gt;</code></pre>
 <h2 id="列表渲染"><a href="#列表渲染" class="headerlink" title="列表渲染"></a>列表渲染</h2><p>使用<code>v-for</code>可以遍历数组和对象，将其渲染到页面上。</p>
-<h3 id="遍历数组"><a href="#遍历数组" class="headerlink" title="遍历数组"></a>遍历数组</h3><p>在下面的代码中，每次从数组中取出一个数字，并渲染到页面上。</p>
-<pre><code class="html">&lt;p v-for=&quot;num in nums&quot;&gt;{{ num }}&lt;/p&gt;</code></pre>
+<pre><code class="html">&lt;!-- 遍历数组 --&gt;
+&lt;span v-for=&quot;num in nums&quot;&gt;{{ num }}&lt;/span&gt;
+&lt;span v-for=&quot;(num, index) in nums&quot;&gt;当前数字是{{ num }}，这是第{{ index }}个数字&lt;/span&gt;
+
+&lt;!-- 遍历对象 --&gt;
+&lt;span v-for=&quot;val in person&quot;&gt;{{ val }}&lt;/span&gt;
+&lt;span v-for=&quot;(val, key) in person&quot;&gt;{{ key }} --- {{ val }}&lt;/span&gt;
+
+&lt;!-- 遍历整数 --&gt;
+&lt;span v-for=&quot;n in 10&quot;&gt;{{ n }}&lt;/span&gt;</code></pre>
 <pre><code class="js">const vue = new Vue({
     data: {
-        nums: [3, 8, 12, 22, 28, 31]
-    }
-})</code></pre>
-<p>除了数组元素本身外，也可以同时获取索引：</p>
-<pre><code class="html">&lt;p v-for=&quot;(num, index) in nums&quot;&gt;当前数字是{{ num }}，这是第{{ index }}个数字&lt;/p&gt;</code></pre>
-<blockquote>
-<p>注意，只有使用会修改原数组的方法操作数组时，才会导致数据被同步修改。</p>
-</blockquote>
-<h3 id="遍历对象"><a href="#遍历对象" class="headerlink" title="遍历对象"></a>遍历对象</h3><p>在下面的代码中，使用<code>v-for</code>遍历了<code>person</code>对象的每个属性值：</p>
-<pre><code class="html">&lt;p v-for=&quot;val in person&quot;&gt;{{ val }}&lt;/p&gt;</code></pre>
-<pre><code class="js">var vue = new Vue({
-    data: {
+        nums: [3, 8, 12, 22, 28, 31],
         person: { name: &#39;御坂美琴&#39;, age: 16 }
     }
 })</code></pre>
-<p>当然也可以同时获取对象的属性名，注意其中第一个参数为属性值，第二个参数为属性名：</p>
-<pre><code class="html">&lt;p v-for=&quot;(val, key) in person&quot;&gt;{{ key }} --- {{ val }}&lt;/p&gt;</code></pre>
-<h3 id="遍历整数"><a href="#遍历整数" class="headerlink" title="遍历整数"></a>遍历整数</h3><p>该指令还可以用来迭代整数。</p>
-<pre><code class="html">&lt;p v-for=&quot;n in 10&quot;&gt;{{ n }}&lt;/p&gt;</code></pre>
-<h3 id="key-属性-1"><a href="#key-属性-1" class="headerlink" title="key 属性"></a>key 属性</h3><p>与<code>v-if</code>中绑定的<code>key</code>属性的原因一样，<code>v-for</code>也必须使用<code>key</code>属性来标识自己的唯一性，否则当中间插入其它数据时，原本的输入值就会保留下来。</p>
-<p>在下面的代码中，使用了<code>v-for</code>遍历输出了<code>persons</code>数组，并且每条数据前都有一个复选框。</p>
+<h3 id="绑定-key-属性"><a href="#绑定-key-属性" class="headerlink" title="绑定 key 属性"></a>绑定 key 属性</h3><p>使用<code>v-for</code>指令时，可能会出现一些令人迷惑的情况。在下面的代码中，使用了<code>v-for</code>遍历了对象数组，每条数据前都有一个复选框。</p>
 <pre><code class="html">&lt;div v-for=&quot;person in persons&quot;&gt;
-    &lt;input type=&quot;checkbox&quot; /&gt;{{ person.id }} : {{ person.name }}
+    &lt;input type=&quot;checkbox&quot;&gt;{{ person.id }} : {{ person.name }}
 &lt;/div&gt;</code></pre>
-<pre><code class="js">var vue = new Vue({
+<pre><code class="js">const vue = new Vue({
     data: {
         persons: [
             { id: 1, name: &#39;御坂美琴&#39; },
@@ -424,85 +351,65 @@ var vue = new Vue({}) // 然后才能实例化 Vue 对象</code></pre>
         ]
     }
 })</code></pre>
-<p>但是假如先勾选任意一条数据，再添加一条新数据到开头，就会发现复选框选中的数据发生了改变。这是因为 Vue 在虚拟 DOM 中比对两个元素时，发现都是相同的元素，因此为了提高性能，会在末尾创建一个新元素，而之前的元素就仅做属性覆盖。</p>
-<p><img src="http://cdn.yesuanzao.cn/superbed/2020/02/27/5e57aad56127cc071301b491.jpg" alt=""></p>
-<p>要解决这个问题，需要为<code>v-for</code>绑定一个唯一的<code>key</code>属性，就可以使虚拟 DOM 找到对应的元素了。</p>
+<p>但是假如先勾选任意一条数据，再添加一条新数据到开头，就会发现复选框选中的数据发生了改变。</p>
+<p><img src="http://cdn.yesuanzao.cn/superbed/2020/03/16/5e6ed02fe83c3a1e3a369766.gif" alt=""></p>
+<p>这是因为 Vue 在对比新旧虚拟 DOM 的不同时，默认会使用一种最大限度减少动态元素，并且尽可能就地复用相同类型元素的算法。如果希望 Vue 重新排列元素顺序，那么需要为元素绑定一个<strong>唯一的</strong><code>key</code>属性：</p>
 <pre><code class="html">&lt;div v-for=&quot;person in persons&quot; :key=&quot;person.id&quot;&gt;&lt;/div&gt;</code></pre>
-<h3 id="数据同步"><a href="#数据同步" class="headerlink" title="数据同步"></a>数据同步</h3><p>由于 JavaScript 的限制，通过索引直接修改数组项、通过对象属性名直接修改值，或者修改数组长度均不会导致数据内容同步显示。</p>
-<pre><code class="html">&lt;p v-for=&quot;num in nums&quot;&gt;{{ num }}&lt;/p&gt;</code></pre>
-<pre><code class="js">var vue = new Vue({
+<h3 id="数据同步"><a href="#数据同步" class="headerlink" title="数据同步"></a>数据同步</h3><p>由于 JavaScript 的限制，通过下列方式操作遍历元素不会导致数据在页面同步渲染：</p>
+<ul>
+<li>使用索引修改数组项</li>
+<li>修改数组长度</li>
+<li>使用对象属性名添加新的键值对</li>
+</ul>
+<pre><code class="html">&lt;p v-for=&quot;num in nums&quot;&gt;{{ num }}&lt;/p&gt;
+&lt;p v-for=&quot;(val, key) in person&quot;&gt;{{ key }} --- {{ val }}&lt;/p&gt;</code></pre>
+<pre><code class="js">const vue = new Vue({
     data: {
-        nums: [10, 20, 30, 40]
+        nums: [10, 20, 30, 40],
+        person: { name: &#39;御坂美琴&#39;, age: 16 },
     }
 })
-// 输入 this.nums[0] = 233，可以看到数据被修改了，但是页面不会同步</code></pre>
-<p>为了解决这个问题，Vue 提供了一个内置的方法<code>Vue.set()</code>，用来修改数组内容。</p>
-<table>
-<thead>
-<tr>
-<th>参数</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>数组 / 对象</td>
-<td>要修改的数组或对象名称</td>
-</tr>
-<tr>
-<td>数值 / 字符串</td>
-<td>要修改的索引位置或对象属性名</td>
-</tr>
-<tr>
-<td>对象</td>
-<td>修改后的值</td>
-</tr>
-</tbody></table>
+
+// 在控制台输入下列语句，不会导致页面同步渲染
+vue.nums[0] = 233
+vue.nums.length = 2
+vue.person.level = 5</code></pre>
+<p>为此 Vue 提供了一个内置的方法<code>Vue.set()</code>用来修改数组或对象。它的第一个参数为要修改的数组或对象，第二个参数为要修改的索引位置或对象属性名，第三个参数为修改后的值。</p>
 <pre><code class="js">Vue.set(this.nums, 0, 233)
 Vue.set(this.person, &#39;age&#39;, 16)</code></pre>
-<h2 id="绑定表单元素"><a href="#绑定表单元素" class="headerlink" title="绑定表单元素"></a>绑定表单元素</h2><p>使用<code>v-model</code>指令可以将实例中的数据与视图中的数据进行<strong>双向绑定</strong>，它只能用于表单元素。之前所有的指令，只能实现由数据（Model，即<code>data</code>数据）到视图（View，即页面元素）的单向绑定，如果修改了数据，那么视图会随之变化，但是如果修改了页面元素内容，数据是不会发生改变的。而数据双向绑定，则是将两者关联起来，只要一方发生了变化，那么另一方也随之改变。</p>
-<h3 id="文本框-文本域"><a href="#文本框-文本域" class="headerlink" title="文本框 / 文本域"></a>文本框 / 文本域</h3><p>将文本框或文本域绑定为字符串数据，表示文本框的值与该字符串数据进行双向绑定。注意，<strong>绑定之后会导致控件本身的<code>value</code>属性失效</strong>。</p>
-<pre><code class="html">&lt;input type=&quot;text&quot; v-model=&quot;msg&quot; /&gt; &lt;span&gt;{{ msg }}&lt;/span&gt;</code></pre>
-<pre><code class="js">var vue = new Vue({
+<h2 id="绑定表单元素"><a href="#绑定表单元素" class="headerlink" title="绑定表单元素"></a>绑定表单元素</h2><p>使用<code>v-model</code>指令可以将实例与视图中的数据进行<strong>双向绑定</strong>，它只能用于表单元素。之前所有的指令，只能实现由数据层到视图层的单向绑定，也就是说，如果修改了数据，那么视图会随之变化，但是如果修改了页面元素内容，数据是不会发生改变的。而数据双向绑定，则是将两者关联起来，只要一方发生了变化，那么另一方也随之改变。</p>
+<h3 id="文本框-文本域"><a href="#文本框-文本域" class="headerlink" title="文本框 / 文本域"></a>文本框 / 文本域</h3><p>文本框或文本域可以绑定字符串数据，如果传入的值不是字符串，会进行自动类型转换。注意，<strong>绑定后会导致元素的<code>value</code>属性失效</strong>。</p>
+<pre><code class="html">&lt;input type=&quot;text&quot; v-model=&quot;msg&quot;&gt;&lt;span&gt;{{ msg }}&lt;/span&gt;</code></pre>
+<pre><code class="js">const vue = new Vue({
     data: { msg: &#39;你好呀&#39; }
 })</code></pre>
-<h3 id="单选框"><a href="#单选框" class="headerlink" title="单选框"></a>单选框</h3><p>将单选框绑定为字符串数据，当它的<code>value</code>属性值等于该字符串时，那么该单选框会被选中，与此同时，其它绑定相同字符串的单选框则会被取消选中。</p>
-<pre><code class="html">&lt;input type=&quot;radio&quot; v-model=&quot;sex&quot; value=&quot;male&quot; /&gt;男
-&lt;input type=&quot;radio&quot; v-model=&quot;sex&quot; value=&quot;female&quot; /&gt;女</code></pre>
-<pre><code class="js">var vue = new Vue({
-    data: {
-        sex: &#39;male&#39; // 与单选框的值同步改变，如果单选框选中了 女，那么该值也会改成 female
-    }
+<h3 id="单选框"><a href="#单选框" class="headerlink" title="单选框"></a>单选框</h3><p>单选框同样绑定字符串数据，当它的<code>value</code>属性值等于该字符串时，那么该单选框会被选中，与此同时，其它绑定相同字符串的单选框则会被取消选中。因此，如果使用 Ajax 方式提交表单，那么<code>name</code>属性其实可以省略，因为<code>v-model</code>本身就可以实现互斥功能。当然原生提交还是必须写明<code>name</code>属性的，否则无法获取属性名称。</p>
+<pre><code class="html">&lt;input type=&quot;radio&quot; v-model=&quot;sex&quot; value=&quot;male&quot;&gt;男
+&lt;input type=&quot;radio&quot; v-model=&quot;sex&quot; value=&quot;female&quot;&gt;女</code></pre>
+<pre><code class="js">const vue = new Vue({
+    data: { sex: &#39;male&#39; } // 如果单选框选中了 女，那么该值也会改成 female
 })</code></pre>
-<blockquote>
-<p>如果使用 Ajax 方式提交表单，那么<code>name</code>属性其实可以省略，因为<code>v-model</code>本身就可以实现互斥功能。当然原生提交还是必须写明<code>name</code>属性的，否则无法获取到属性名称。</p>
-</blockquote>
-<h3 id="复选框"><a href="#复选框" class="headerlink" title="复选框"></a>复选框</h3><p>复选框分为两种情况，首先，如果绑定一个布尔值，那么表示该复选框是否被选中（用于同意协议等场景）：</p>
-<pre><code class="html">&lt;input type=&quot;checkbox&quot; v-model=&quot;isAgree&quot; /&gt;我已阅读并同意以上扯淡条款</code></pre>
-<pre><code class="js">var vue = new Vue({
-    data: {
-        isAgree: false
-    }
+<h3 id="复选框"><a href="#复选框" class="headerlink" title="复选框"></a>复选框</h3><p>对于复选框，如果绑定布尔值，那么表示该复选框是否被选中：</p>
+<pre><code class="html">&lt;input type=&quot;checkbox&quot; v-model=&quot;isAgree&quot;&gt;我已阅读并同意以上扯淡条款</code></pre>
+<pre><code class="js">const vue = new Vue({
+    data: { isAgree: false }
 })</code></pre>
-<p>如果绑定一个数组，那么表示当数组中包含它们的<code>value</code>属性值时，这些复选框会被选中：</p>
-<pre><code class="html">&lt;input type=&quot;checkbox&quot; v-model=&quot;hobbies&quot; value=&quot;sing&quot; /&gt;唱
-&lt;input type=&quot;checkbox&quot; v-model=&quot;hobbies&quot; value=&quot;jump&quot; /&gt;跳
-&lt;input type=&quot;checkbox&quot; v-model=&quot;hobbies&quot; value=&quot;rap&quot; /&gt;Rap
-&lt;input type=&quot;checkbox&quot; v-model=&quot;hobbies&quot; value=&quot;basketball&quot; /&gt;篮球</code></pre>
-<pre><code class="js">var vue = new Vue({
-    data: {
-        hobbies: [&#39;sing&#39;, &#39;jump&#39;]
-    }
+<p>如果绑定一个数组，那么当数组中包含对应的<code>value</code>属性值时，这些复选框会被选中：</p>
+<pre><code class="html">&lt;input type=&quot;checkbox&quot; v-model=&quot;hobbies&quot; value=&quot;sing&quot;&gt;唱
+&lt;input type=&quot;checkbox&quot; v-model=&quot;hobbies&quot; value=&quot;jump&quot;&gt;跳
+&lt;input type=&quot;checkbox&quot; v-model=&quot;hobbies&quot; value=&quot;rap&quot;&gt;Rap
+&lt;input type=&quot;checkbox&quot; v-model=&quot;hobbies&quot; value=&quot;basketball&quot;&gt;篮球</code></pre>
+<pre><code class="js">const vue = new Vue({
+    data: { hobbies: [&#39;sing&#39;, &#39;jump&#39;] }
 })</code></pre>
-<h3 id="下拉列表"><a href="#下拉列表" class="headerlink" title="下拉列表"></a>下拉列表</h3><p>如果绑定的是单个字符串数据，那么当<code>&lt;option&gt;</code>的<code>value</code>属性值等于该字符串时，该选项被选中。如果<code>value</code>属性不存在，则会以<code>&lt;option&gt;</code>中的内容作为备选项。</p>
+<h3 id="下拉列表"><a href="#下拉列表" class="headerlink" title="下拉列表"></a>下拉列表</h3><p>对于下拉列表，如果绑定单个字符串，那么当<code>&lt;option&gt;</code>的<code>value</code>属性值等于该字符串时，该选项被选中。如果<code>value</code>属性不存在，则会以<code>&lt;option&gt;</code>中的内容作为备选项。</p>
 <pre><code class="html">&lt;select v-model=&quot;province&quot;&gt;
     &lt;option value=&quot;bj&quot;&gt;北京&lt;/option&gt;
     &lt;option value=&quot;sh&quot;&gt;上海&lt;/option&gt;
     &lt;option value=&quot;sd&quot;&gt;山东&lt;/option&gt;
 &lt;/select&gt;</code></pre>
-<pre><code class="js">var vue = new Vue({
-    data: {
-        province: &#39;sd&#39;
-    }
+<pre><code class="js">const vue = new Vue({
+    data: { province: &#39;sd&#39; }
 })</code></pre>
 <p>如果下拉列表允许多选，那么需要绑定一个数组。</p>
 <pre><code class="html">&lt;select v-model=&quot;province&quot; multiple&gt;
@@ -510,10 +417,8 @@ Vue.set(this.person, &#39;age&#39;, 16)</code></pre>
     &lt;option value=&quot;sh&quot;&gt;上海&lt;/option&gt;
     &lt;option value=&quot;sd&quot;&gt;山东&lt;/option&gt;
 &lt;/select&gt;</code></pre>
-<pre><code class="js">var vue = new Vue({
-    data: {
-        province: [&#39;sd&#39;, &#39;bj&#39;]
-    }
+<pre><code class="js">const vue = new Vue({
+    data: { province: [&#39;sd&#39;, &#39;bj&#39;] }
 })</code></pre>
 <h3 id="表单修饰符"><a href="#表单修饰符" class="headerlink" title="表单修饰符"></a>表单修饰符</h3><p>表单修饰符可以对表单数据进行简单处理。</p>
 <table>
@@ -533,236 +438,156 @@ Vue.set(this.person, &#39;age&#39;, 16)</code></pre>
 </tr>
 <tr>
 <td><code>.lazy</code></td>
-<td>默认情况下，<code>v-model</code>绑定的元素只要发生<code>input</code>事件就会进行数据同步，使用该修饰符可以将其更改为<code>change</code>事件，也就是只有当表单元素失去焦点时，数据才会同步</td>
+<td><code>v-model</code>默认通过<code>input</code>事件监听数据变化，而该修饰符可以将其更改为<code>change</code>事件，即元素失去焦点时数据才会同步</td>
 </tr>
 </tbody></table>
-<pre><code class="html">&lt;input type=&quot;text&quot; v-model.number=&quot;num&quot; /&gt;</code></pre>
-<pre><code class="js">var vue = new Vue({
+<pre><code class="html">&lt;input type=&quot;text&quot; v-model.number=&quot;num&quot;&gt;</code></pre>
+<pre><code class="js">const vue = new Vue({
     data: { num: 0 }, // =&gt; 输入 30
     computed: {
-        sum() {
-            return this.num + 10
-        } // =&gt; 如果不加修饰符，则结果是 3010，转换成数字后，则结果为 40
+        // 如果不加修饰符，则结果是 3010，转换成数字后，则结果为 40
+        sum() { return this.num + 10 } 
     }
 })</code></pre>
 <h2 id="组件"><a href="#组件" class="headerlink" title="组件"></a>组件</h2><p>Vue 可以将页面上的不同部分划分成一个个组件，每个组件实现一个单独的功能块，以方便维护和复用。</p>
-<h3 id="注册组件"><a href="#注册组件" class="headerlink" title="注册组件"></a>注册组件</h3><p>使用<code>Vue.component()</code>方法可以注册一个全局组件，与<a href="#过滤器">过滤器</a>一样，它依然要位于<code>Vue()</code>实例化之前。</p>
-<table>
-<thead>
-<tr>
-<th>参数</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>字符串</td>
-<td>组件名称</td>
-</tr>
-<tr>
-<td>对象</td>
-<td>组件的配置参数</td>
-</tr>
-</tbody></table>
-<p>在组件对象中使用<code>template</code>属性可以为组件定义一个模板，也就是组件的内容。将组件名称作为 HTML 元素定义在页面上，那么 Vue 会使用组件的模板替换掉这个组件元素。</p>
+<p>使用<code>Vue.component()</code>方法可以注册一个<strong>全局组件</strong>，它的第一个参数为组件名称，第二个参数为配置对象，注意它必须位于<code>Vue()</code>实例化之前。</p>
+<p>在配置对象中使用<code>template</code>属性为组件定义模板，即组件的内容。然后将组件名称作为 HTML 元素定义在页面上，那么 Vue 会使用组件的模板替换掉组件元素。</p>
 <pre><code class="html">&lt;div id=&quot;app&quot;&gt;
-    &lt;my-com&gt;&lt;/my-com
-    &gt;&lt;!-- &lt;h1&gt;这是一个标题组件啦&lt;/h1&gt; --&gt;
+    &lt;my-com&gt;&lt;/my-com&gt;&lt;!-- &lt;div&gt;这是一个标题组件啦&lt;/div&gt; --&gt;
 &lt;/div&gt;</code></pre>
 <pre><code class="js">Vue.component(&#39;my-com&#39;, {
-    template: &#39;&lt;h1&gt;这是一个标题组件啦&lt;/h1&gt;&#39;
+    template: &#39;&lt;div&gt;这是一个标题组件啦&lt;/div&gt;&#39;
 })</code></pre>
 <blockquote>
-<p>组件的名称如果包含多个单词，应该以<strong>短横线</strong>的方式命名和引用，因为 HTML 标签是忽略大小写的。如果标签名写作<code>&lt;myCom&gt;</code>，那么解析后的名称其实为<code>mycom</code>，而 JavaScript 又是一门大小写敏感的语言，它定义的组件名如果是<code>myCom</code>，那么很明显是不能对应<code>mycom</code>这个名称的。</p>
+<p>如果组件名称包含多个单词，应该以<strong>短横线连接</strong>。因为 HTML 标签是忽略大小写的。如果标签名写作<code>&lt;myCom&gt;</code>，那么解析后的名称其实为<code>&lt;mycom&gt;</code>。而 JavaScript 又是一门大小写敏感的语言，如果定义的组件名是<code>myCom</code>，那么很明显是不能对应标签名<code>&lt;mycom&gt;</code>的。</p>
 </blockquote>
-<p>组件也可以使用<code>components</code>属性定义在实例对象内部，作为<strong>局部组件</strong>使用。</p>
-<pre><code class="js">var vue = new Vue({
+<p>组件也可以使用<code>components</code>属性定义在实例内部，作为<strong>局部组件</strong>使用。</p>
+<pre><code class="js">const vue = new Vue({
     components: {
-        &#39;my-com&#39;: {
-            // 组件名称，带有短横线的属性名必须加引号包裹
-            template: &#39;&lt;h1&gt;这是一个标题组件啦&lt;/h1&gt;&#39;
+        &#39;my-com&#39;: { // 组件名称，带有短横线的属性名必须加引号包裹
+            template: &#39;&lt;div&gt;这是一个标题组件啦&lt;/div&gt;&#39;
         }
     }
 })</code></pre>
-<p>注意，组件模板<strong>只能有一个根元素</strong>，因此下面的写法是错误的：</p>
+<p>注意，组件模板<strong>只能有一个根元素</strong>，并且<code>&lt;template&gt;</code>不能作为唯一的根元素（因为不会被渲染），因此下面的写法是错误的：</p>
 <pre><code class="js">Vue.component(&#39;my-com&#39;, {
-    template: &#39;&lt;h1&gt;这是一个标题组件啦&lt;/h1&gt; &lt;h2&gt;只能有一个根元素！&lt;/h2&gt;&#39;
+    template: `
+        &lt;template&gt;
+            &lt;h1&gt;这是一个标题组件啦&lt;/h1&gt;
+            &lt;h2&gt;只能有一个根元素！&lt;/h2&gt;
+        &lt;/template&gt;
+    ` // 相当于有两个根元素
 })</code></pre>
-<p>将 HTML 写在 JavaScript 中会使得代码混乱不堪，因此可以使用<code>&lt;template&gt;</code>元素预先定义好模板，然后将<code>id</code>（必须是以<code>#</code>开头才会被识别为选择器，与<code>el</code>属性不同）传入<code>template</code>属性中：</p>
-<pre><code class="html">&lt;div class=&quot;app&quot;&gt;
+<p>可见，将 HTML 写在 JavaScript 中会使得代码混乱不堪，因此可以使用<code>&lt;template&gt;</code>元素预先定义好模板，然后将模板的<code>id</code>传入<code>template</code>属性中。注意，必须是以<code>#</code>开头的字符串才会被<code>template</code>识别为选择器，相比之下<code>el</code>属性识别元素的方式要更多。</p>
+<pre><code class="html">&lt;div id=&quot;app&quot;&gt;
     &lt;my-com&gt;&lt;/my-com&gt;
 &lt;/div&gt;
 
 &lt;template id=&quot;tpl&quot;&gt;
-    &lt;h1&gt;这是一个组件啦&lt;/h1&gt;
+    &lt;div&gt;这是一个组件啦&lt;/div&gt;
 &lt;/template&gt;</code></pre>
-<pre><code class="js">var vue = new Vue({
+<pre><code class="js">const vue = new Vue({
     components: {
-        &#39;my-com&#39;: {
-            template: &#39;#tpl&#39;
-        }
+        &#39;my-com&#39;: { template: &#39;#tpl&#39; }
     }
 })</code></pre>
-<h3 id="组件数据"><a href="#组件数据" class="headerlink" title="组件数据"></a>组件数据</h3><p>组件与<code>Vue()</code>实例一样，也可以定义属于该组件的<code>data</code>数据。但是区别在于，<strong>组件中的数据<code>data</code>不是一个对象，而是一个函数</strong>，该函数的返回值才是数据对象。</p>
+<h3 id="组件数据"><a href="#组件数据" class="headerlink" title="组件数据"></a>组件数据</h3><p>组件与<code>Vue()</code>实例一样，也可以定义属于该组件的<code>data</code>数据。但是区别在于，<strong>组件中的数据<code>data</code>不是一个对象，而是一个函数</strong>，该函数的返回值才是数据对象。之所以这样设计，是为了保证组件在复用时，彼此之间的数据独立，否则这些组件会通过引用传递，共享同一个对象。</p>
 <pre><code class="js">Vue.component(&#39;my-com&#39;, {
     data() {
         return { msg: &#39;这是组件的数据啦&#39; }
     }
 })</code></pre>
-<p>之所以这样设计，是为了保证组件在复用时，彼此之间的数据独立。如果<code>data</code>是一个对象，那么这些组件会通过引用传递，共享同一个对象。</p>
-<p>在下面的代码中模拟了这种情况，组件的<code>data()</code>并不是直接返回一个对象，而是返回了一个外部的全局对象。此时所有的组件获得的都是该对象的<strong>引用</strong>，也就是说，它们指向同一块内存空间。因此一旦通过任何一个组件修改了数据，那么所有的组件数据都会被修改。</p>
-<pre><code class="html">&lt;div id=&quot;app&quot;&gt;
-    &lt;my-com&gt;&lt;/my-com&gt;
-    &lt;my-com&gt;&lt;/my-com&gt;
-    &lt;my-com&gt;&lt;/my-com&gt;
-&lt;/div&gt;
-
-&lt;template id=&quot;tpl&quot;&gt;
-    &lt;h1&gt;{{ msg }}&lt;/h1&gt;
-&lt;/template&gt;</code></pre>
-<pre><code class="js">const obj = { msg: &#39;这是组件的数据啦&#39; }
-
-Vue.component(&#39;my-com&#39;, {
-    template: &#39;#tpl&#39;,
-    data() {
-        return obj
-    }
-})</code></pre>
-<h3 id="组件通信"><a href="#组件通信" class="headerlink" title="组件通信"></a>组件通信</h3><p>组件是可以嵌套的，只需要将一个组件（如<code>child</code>）放到另一个组件（如<code>parent</code>）的<code>components</code>属性中，那么<code>parent</code>就是<code>child</code>的父组件。</p>
-<blockquote>
-<p>可以看出，组件与之前一直使用<code>Vue()</code>实例非常相似，其实<code>Vue()</code>实例也可以看作一个组件，并且是根组件。</p>
-</blockquote>
-<pre><code class="js">var vue = new Vue({
+<h3 id="组件通信"><a href="#组件通信" class="headerlink" title="组件通信"></a>组件通信</h3><p>组件是可以嵌套的，只需要将一个组件放到另一个组件的<code>components</code>属性中，那么后者就是前者的父组件。</p>
+<pre><code class="js">const vue = new Vue({
     components: {
-        // Vue 实例的 components 属性
-        parent: {
-            // 注册在 Vue 实例中的父组件
-            template: &#39;&lt;h1&gt;这是父组件啦，里面包含&lt;child&gt;&lt;/child&gt;&lt;/h1&gt;&#39;,
+        parent: { // 父组件
+            template: &#39;&lt;div&gt;这是父组件啦，里面包含子组件：&lt;child&gt;&lt;/child&gt;&lt;/div&gt;&#39;,
 
-            components: {
-                // 父组件的 components 属性
-                child: {
-                    // 注册在 parent 父组件中的子组件
+            components: { // 父组件的 components
+                child: { // 子组件
                     template: &#39;&lt;h3&gt;这是子组件啦&lt;/h3&gt;&#39;
                 }
             }
         }
     }
 })</code></pre>
-<p>注意，<strong>子组件是不能直接使用父组件中的<code>data</code>数据的</strong>，但是在开发中，通常都是由父组件统一请求数据（如果由子组件发送，那么发送次数也太频繁了），因此父子组件必须通过一定的方式来交换数据，这称为父子组件之间的通信。</p>
-<h4 id="父组件向子组件传递数据"><a href="#父组件向子组件传递数据" class="headerlink" title="父组件向子组件传递数据"></a>父组件向子组件传递数据</h4><p>如果父组件需要向子组件传递数据，那么子组件首先要使用<code>props</code>属性定义用来保存父组件数据的变量名，该属性默认是一个字符串数组，每个元素为变量名。子组件中也只能使用<code>props</code>属性中的变量名，用来显示父组件数据。</p>
-<pre><code class="js">var vue = new Vue({
-    data: {
-        parentMsg: &#39;父组件的数据&#39;
-    },
-    components: {
-        child: {
-            template: &#39;&lt;h1&gt;这是子组件啦{{ childMsgProp }}&lt;/h1&gt;&#39;, // 只能使用 props 中定义的变量名
-            props: [&#39;childMsgProp&#39;] // 用来保存接收的父组件数据
-        }
-    }
-})</code></pre>
-<p>然后，子组件需要绑定一个属性，其中属性名是<code>props</code>中用来接收数据的变量名，属性值是父组件的数据名，为要传递的数据。注意，<strong>如果实例中<code>props</code>的变量名为驼峰形式，那么绑定元素的属性名必须要转换成连字符形式。</strong></p>
+<p>注意，<strong>父子组件中的数据不能共享</strong>，但是在开发中，通常由父组件统一请求数据（如果由子组件发送，那么也太频繁了），因此父子组件必须通过一定的方式来交换数据，这称为父子组件之间的通信。</p>
+<h4 id="父组件向子组件传递数据"><a href="#父组件向子组件传递数据" class="headerlink" title="父组件向子组件传递数据"></a>父组件向子组件传递数据</h4><p>如果父组件需要向子组件传递数据，那么在调用子组件时，需要为其绑定一个自定义属性。由于这里是父组件的<a href="#作用域插槽">作用域</a>，因此可以将父组件的数据保存到该属性中。</p>
+<p>然后在子组件中使用<code>props</code>属性接收自定义属性，该属性默认是一个字符串数组，每个元素为自定义属性名。然后就可以将其当作<code>data</code>属性来使用了。注意，如果自定义属性名为连字符形式，那么<code>props</code>中的字符串可以是同样的连字符形式，也可以是驼峰形式。</p>
 <pre><code class="html">&lt;div id=&quot;app&quot;&gt;
-    &lt;!-- 如果 props 名称是驼峰式，这里的属性名要转换成连字符形式 --&gt;
-    &lt;child :child-msg-prop=&quot;parentMsg&quot;&gt;&lt;/child&gt;
-&lt;/div&gt;</code></pre>
-<p>此外，<code>props</code>也可以是一个对象，它的属性名依然是接收数据的变量名称，但是它的值可以是数据类型（<code>String</code>、<code>Number</code>、<code>Boolean</code>、<code>Array</code>、<code>Object</code>、<code>Date</code>、<code>Function</code>、<code>Symbol</code>）或者另一个对象。如果是单独的数据类型，那么表示该变量必须接收该类型的数据，否则会报错；如果是另一个对象，那么还可以实现更复杂的验证操作：</p>
-<pre><code class="js">var vue = new Vue({
-    components: {
-        child: {
-            props: Array, // 类型限制
-
-            props: {
-                // 传入更复杂的验证对象
-                type: [Number, String], // 类型限制，满足其中之一即可
-                default: 233, // 默认值
-                required: true, // 必须通过元素属性传值
-                validator(value) {
-                    //自定义验证函数
-                    // 这个值必须匹配下列字符串中的一个
-                    return (
-                        [&#39;success&#39;, &#39;warning&#39;, &#39;danger&#39;].indexOf(value) !== -1
-                    )
-                }
-            }
-        }
-    }
-})</code></pre>
-<p>对于对象和数组类型的默认值，其类型也必须是一个工厂函数，将默认值作为对象返回，原因与组件中的<code>data</code>必须是函数一样。</p>
-<pre><code class="js">var vue = new Vue({
-    components: {
-        child: {
-            props: {
-                default() {
-                    // 默认是空数组，必须通过函数返回
-                    return []
-                }
-            }
-        }
-    }
-})</code></pre>
-<p>注意，虽然可以直接使用<code>props</code>中的数据，但是与<code>data</code>数据不同的是，<strong><code>props</code>的数据是不能修改的</strong>。因此，在下面的代码中，虽然将<code>props</code>数据进行了双向绑定，但是程序会报出<code>Avoid mutating a prop directly...</code>的错误。</p>
-<pre><code class="html">&lt;div id=&quot;app&quot; class=&quot;container&quot;&gt;
     &lt;child :child-msg=&quot;parentMsg&quot;&gt;&lt;/child&gt;
 &lt;/div&gt;</code></pre>
-<pre><code class="js">const vue = new Vue({
-    data: { parentMsg: &#39;父组件数据&#39; },
-
+<pre><code class="js">// 这里直接将 Vue() 实例作为父组件
+const vue = new Vue({
+    data: { parentMsg: &#39;父组件的数据&#39; },
     components: {
         child: {
-            // 绑定了 props 数据，程序会报错
-            template:
-                &#39;&lt;h1&gt;这是子组件啦 -- {{ childMsg }} &lt;input type=&quot;text&quot; v-model=&quot;childMsg&quot;&gt;&lt;/h1&gt;&#39;,
+            template: &#39;&lt;div&gt;这是子组件啦：{{ childMsg }}&lt;/div&gt;&#39;,
+            // 用来保存接收的父组件数据，childMsg 和 child-msg 都是有效的
             props: [&#39;childMsg&#39;]
         }
     }
 })</code></pre>
-<p>根据错误信息提示，为了避免这个错误，应该将<code>props</code>数据保存到自己的<code>data</code>等属性中，然后绑定<code>data</code>中的数据就可以了。</p>
-<pre><code class="js">const vue = new Vue({
-    data: { parentMsg: &#39;父组件数据&#39; },
-
-    components: {
-        child: {
-            // 绑定了自己的 data 数据
-            template:
-                &#39;&lt;h1&gt;这是子组件啦 -- {{ childOwnMsg }} &lt;input type=&quot;text&quot; v-model=&quot;childOwnMsg&quot;&gt;&lt;/h1&gt;&#39;,
-            props: [&#39;childMsg&#39;],
-            data() {
-                // 将 props 的数据传递给 data
-                return { childOwnMsg: this.childMsg }
+<p><code>props</code>还可以对传入的数据进行验证，如果不符合要求，Vue 会在<strong>开发模式</strong>的控制台报出警告，这有助于其他开发者正确调用你设计的组件。</p>
+<pre><code class="js">Vue.component(&#39;my-com&#39;, {
+    props: {
+        // 单个类型检查，可以是 String、Number、Boolean、Array、Object、Date、Function、Symbol
+        // 注意，null 和 undefined 不会被检查，它们可以通过任何验证
+        propA: Number, 
+        // 多个类型检查，符合其中之一即可
+        propB: [String, Number], 
+        // 必须传入一个字符串
+        propC: { 
+            type: String,
+            required: true
+        },
+        // 带有默认值的数字
+        propD: { 
+            type: Number,
+            default: 100
+        },
+        // 带有默认值的对象
+        propE: { 
+            type: Object,
+            default: function () { // 对象或数组默认值必须从一个工厂函数获取，原因与组件中的 data 必须是函数一样
+                return { message: &#39;hello&#39; }
+            }
+        },
+        // 自定义验证函数
+        propF: {
+            validator: function (value) {
+                // 这个值必须匹配下列字符串中的一个
+                return [&#39;success&#39;, &#39;warning&#39;, &#39;danger&#39;].indexOf(value) !== -1
             }
         }
     }
 })</code></pre>
-<h4 id="子组件向父组件传递数据"><a href="#子组件向父组件传递数据" class="headerlink" title="子组件向父组件传递数据"></a>子组件向父组件传递数据</h4><p>如果子组件需要向父组件传递数据，那么过程会比较麻烦，因为它们需要通过<strong>子组件的事件绑定父组件的方法作为监听函数</strong>来传递。具体来说，子组件需要设置一个自定义事件，将父组件的方法作为监听函数传入，然后子组件自己触发自定义事件，就相当于调用了父组件的方法。如果父组件方法中设置了参数，那么子组件在调用时就可以通过参数将数据传递过去了。</p>
-<p>首先，为子组件绑定一个自定义事件<code>@child-event</code>，将父组件的方法<code>parentMethod()</code>传入。</p>
-<blockquote>
-<p>由于 HTML 不区分大小写，因此自定义事件名称的多个单词建议以<strong>连字符</strong>分隔，切记不能使用驼峰命名法。</p>
-</blockquote>
+<p>注意，<code>props</code>的数据<strong>不能被直接修改</strong>，否则会出现<code>Avoid mutating a prop directly...</code>错误。正确的做法是，先将<code>props</code>数据保存到自己<code>data</code>等属性中，然后绑定<code>data</code>数据就可以了。</p>
+<pre><code class="js">const vue = new Vue({
+    components: {
+        child: {
+            props: [&#39;childMsg&#39;]
+            // 错误的做法，绑定了 props 数据
+            template:&#39;&lt;h1&gt;&lt;input type=&quot;text&quot; v-model=&quot;childMsg&quot;&gt;&lt;/h1&gt;&#39;,
+            // 正确的做法
+            template:&#39;&lt;h1&gt;这是子组件啦 -- {{ childOwnMsg }} &lt;input type=&quot;text&quot; v-model=&quot;childOwnMsg&quot;&gt;&lt;/h1&gt;&#39;,
+            data() {
+                return { childOwnMsg: this.childMsg } // 将 props 的数据传递给 data
+            }
+        }
+    }
+})</code></pre>
+<h4 id="子组件向父组件传递数据"><a href="#子组件向父组件传递数据" class="headerlink" title="子组件向父组件传递数据"></a>子组件向父组件传递数据</h4><p>如果子组件需要向父组件传递数据，则需要通过<strong>子组件的事件绑定父组件的方法作为监听函数</strong>来传递。具体来说，子组件需要设置一个自定义事件，将父组件的方法作为监听函数传入，然后子组件自己触发自定义事件，就相当于调用了父组件的方法。如果父组件方法中设置了参数，那么子组件在调用时就可以通过参数将数据传递过去了。</p>
+<p>要在组件中触发自己的事件，需要使用<code>$emit()</code>方法。该方法的第一个参数为事件名称，之后若干参数为监听函数中的参数。</p>
 <pre><code class="html">&lt;div id=&quot;app&quot; class=&quot;container&quot;&gt;
     &lt;child @child-event=&quot;parentMethod&quot;&gt;&lt;/child&gt;
 &lt;/div&gt;</code></pre>
-<pre><code class="js">var vue = new Vue({
+<pre><code class="js">const vue = new Vue({
+    data: { parentMsg : &#39;&#39; },
     methods: {
         // 父组件方法，用于传递给子组件调用
-        parentMethod() {
-            console.log(&#39;调用了父组件方法&#39;)
-        }
-    },
-
-    components: {
-        child: {
-            data() {
-                return { childMsg: &#39;子组件的数据&#39; } // 要传递的子组件数据
-            }
-        }
-    }
-})</code></pre>
-<p>然后，需要在子组件中使用<code>$emit()</code>方法触发自己绑定的事件，该方法的第一个参数为事件名称，之后若干参数为监听函数中的参数。当然，为了调用<code>$emit()</code>，在子组件中再定义一个自己的方法。</p>
-<pre><code class="js">var vue = new Vue({
-    methods: {
-        parentMethod() {
-            console.log(&#39;调用了父组件方法&#39;)
+        parentMethod(msg) { 
+            this.parentMsg = msg // 接收子组件调用时传递过来的数据
         }
     },
 
@@ -774,89 +599,51 @@ Vue.component(&#39;my-com&#39;, {
             },
             methods: {
                 childMethod() {
-                    // 触发自己绑定的自定义 @child-event 事件，从而调用了监听函数，也就是父组件的方法 parentMethod()
-                    this.$emit(&#39;child-event&#39;)
+                    // 触发自己绑定的自定义 @child-event 事件，从而调用了监听函数，也就是父组件的方法 parentMethod()，同时传递子组件数据
+                    // 注意，该方法返回组件本身，因此不要写到花括号中渲染，否则会出现死循环
+                    this.$emit(&#39;child-event&#39;, this.childMsg)
                 }
             }
         }
     }
 })</code></pre>
-<p>此时可以发现父组件方法<code>parentMethod()</code>已经被调用了，因此为了传递数据，只需要在<code>parentMethod()</code>中设置参数，在子组件调用时传递就可以了。</p>
-<pre><code class="js">var vue = new Vue({
-    data: {
-        parentMsg : &#39;&#39;
-    }
-    methods: {
-        parentMethod(msg) {
-            console.log(&#39;调用了父组件方法&#39;)
-            this.parentMsg = msg // 接收子组件调用时传递过来的数据
-        }
-    },
-
-    components: {
-        child: {
-            template: &#39;&lt;h1&gt;这是子组件啦{{ childMethod() }}&lt;/h1&gt;&#39;,
-            data() {
-                return { childMsg: &#39;子组件的数据&#39; }
-            },
-            methods: {
-                childMethod() {
-                    // 调用父组件的方法 parentMethod() 时同时传递子组件数据
-                    this.$emit(&#39;child-event&#39;, this.childMsg)
-                }
-            },
-        }
-    }
-})</code></pre>
-<h4 id="父组件访问子组件"><a href="#父组件访问子组件" class="headerlink" title="父组件访问子组件"></a>父组件访问子组件</h4><p>有些时候我们不需要组件的数据进行传递，而只是希望从父（子）组件中获取到子（父）组件中数据或方法直接使用。Vue 为此提供了专门的方式用来获取父子组件。</p>
-<p>如果希望在父组件中访问子组件，总共有两种方式。第一种是直接在父组件中使用<code>$children</code>数组，该数组保存了它所有的子组件，使用索引取出后即可直接访问子组件中的数据。</p>
+<h4 id="父组件访问子组件"><a href="#父组件访问子组件" class="headerlink" title="父组件访问子组件"></a>父组件访问子组件</h4><p>如果希望在父组件中直接访问子组件，总共有两种方式。第一种是直接在父组件中使用<code>$children</code>数组，该数组保存了它所有的子组件，使用索引取出后即可直接访问子组件中的数据。</p>
 <blockquote>
-<p>注意，无论是<code>$children</code>，还是接下来的<code>$refs</code>和<code>$parent</code>，它们必须要等到模板渲染完成，也就是生命周期函数<code>mounted()</code>之后才能被正确获取，因为这些组件元素是通过 DOM 获取的。否则的话，这些属性的值会为空。</p>
+<p>注意，<code>$children</code>和接下来的<code>$refs</code>必须要等到模板渲染完成时，也就是在<code>mounted()</code>之后的生命周期函数中才能被正确获取，因为这些组件元素来自于 DOM。</p>
 </blockquote>
-<pre><code class="html">&lt;div id=&quot;app&quot;&gt;
-    &lt;child&gt;&lt;/child&gt;
-&lt;/div&gt;</code></pre>
 <pre><code class="js">const vue = new Vue({
-    el: &#39;#app&#39;,
     mounted() {
         this.$children[0].childMethod() // =&gt; 子组件方法被调用了！
     },
 
     components: {
         child: {
-            template: &#39;&lt;div&gt;&lt;/div&gt;&#39;,
             methods: {
-                childMethod() {
-                    console.log(&#39;子组件方法被调用了！&#39;)
-                }
+                childMethod() { console.log(&#39;子组件方法被调用了！&#39;) }
             }
         }
     }
 })</code></pre>
 <p>但是由于该方式通过索引来获取组件，如果组件顺序发生改变就会影响代码执行，因此通常都会使用下面的第二种方式。</p>
-<p>第二种方式需要首先在子组件元素上添加<code>ref</code>属性，然后父组件就可以通过<code>$refs</code>对象获取到子组件了，该对象保存了所有定义了<code>ref</code>属性的元素。</p>
+<p>第二种方式需要在子组件元素上添加<code>ref</code>属性，然后父组件就可以通过<code>$refs</code>对象获取到子组件了，该对象保存了所有定义了<code>ref</code>属性的元素。</p>
 <pre><code class="html">&lt;div id=&quot;app&quot;&gt;
     &lt;child ref=&quot;childRef&quot;&gt;&lt;/child&gt;
 &lt;/div&gt;</code></pre>
 <pre><code class="js">const vue = new Vue({
-    el: &#39;#app&#39;,
     mounted() {
         this.$refs.childRef.childMethod() // =&gt; 子组件方法被调用了！
     },
 
     components: {
         child: {
-            template: &#39;&lt;div&gt;&lt;/div&gt;&#39;,
             methods: {
-                childMethod() {
-                    console.log(&#39;子组件方法被调用了！&#39;)
-                }
+                childMethod() { console.log(&#39;子组件方法被调用了！&#39;) }
             }
         }
     }
 })</code></pre>
-<h3 id="插槽"><a href="#插槽" class="headerlink" title="插槽"></a>插槽</h3><p>虽然同一个组件可以多次复用，但是这些组件可能会有细小的差别，如果因为这些差别再去定义几乎一致的不同组件，那么就太浪费了。为了解决这一问题，Vue 提供了插槽的概念，可以将组件中有差别的部分定义成一个插槽<code>&lt;slot&gt;</code>，然后在调用组件时提供这些差异内容就可以了。</p>
-<p>在下面的代码中，我们希望每个组件的最后一个元素有所不同，因此在注册组件时，将最后一个元素的位置设置为插槽。然后在调用组件时，传入想要的元素即可。</p>
+<h3 id="插槽"><a href="#插槽" class="headerlink" title="插槽"></a>插槽</h3><p>虽然同一个组件可以多次复用，但是这些组件可能会有细小的差别，如果因为这些差别再去定义几乎一致的不同组件，那么就太浪费了。为此，可以将组件中内容不同的部分定义成一个插槽<code>&lt;slot&gt;</code>，然后在调用组件时提供这些差异内容就可以了。</p>
+<p>在下面的代码中，每个组件的最后会被渲染成一个不同的元素。</p>
 <pre><code class="html">&lt;div id=&quot;app&quot;&gt;
     &lt;com&gt;&lt;button&gt;将插槽替换成按钮元素&lt;/button&gt;&lt;/com&gt;
     &lt;com&gt;&lt;strong&gt;将插槽替换成加粗元素&lt;/strong&gt;&lt;/com&gt;
@@ -869,89 +656,71 @@ Vue.component(&#39;my-com&#39;, {
         &lt;slot&gt;&lt;/slot&gt;
     &lt;/div&gt;
 &lt;/template&gt;</code></pre>
-<pre><code class="js">const vue = new Vue({
-    components: {
-        com: {
-            template: &#39;#comTpl&#39;
-        }
-    }
-})</code></pre>
 <p>在插槽中定义元素，可以为插槽设置一个默认值，如果调用组件时没有传入元素，那么会渲染为默认元素。</p>
 <pre><code class="html">&lt;div id=&quot;app&quot;&gt;
     &lt;com&gt;&lt;/com&gt;
-    &lt;!-- 最后一个元素为 &lt;button&gt;默认的按钮元素&lt;/button&gt; --&gt;
+    &lt;!-- 被渲染为：
+        &lt;h2&gt;这是一个组件啦&lt;/h2&gt;
+        &lt;button&gt;默认的按钮&lt;/button&gt;
+    --&gt;
 &lt;/div&gt;
 
-&lt;template id=&quot;childTpl&quot;&gt;
+&lt;template id=&quot;comTpl&quot;&gt;
     &lt;div&gt;
         &lt;h2&gt;这是一个组件啦&lt;/h2&gt;
-        &lt;slot&gt;&lt;button&gt;默认的按钮元素&lt;/button&gt;&lt;/slot&gt;
+        &lt;slot&gt;&lt;button&gt;默认的按钮&lt;/button&gt;&lt;/slot&gt;
     &lt;/div&gt;
 &lt;/template&gt;</code></pre>
-<h4 id="具名插槽"><a href="#具名插槽" class="headerlink" title="具名插槽"></a>具名插槽</h4><p>一个组件中也可以定义多个插槽，在调用组件时为不同的插槽传入不同的元素。但是要实现这样的功能，需要为插槽起个名字，这样 Vue 才能知道哪些元素对应哪个插槽。这些拥有名字的插槽被称为具名插槽。</p>
-<p>在下面的代码中，为导航栏组件定义了三个插槽，并且分别在<code>&lt;slot&gt;</code>上使用<code>name</code>属性为插槽定义名称：</p>
-<pre><code class="html">&lt;template id=&quot;comTpl&quot;&gt;
-    &lt;div class=&quot;navbar&quot;&gt;
+<h4 id="具名插槽"><a href="#具名插槽" class="headerlink" title="具名插槽"></a>具名插槽</h4><p>一个组件可以定义多个插槽，在调用组件时为不同的插槽传入不同的元素。不过首先需要先通过<code>&lt;slot&gt;</code>的<code>name</code>属性为插槽起个名字，这样 Vue 才能知道哪些元素对应哪个插槽。这些拥有名字的插槽被称为具名插槽，与之相对刚才没有<code>name</code>属性的插槽则称为匿名插槽。</p>
+<p>当调用插槽时，需要使用<code>v-slot</code>指令冒号后面的值设置其对应的插槽。注意，该指令只能用于组件或<code>&lt;template&gt;</code>元素上。注意，如果调用组件的同时定义了没有<code>v-slot</code>的内容，那么就会将其对应为匿名插槽。</p>
+<pre><code class="html">&lt;div id=&quot;app&quot;&gt;
+    &lt;com&gt;
+        &lt;!-- 传入对应插槽的内容 --&gt;
+        &lt;template v-slot:left&gt;&lt;span&gt;左侧内容&lt;/span&gt;&lt;/template&gt;
+        &lt;template v-slot:center&gt;&lt;span&gt;中间内容&lt;/span&gt;&lt;/template&gt;
+        &lt;template v-slot:right&gt;&lt;span&gt;右侧内容&lt;/span&gt;&lt;/template&gt;
+    &lt;/com&gt;
+&lt;/div&gt;
+
+&lt;template id=&quot;comTpl&quot;&gt;
+    &lt;div&gt;
+        &lt;!-- 预留的具名插槽 --&gt;
         &lt;slot name=&quot;left&quot;&gt;&lt;/slot&gt;
         &lt;slot name=&quot;center&quot;&gt;&lt;/slot&gt;
         &lt;slot name=&quot;right&quot;&gt;&lt;/slot&gt;
     &lt;/div&gt;
 &lt;/template&gt;</code></pre>
-<p>当调用插槽时，需要在元素上使用<code>v-slot</code>指令冒号后面的值（该指令的属性值稍后再用）设置其对应的插槽。注意，该指令只能用于组件或<code>&lt;template&gt;</code>上。</p>
-<pre><code class="html">&lt;div id=&quot;app&quot;&gt;
-    &lt;com&gt;
-        &lt;template v-slot:left&gt;&lt;span&gt;左侧内容&lt;/span&gt;&lt;/template&gt;
-        &lt;template v-slot:center&gt;&lt;span&gt;中间内容&lt;/span&gt;&lt;/template&gt;
-        &lt;template v-slot:right&gt;&lt;span&gt;右侧内容&lt;/span&gt;&lt;/template&gt;
-    &lt;/com&gt;
-&lt;/div&gt;</code></pre>
-<p>没有<code>name</code>名称的插槽，称为匿名插槽。如果调用组件时定义了没有<code>v-slot</code>指令的内容，那么就会将其对应为匿名插槽，如同本节开始时一样。</p>
 <p>具名插槽同样有语法糖形式，只需将<code>v-slot:</code>替换成一个<code>#</code>即可：</p>
+<pre><code class="html">&lt;template #left&gt;&lt;span&gt;左侧内容&lt;/span&gt;&lt;/template&gt;</code></pre>
+<h4 id="作用域插槽"><a href="#作用域插槽" class="headerlink" title="作用域插槽"></a>作用域插槽</h4><p>在讨论作用域插槽之前，需要先明确组件的作用域。首先，在父组件中调用子组件时，这里全部都是父组件作用域，因此即便是传入插槽的元素，也没法获取子组件数据。只有在子组件的模板中，才是子组件的作用域。</p>
 <pre><code class="html">&lt;div id=&quot;app&quot;&gt;
     &lt;com&gt;
-        &lt;template #left&gt;&lt;span&gt;左侧内容&lt;/span&gt;&lt;/template&gt;
-    &lt;/com&gt;
-&lt;/div&gt;</code></pre>
-<h4 id="作用域插槽"><a href="#作用域插槽" class="headerlink" title="作用域插槽"></a>作用域插槽</h4><p>在讨论作用域插槽之前，需要先明确一下 Vue 中作用域的问题。首先，在父组件中调用子组件时，子组件是没法获得自己数据的，即便是传入插槽的元素也不行。因为这整个位置都是父组件的作用域，而只有在子组件模板中才是子组件的作用域。</p>
-<pre><code class="html">&lt;div id=&quot;app&quot;&gt;
-    &lt;com&gt;
-        &lt;!-- 这里只能获取到父组件的数据，因此 childMsg 为空 --&gt;
+        &lt;!-- 父组件作用域，因此 childMsg 为空 --&gt;
         &lt;button&gt;{{ childMsg }}&lt;/button&gt;
     &lt;/com&gt;
 &lt;/div&gt;
 
 &lt;template id=&quot;comTpl&quot;&gt;
     &lt;div&gt;
-        &lt;slot&gt;&lt;/slot&gt;
-        &lt;!-- 这里可以正常获取 childMsg --&gt;
-        {{ childMsg }}
+        &lt;!-- 子组件作用域，可以正常获取 childMsg --&gt;
+        &lt;slot&gt;&lt;/slot&gt; {{ childMsg }}
     &lt;/div&gt;
 &lt;/template&gt;</code></pre>
-<pre><code class="js">const vue = new Vue({
-    components: {
-        com: {
-            template: &#39;#comTpl&#39;,
-            data() {
-                return { childMsg: &#39;子组件的数据&#39; }
-            }
-        }
-    }
-})</code></pre>
-<p>要解决这个问题，需要先在子组件模板中为插槽<code>&lt;slot&gt;</code>绑定一个属性，属性名可以自定义，属性值则是要传递的数据。由于这里是子组件的作用域，因此可以访问到<code>childMsg</code>数据。</p>
-<pre><code class="html">&lt;template id=&quot;comTpl&quot;&gt;
+<p>如果希望在调用插槽时可以获取子组件数据，除了使用组件通信外，也可以使用作用域插槽。</p>
+<p>首先为插槽<code>&lt;slot&gt;</code>绑定一个自定义属性，其属性值则是要传递的数据。然后，在调用组件时通过<code>v-slot</code>指令的属性值，可以获取到所有作用域插槽传递的数据。</p>
+<pre><code class="html">&lt;div id=&quot;app&quot;&gt;
+    &lt;com v-slot=&quot;slotProps&quot;&gt;
+        &lt;button&gt;{{ slotProps.msg }}&lt;/button&gt;
+    &lt;/com&gt;
+&lt;/div&gt;
+
+&lt;template id=&quot;comTpl&quot;&gt;
     &lt;div&gt;
         &lt;!-- 子组件模板中可以访问子组件数据，属性名可以自定义 --&gt;
         &lt;slot :msg=&quot;childMsg&quot;&gt;&lt;/slot&gt;
     &lt;/div&gt;
 &lt;/template&gt;</code></pre>
-<p>然后，在调用组件时为组件添加<code>v-slot</code>指令，它的属性值为一个对象（同样可以自定义名称），包含了所有插槽传递数据的名称（如上文中的<code>msg</code>）。通过该对象访问这些名称，就可以获取到子组件中的数据。</p>
-<pre><code class="html">&lt;div id=&quot;app&quot;&gt;
-    &lt;com v-slot=&quot;slotProps&quot;&gt;
-        &lt;button&gt;{{ slotProps.msg }}&lt;/button&gt;
-        &lt;!-- &lt;button&gt;子组件的数据&lt;/button&gt; --&gt;
-    &lt;/com&gt;
-&lt;/div&gt;</code></pre>
-<p>如果匿名插槽与作用域插槽同时使用，还希望使用语法糖形式，那么必须要添加匿名插槽的名称<code>default</code>，不能直接省略。</p>
+<p>如果匿名插槽与作用域插槽同时使用时，还希望使用语法糖形式，那么必须要为匿名插槽添加名称<code>default</code>，不能直接省略。</p>
 <pre><code class="html">&lt;div id=&quot;app&quot;&gt;
     &lt;com #default=&quot;slotProps&quot;&gt;
         &lt;button&gt;{{ slotProps.msg }}&lt;/button&gt;
@@ -976,335 +745,150 @@ Vue.component(&#39;my-com&#39;, {
         login: { template: &#39;&lt;h1&gt;登录组件&lt;/h1&gt;&#39; }
     }
 })</code></pre>
-<p>不过注意，如果此时为组件添加生命周期函数<code>created()</code>和<code>destroy()</code>的话，会发现切换组件时它们会一直被创建和销毁。这无疑是比较影响性能的。如果希望它们可以被缓存下来，可以在组件外侧包裹一层<code>&lt;keep-alive&gt;</code>。</p>
+<p>不过注意，如果此时为组件添加生命周期函数<code>created()</code>和<code>destroy()</code>的话，会发现切换组件时它们会一直被创建和销毁，这无疑是比较影响性能的。如果希望它们可以被缓存下来，可以在组件外侧包裹一层<code>&lt;keep-alive&gt;</code>。</p>
 <pre><code class="html">&lt;keep-alive&gt;
     &lt;component :is=&quot;comName&quot;&gt;&lt;/component&gt;
 &lt;/keep-alive&gt;</code></pre>
-<h3 id="单文件组件"><a href="#单文件组件" class="headerlink" title="单文件组件"></a>单文件组件</h3><p>之前我们均是使用<code>Vue.component()</code>定义全局组件，或者使用<code>components</code>属性定义局部组件，然后将组件相关的数据、模板写到对象属性中。但是随着项目变得复杂，这种方式定义的组件阅读起来会非常的麻烦。</p>
-<p>因此，Vue 提供了一种单文件组件的方式来管理组件，可以将一个组件所有的模板、脚本和样式抽离到一个单独的<code>.vue</code>文件中管理。不过，此时必须要将组件作为一个模块导入才可以使用，为此，则必须使用<a href="/posts/1zcig0yl.html">webpack</a>来提供模块化支持。</p>
-<pre><code class="html">&lt;!-- app.vue --&gt;
-&lt;template&gt;
-    &lt;div&gt;{{ msg }}&lt;/div&gt;
-&lt;/template&gt;
-
-&lt;script&gt;
-    export default {
-        data() {
-            return { msg: &#39;你好呀&#39; }
-        }
-    }
-&lt;/script&gt;
-
-&lt;style&gt;
-    div {
-        background-color: #66ccff;
-    }
-&lt;/style&gt;</code></pre>
-<p>虽然通常情况下我们都是使用<a href="#Vue-CLI">Vue-CLI</a>来直接搭建带有 webpack 的 Vue 项目，但是也可以安装<a href="https://vue-loader.vuejs.org/zh/" target="_blank" rel="noopener">Vue Loader</a>来手动配置。</p>
-<pre><code class="powershell">npm install vue # 安装 vue
-npm install webpack webpack-cli --save-dev # 安装 webpack
-npm install -D vue-loader vue-template-compiler # 安装 vue-loader</code></pre>
-<blockquote>
-<p>如果希望组件的<code>&lt;style&gt;</code>生效，还必须安装<a href="/posts/1zcig0yl.html#样式文件">渲染样式</a>的 loader。</p>
-</blockquote>
-<pre><code class="js">/* webpack.config.js */
-const { VueLoaderPlugin } = require(&#39;vue-loader&#39;)
-
-module.exports = {
-    module: {
-        rules: [
-            {
-                test: /\.vue$/,
-                loader: &#39;vue-loader&#39;
-            },
-            {
-                test: /\.css$/,
-                use: [&#39;style-loader&#39;, &#39;css-loader&#39;]
-            }
-        ]
-    },
-    plugins: [
-        new VueLoaderPlugin() // 请确保引入这个插件！
-    ]
-}</code></pre>
-<p>这样就可以将<code>.vue</code>文件直接作为模块导入，并作为组件来使用了：</p>
-<pre><code class="js">import Vue from &#39;vue&#39;
-import app from &#39;./vue/app.vue&#39; // 导入根组件模块
-// CommonJS 导入方式，注意 Vue 对象保存在 default 属性中
-// const Vue = require(&#39;vue&#39;).default
-
-new Vue({
-    el: &#39;#app&#39;,
-    template: &#39;&lt;app&gt;&lt;/app&gt;&#39;, // 会覆盖 index.html 中的 &lt;div id=&quot;app&quot;&gt;&lt;/div&gt; 作为根组件模板
-    components: { app } // 根组件
-})</code></pre>
-<pre><code class="html">&lt;body&gt;
-    &lt;div id=&quot;app&quot;&gt;&lt;/div&gt;
-    &lt;script src=&quot;./dist/main.js&quot;&gt;&lt;/script&gt;
-&lt;/body&gt;</code></pre>
-<p>与之前将根组件数据直接写在<code>Vue()</code>实例中不同的是，这里把根组件也作为一个子组件抽离到了外部。此时<code>index.html</code>页面上只有一个<code>#app</code>元素，而没有其它组件或数据。当 Vue 渲染页面时，会使用<code>template</code>属性中的<code>&lt;app&gt;&lt;/app&gt;</code>替换掉页面上的<code>#app</code>元素，又因为<code>&lt;app&gt;</code>本身是一个组件，因此会找到<code>app.vue</code>中的模板内容<code>&lt;div&gt;{ msg }&lt;/div&gt;</code>来替换掉<code>&lt;app&gt;&lt;/app&gt;</code>。</p>
-<p>注意，此时浏览器可能会报<code>You are using the runtime-only build of Vue...</code>这样的错误，这是因为 Vue 包含多个不同的版本，而默认的版本是不包含编译器的。因此如果<code>Vue()</code>实例中使用了模板，那么 Vue 就无法在运行时将其编译。要修改成完整版，需要在 webpack 中添加一项配置：</p>
-<pre><code class="js">module.exports = {
-    mode: &#39;development&#39;, // 否则 webpack 会隐藏错误信息
-    resolve: {
-        alias: {
-            vue$: &#39;vue/dist/vue.esm.js&#39;
-        }
-    }
-}</code></pre>
-<blockquote>
-<p>如果没有报错信息，但是也没有出现效果，则需要在<code>webpack.config.js</code>中配置<code>mode: &#39;development&#39;</code>，否则 webpack 会将错误信息隐藏。</p>
-</blockquote>
-<p>之所以出现这样的情况，是因为 Vue 将版本分为了两种：仅运行时版本（runtime-only）与运行时 + 编译器版本（runtime-only + compiler）。</p>
-<p>要了解它们的区别，首先要简单了解 Vue 运行时的工作原理，注意接下来的步骤均是工作在<strong>运行时</strong>，也就是浏览器运行代码时，而非 webpack 编译时。当创建<code>Vue()</code>实例时，Vue 首先会将实例中<code>template</code>属性的值（也就是模板）进行编译成 AST（Abstract Syntax Tree，抽象语法树），这是一个编译原理的概念，不作展开讨论，有兴趣可以看看<a href="https://segmentfault.com/a/1190000016231512" target="_blank" rel="noopener">这篇文章</a>。</p>
-<p>然后 Vue 会将 AST 传入一个渲染函数，通过渲染函数来创建虚拟 DOM。该函数可以通过实例中的<code>render()</code>的参数来手动调用，它接收诸如元素名称、元素属性、元素内容等参数，从而根据这些参数创建出虚拟 DOM。最后，Vue 才会将虚拟 DOM 转换成真实 DOM，并根据<code>el</code>属性找到页面上对应的元素，然后使用 DOM 的内容将其替换，从而呈现到页面上。</p>
-<p>而这两个版本的区别，就在于运行时将模板编译为 AST 这一步，也就是说，runtime-only 版本没有这一步，而是直接从渲染函数开始的。这样做的原因是为了减少打包后的代码体积，但是缺少了编译模板的功能。</p>
-<p>既然不使用模板，那么必须另寻他法来解决编译的问题。好在，渲染函数可以直接<strong>传入一个组件</strong>，Vue 可以通过组件生成虚拟 DOM，从而完成剩下的工作。因此，我们可以将之前创建实例的代码稍作修改（这也基本上是脚手架中自动生成的代码了）：</p>
-<pre><code class="js">new Vue({
-    el: &#39;#app&#39;, // 设置要替换的元素，脚手架中使用了 $mount(&#39;#app&#39;)，效果相同
-    // 直接将组件传入，渲染函数可以通过组件生成虚拟 DOM
-    render: function(h) {
-        // h 为渲染函数，也可以称为 createElement()
-        return h(app) // 返回值为虚拟 DOM
-    }
-})</code></pre>
-<p>这时你可能有一个疑问，组件中不是也有<code>&lt;template&gt;</code>模板，那么 Vue 是怎么处理的呢？原因是，这些模板<strong>早在 webpack 编译时就已经被处理成渲染函数了</strong>，也就是说，它们<strong>没有发生在运行时</strong>。在刚才安装 vue-loader 时，我们还安装了另外一个 vue-template-compiler，它的作用就是在编译时将模板处理成渲染函数，这样就不需要运行时再次处理了。并且，可以看到参数中使用了<code>-D</code>即开发时依赖，也就证明了它们是没有工作在运行时的。</p>
-<pre><code class="powershell">npm install -D vue-loader vue-template-compiler # 安装 vue-loader</code></pre>
-<h2 id="Vue-CLI"><a href="#Vue-CLI" class="headerlink" title="Vue-CLI"></a>Vue-CLI</h2><p><a href="https://cli.vuejs.org/zh/guide/" target="_blank" rel="noopener">Vue-CLI</a>（Vue Command-Line Interface，即 Vue 命令行工具，俗称脚手架）是一个用于快速搭建 Vue 项目开发环境的工具，使用它可以运行 Vue 的命令行指令，从而帮助我们快速生成目录结构、配置 webpack 等。</p>
-<pre><code class="powershell">npm install -g @vue/cli</code></pre>
-<p>然后，使用<code>vue create</code>命令可以创建一个项目：</p>
-<pre><code class="powershell">vue create hello-world</code></pre>
-<p>此时终端会提示<code>Please pick a preset</code>，即要求选择一个预设，选择<code>Manually select features</code>即手动配置后，按照顺序可以进行以下配置：</p>
-<ul>
-<li>选择项目支持的特性，如 Babel、路由、vuex 等</li>
-<li>对于一些特性是否生成独立的配置文件，还是保存到<code>package.json</code>中</li>
-<li>是否将配置保存为一个预设，这样在创建项目时就会多出一个选项</li>
-</ul>
-<p>选择完成后，便会生成一个如下的项目目录：</p>
-<pre><code class="powershell">hello-world
-├─ .gitignore
-├─ README.md
-├─ babel.config.js              # bebel 的配置文件
-├─ node_modules
-├─ package-lock.json
-├─ package.json
-├─ public                       # 静态资源目录，所有的内容会被原封不动打包到 dist 目录中
-│    ├─ favicon.ico
-│    └─ index.html              # htmlWebpackPlugin 载入的模板，以此创建 index.html 文件
-└─ src                          # 源代码目录
-       ├─ App.vue               # 根组件，可以自行修改
-       ├─ assets                # 资源文件，如图片、样式文件等
-       │    └─ logo.png
-       ├─ components            # 子组件目录
-       │    └─ HelloWorld.vue
-       └─ main.js               # 项目入口</code></pre>
-<p>使用<code>vue ui</code>命令可以创建一个图形化界面的项目管理工具，如果希望修改配置、管理依赖等，也可以在这里更改。</p>
-<h2 id="前端路由"><a href="#前端路由" class="headerlink" title="前端路由"></a>前端路由</h2><p>路由（route）在网站开发中指的是 URL 和页面之间的对应关系。在早期的网站开发中，服务器通常需要使用诸如 JSP、PHP 等技术，使用这些技术的页面除了 HTML 代码以外，还需要内嵌一些 Java 或 PHP 等后端代码。当用户请求一个 URL 之后，服务器会根据 URL 找到对应的页面，并通过后端代码查询数据库，然后将拼接好数据的页面返回给用户。可以看到，此时 URL 和页面之间的对应关系是由后端处理的，而这样的方式被称为<strong>后端路由</strong>。并且，由于返回给用户的是渲染之后的静态页面，因此对于 SEO 是比较友好的。但是，这种方式的缺点也很明显，因为页面中 HTML 和后端代码耦合在一起，使得页面维护变得非常麻烦，修改一个页面需要前端和后端人员一起配合才能完成。</p>
-<p><img src="https://pic.downk.cc/item/5e66588e98271cb2b83caa14.jpg" alt=""></p>
-<p>后来，随着 Ajax 技术的普及，我们将之前的页面拆分成了两个部分：静态资源（不包含数据的 HTML、CSS、JS）和数据接口。当用户请求一个 URL 之后，依然是从服务器找到对应的 HTML 页面，但是此时的 HTML 页面只是一个骨架，并没有任何实际数据。但是，HTML 中会包含 JS 代码，用来向数据接口发送请求，然后再通过操作 DOM 的方式，将数据拼接到页面上，从而完成页面渲染。当然，为了方便操作 DOM，HTML 通常会包含模板引擎代码，这样页面只需要加载模板引擎，就可以快速地将模板引擎代码替换成获取的数据了。此时前后端责任更加清晰，开发、部署互不影响，而这样的开发模式称为「前后端分离」。</p>
-<p><img src="https://pic.downk.cc/item/5e66598d98271cb2b83d3e56.jpg" alt=""></p>
-<p>随之而来的下一个阶段则是<strong>单页面应用</strong>（SPA，Single Page Application），与之前的区别在于，它将多个 URL 对应的多套静态资源合并成了一个，也就是说，用户发送任何一个 URL 请求，返回的都只有一套 HTML + CSS + JS。然后，浏览器会监听 URL 变化，由 JavaScript 根据用户请求的 URL 不同，从这些资源中找到对应的部分（组件）进行渲染，但是不需要再向服务器请求静态资源了（接口数据还是得正常请求）。可见，此时的 URL 与页面（组件）的映射关系是由前端 JavaScript 维护的，因此这样的方式被称为<strong>前端路由</strong>。单页面应用的优点在于，它仅在用户首次访问时需要稍长的加载时间，但是之后切换页面不需要再次发送请求，这样增加了用户体验，也减轻了服务器压力。</p>
-<p><img src="https://pic.downk.cc/item/5e665cb198271cb2b83ffbf1.jpg" alt=""></p>
-<p>此时，URL 只是一个页面的标识，并不需要真正发送请求。因此，我们必须通过一些方式使得 URL 发生改变，但是又不发送请求。</p>
-<p>第一种方式是修改 URL 中的 hash 部分（<code>#</code>之后），然后通过监听<code>hashchange</code>事件来重新渲染页面。</p>
-<p>第二种方式是通过 HTML5 新增的<a href="/posts/gjqbkyw3.html#History">History</a>对象中的方法来修改 URL，这些方法也不会导致重新发送请求。但如果用户刷新了页面，那么浏览器还是会将其当作正常的 URL 向服务端发送请求。</p>
+<h2 id="前端路由"><a href="#前端路由" class="headerlink" title="前端路由"></a>前端路由</h2><p>前端路由指的是在客户端维护 URL 和页面之间的对应关系，无论用户向服务器请求什么 URL，返回的都只有一套 HTML + CSS + JS，这样的技术称为<abbr title="SPA，Single Page Application"><strong>单页面应用</strong></abbr>。JavaScript 通过监听 URL 的变化，从这些资源中找到对应的部分（组件）进行渲染，但是不需要再向服务器请求静态资源了（接口动态数据还是得正常请求）。单页面应用的优点在于，它仅在用户首次访问时需要稍长的加载时间，但是之后切换页面不需要再次发送请求，这样增加了用户体验，也减轻了服务器压力。</p>
+<p>此时，URL 只是一个页面的标识，并不需要真正发送请求。因此，我们必须通过一些方式使得 URL 发生改变，但是又不发送请求。第一种方式是修改 URL 中的 hash 部分（<code>#</code>之后），然后通过监听<code>hashchange</code>事件来重新渲染页面。</p>
+<p>第二种方式是通过 HTML5 新增的<a href="/posts/gjqbkyw3.html#History">History</a>对象中的方法来修改 URL，这些方法也不会导致重新发送请求。但如果用户刷新了页面，那么浏览器还是会将其当作正常的 URL 向服务端发送请求，因此需要后端配合。</p>
 <p>而 Vue 通过<a href="https://router.vuejs.org/zh/installation.html" target="_blank" rel="noopener">Vue-Router</a>扩展提供了对前端路由的支持，它的实现原理也是上述两种方式。</p>
-<h3 id="安装与配置"><a href="#安装与配置" class="headerlink" title="安装与配置"></a>安装与配置</h3><p>安装 Vue-Router 可以使用浏览器端和模块两种方式：</p>
-<pre><code class="html">&lt;script src=&quot;https://cdn.jsdelivr.net/npm/vue/dist/vue.js&quot;&gt;&lt;/script&gt;
-&lt;script src=&quot;https://unpkg.com/vue-router/dist/vue-router.js&quot;&gt;&lt;/script&gt;</code></pre>
-<pre><code class="powershell">npm install vue-router</code></pre>
-<p>为了目录更加清晰，我们通常会在<code>src</code>目录中新建一个<code>router</code>文件夹，再创建一个<code>index.js</code>文件（导入<code>router</code>文件夹时会自动寻找该文件），将创建路由对象的部分放到里面，而入口文件只需要导入该模块即可。</p>
-<p>接下来，需要实例化一个路由对象，并通过<code>Vue()</code>实例挂载。如果使用了模块引用，则还需要导入路由模块，并通过<code>Vue.use()</code>加载。</p>
-<pre><code class="js">/* index.js */
-import Vue from &#39;vue&#39;
-import VueRouter from &#39;vue-router&#39;
-import Home from &#39;../components/Home&#39;
-import About from &#39;../components/About&#39;
-
-Vue.use(VueRouter) // 模块导入 VueRouter 的话必须加载插件
-
-export default new VueRouter({
-    // 将模块对象导出，供 main.js 调用
-    routes: [
-        // 配置路由，即 URL 和组件的对应关系
-    ]
-})
-
-/* main.js */
-import router from &#39;./router&#39; // 会自动寻找目录下的 index.js 文件
-
-new Vue({
-    render: h =&gt; h(App),
-    router: router // 挂载路由模块
-}).$mount(&#39;#app&#39;)</code></pre>
-<p>当引入路由模块后，会发现 URL 自动变成了<code>http://localhost/#/</code>的形式，最后一个<code>/</code>的后面也就是接下来要自己定义的 Hash 值。</p>
-<h3 id="配置路由规则"><a href="#配置路由规则" class="headerlink" title="配置路由规则"></a>配置路由规则</h3><p>接下来，需要在<code>VueRouter()</code>实例中的<code>routes</code>属性中配置具体的路由规则。该属性是一个对象数组，每个对象表示一条匹配规则。对象的第一个属性<code>path</code>表示匹配的路径，第二个属性<code>component</code>对应的组件，它必须为一个<strong>组件对象</strong>。</p>
-<pre><code class="js">import VueRouter from &#39;vue-router&#39;
-import Home from &#39;../components/Home&#39;
-import About from &#39;../components/About&#39;
-
-export default new VueRouter({
-    routes: [
-        { path: &#39;/home&#39;, component: Home },
-        { path: &#39;/about&#39;, component: About }
-    ]
-})</code></pre>
-<p>最后在页面上使用<code>&lt;router-view&gt;</code>作为占位符，一旦找到匹配的路由，就会将该元素替换为对应的组件。这时将 URL 修改成<code>http://localhost/#/home</code>就可以跳转到首页组件了。当然让用户修改 URL 肯定是不现实的，为此 Vue 提供了<code>&lt;router-link&gt;</code>元素，将要跳转的路由添加到<code>to</code>属性中，Vue 会自动将该元素渲染为仅改变 Hash 值的<code>&lt;a&gt;</code>标签。</p>
+<p>要使用 Vue-Router，需要另外引入一个单独的文件：</p>
+<pre><code class="html">&lt;script src=&quot;https://unpkg.com/vue-router/dist/vue-router.js&quot;&gt;&lt;/script&gt;</code></pre>
+<p>然后实例化一个<code>VueRouter()</code>路由对象，用来配置路由规则，并通过<code>Vue()</code>实例挂载。接下来在页面上使用<code>&lt;router-view&gt;</code>作为占位符，一旦找到匹配的路由，就会将该元素替换为对应的组件。这时将 URL 修改成<code>http://localhost/#/home</code>就可以跳转到首页组件了，当然让用户修改 URL 肯定是不现实的，为此 Vue 提供了<code>&lt;router-link&gt;</code>元素，将要跳转的路由添加到<code>to</code>属性中，Vue 会自动将该元素渲染为仅改变 Hash 值的<code>&lt;a&gt;</code>标签。</p>
 <blockquote>
 <p>注意，<code>&lt;router-view&gt;</code>和<code>&lt;router-link&gt;</code>本身也是两个全局组件。</p>
 </blockquote>
-<pre><code class="html">&lt;!-- App.vue --&gt;
-&lt;template&gt;
-    &lt;div id=&quot;app&quot;&gt;
-        &lt;router-link to=&quot;home&quot;&gt;首页&lt;/router-link&gt;
-        &lt;router-link to=&quot;about&quot;&gt;关于&lt;/router-link&gt;
-        &lt;router-view&gt;&lt;/router-view&gt;
-    &lt;/div&gt;
-&lt;/template&gt;</code></pre>
-<p>如果希望<code>&lt;router-link&gt;</code>渲染为其它的元素，而非<code>&lt;a&gt;</code>元素，那么为其添加一个<code>tag</code>属性即可。注意，无论渲染为任何元素，它都是可以点击跳转的。</p>
+<pre><code class="html">&lt;div id=&quot;app&quot;&gt;
+    &lt;router-link to=&quot;/home&quot;&gt;首页&lt;/router-link&gt;
+    &lt;router-link to=&quot;/about&quot;&gt;关于&lt;/router-link&gt;
+    &lt;router-view&gt;&lt;/router-view&gt;
+&lt;/div&gt;</code></pre>
+<pre><code class="js">// 注册两个组件对象
+const Home = Vue.component(&#39;Home&#39;, {
+    template: &#39;&lt;h1&gt;主页&lt;/h1&gt;&#39;
+})
+const About = Vue.component(&#39;About&#39;, {
+    template: &#39;&lt;h1&gt;关于&lt;/h1&gt;&#39;
+})
+
+// 实例化路由对象，通过 Vue() 实例挂载
+const router = new VueRouter({
+    // 配置路由，即路径和组件的对应关系
+    routes: [ 
+        // 每个对象表示一条路由规则，path 为路径，component 为组件对象
+        { path: &#39;/home&#39;, component: Home },
+        { path: &#39;/about&#39;, component: About }
+    ]
+})
+
+const vue = new Vue({
+    el: &#39;#app&#39;,
+    router: router // 挂载路由对象
+})</code></pre>
+<p>如果希望<code>&lt;router-link&gt;</code>渲染为其它的元素，那么为其添加一个<code>tag</code>属性即可。注意，无论渲染为任何元素，它都是可以点击跳转的。</p>
 <pre><code class="html">&lt;!-- 会渲染为一个 &lt;button&gt; 元素 --&gt;
 &lt;router-link to=&quot;home&quot; tag=&quot;button&quot;&gt;首页&lt;/router-link&gt;</code></pre>
 <h3 id="重定向"><a href="#重定向" class="headerlink" title="重定向"></a>重定向</h3><p>将路由规则对象中的<code>component</code>替换为<code>redirect</code>，可以使该路由重定向到另外的路由：</p>
-<pre><code class="js">var myRouter = new VueRouter({
+<pre><code class="js">const router = new VueRouter({
     routes: [
-        // 当访问根路径时，重定向到首页
-        { path: &#39;/&#39;, redirect: &#39;/home&#39; },
+        { path: &#39;/&#39;, redirect: &#39;/home&#39; }, // 访问根路径时，重定向到首页
         { path: &#39;/home&#39;, component: Home },
         { path: &#39;/about&#39;, component: About }
     ]
 })</code></pre>
-<h3 id="History-模式"><a href="#History-模式" class="headerlink" title="History 模式"></a>History 模式</h3><p>如果要使用 HTML5 中<code>History</code>方式来实现前端路由，以去掉 URL 中的<code>#</code>，只需设置一个<code>mode</code>属性即可：</p>
-<pre><code class="js">var myRouter = new VueRouter({
+<h3 id="History-模式"><a href="#History-模式" class="headerlink" title="History 模式"></a>History 模式</h3><p>使用<code>mode</code>属性可以用<code>History</code>方式实现前端路由，从而去掉 URL 中的<code>#</code>，但是该方式需要后端配合实现。</p>
+<pre><code class="js">const router = new VueRouter({
     mode: &#39;history&#39;, // 设置为 History 实现前端路由
     routes: []
 })</code></pre>
-<h3 id="取消历史记录"><a href="#取消历史记录" class="headerlink" title="取消历史记录"></a>取消历史记录</h3><p>默认情况下，点击浏览器的后退按钮是可以返回上一条历史记录的，如果希望直接将当前记录替换，而非压入一条新记录，则可以为<code>&lt;router-link&gt;</code>添加一个<code>replace</code>属性。</p>
-<pre><code class="html">&lt;router-link to=&quot;home&quot; replace&gt;首页&lt;/router-link&gt;
-&lt;router-link to=&quot;about&quot; replace&gt;关于&lt;/router-link&gt;</code></pre>
-<h3 id="当前链接样式"><a href="#当前链接样式" class="headerlink" title="当前链接样式"></a>当前链接样式</h3><p>对于当前选中的链接，Vue 会自动默认添加一个<code>.router-link-active</code>类，通过它可以设置当前选中链接的样式。如果要修改这个类名，在路由实例中设置<code>linkActiveClass</code>属性即可：</p>
-<pre><code class="js">var myRouter = new VueRouter({
+<h3 id="取消历史记录"><a href="#取消历史记录" class="headerlink" title="取消历史记录"></a>取消历史记录</h3><p>默认情况下，点击浏览器的后退按钮是可以返回上一条历史记录的，为<code>&lt;router-link&gt;</code>添加<code>replace</code>属性则可以直接将当前记录替换，而非压入一条新记录。</p>
+<pre><code class="html">&lt;router-link to=&quot;/home&quot; replace&gt;首页&lt;/router-link&gt;
+&lt;router-link to=&quot;/about&quot; replace&gt;关于&lt;/router-link&gt;</code></pre>
+<h3 id="当前链接样式"><a href="#当前链接样式" class="headerlink" title="当前链接样式"></a>当前链接样式</h3><p>当前选中的链接会自动添加<code>.router-link-active</code>类，通过它可以设置当前链接的样式。在路由实例中设置<code>linkActiveClass</code>属性可以修改这个类名。</p>
+<pre><code class="js">const router = new VueRouter({
     routes: [],
     linkActiveClass: &#39;active&#39; // 修改默认的选中类
 })</code></pre>
-<h3 id="编程式导航"><a href="#编程式导航" class="headerlink" title="编程式导航"></a>编程式导航</h3><p>除了使用<code>&lt;router-link&gt;</code>创建标签来定义导航链接，也可以借助<code>Vue</code>实例内部提供的<code>$router</code>调用实例方法，通过编写代码来实现跳转。</p>
-<p>在下面的代码中，通过两个按钮的点击事件来实现跳转。</p>
-<pre><code class="html">&lt;button @click=&quot;goIndex&quot;&gt;首页&lt;/button&gt; &lt;button @click=&quot;goAbout&quot;&gt;关于&lt;/button&gt;</code></pre>
-<pre><code class="js">export default {
-    name: &#39;App&#39;,
+<h3 id="编程式导航"><a href="#编程式导航" class="headerlink" title="编程式导航"></a>编程式导航</h3><p>除了使用<code>&lt;router-link&gt;</code>创建标签来定义导航链接，也可以使用<code>$router</code>调用方法实现跳转，它指代的是<code>VueRouter()</code>实例对象。</p>
+<pre><code class="html">&lt;button @click=&quot;goIndex&quot;&gt;首页&lt;/button&gt;
+&lt;button @click=&quot;goAbout&quot;&gt;关于&lt;/button&gt;</code></pre>
+<pre><code class="js">const vue = new Vue({
     methods: {
         goIndex() {
-            this.$router.push(&#39;/home&#39;).catch(err =&gt; {}) // 跳转到 /home
-            this.$router.replace(&#39;/home&#39;).catch(err =&gt; {}) // 不添加新的历史记录，而是直接替换
-            this.$router.go(-1) // 跳转到某个历史记录，如果不存在则无效
+            // 跳转到 /home
+            this.$router.push(&#39;/home&#39;).catch(err =&gt; {}) 
+            // 不添加新的历史记录，而是直接替换
+            this.$router.replace(&#39;/home&#39;).catch(err =&gt; {}) 
+            // 跳转到某个历史记录，如果不存在则无效
+            this.$router.go(-1)
         },
         goAbout() {
             this.$router.push(&#39;/about&#39;).catch(err =&gt; {})
         }
     }
-}</code></pre>
-<p>注意对于<code>push()</code>和<code>replace()</code>两个方法来说，如果当前已经是该组件，那么重复跳转会导致<code>NavigationDuplicated</code>错误。好在它们均返回<code>Promise</code>对象，使用<code>catch()</code>可以捕获异常（它们的第二个和第三个参数其实是跳转成功和失败的回调函数，可以使用<code>then()</code>和<code>catch()</code>替代）。</p>
-<h3 id="路由懒加载"><a href="#路由懒加载" class="headerlink" title="路由懒加载"></a>路由懒加载</h3><p>随着业务代码越来越多，如果当用户第一次打开时就将所有页面对应的组件全部载入，可能速度会非常慢，影响用户体验。为此 Vue 提供了路由懒加载，它可以将原本打包成一个文件的业务代码分成多个文件，每个路由对应其中一个，当用户真正跳转到这个页面时，对应的组件文件才会被下载。</p>
-<p>要实现路由懒加载，只需将原本组件对象的位置，替换成一个箭头函数即可：</p>
-<pre><code class="js">/* router/index.js */
-const Home = () =&gt; import(&#39;../components/Home&#39;)
-const About = () =&gt; import(&#39;../components/About&#39;)
-
-export default new VueRouter({
-    routes: [
-        { path: &#39;/home&#39;, component: Home },
-        { path: &#39;/about&#39;, component: About }
-    ]
 })</code></pre>
-<h3 id="嵌套路由"><a href="#嵌套路由" class="headerlink" title="嵌套路由"></a>嵌套路由</h3><p>Vue 支持在路由下继续定义子路由。首先，需要在路由规则对象中添加<code>children</code>属性，以配置二级路由规则。注意子路由的<code>path</code>不要添加<code>/</code>，否则表示根路由，会导致路由拼接错误。</p>
-<pre><code class="js">/* router/index.js */
-const Home = () =&gt; import(&#39;../components/Home&#39;)
-const HomeNews = () =&gt; import(&#39;../components/HomeNews&#39;)
-const HomeMessage = () =&gt; import(&#39;../components/HomeMessage&#39;)
-// 注意两个子路由模块不要忘记定义，这里就不写了
-
-export default new VueRouter({
+<p>注意对于<code>push()</code>和<code>replace()</code>两个方法来说，如果当前已经是该组件，那么重复跳转会导致<code>NavigationDuplicated</code>错误，好在它们均返回<code>Promise</code>对象，可以用于捕获异常。</p>
+<h3 id="嵌套路由"><a href="#嵌套路由" class="headerlink" title="嵌套路由"></a>嵌套路由</h3><p>Vue 支持在路由下继续定义子路由。</p>
+<pre><code class="js">const router = new VueRouter({
     routes: [
         {
             path: &#39;/home&#39;,
             component: Home,
+            // 子路由规则
             children: [
-                // 子路由规则，为首页添加了两个路由，新闻和消息
-                { path: &#39;&#39;, redirect: &#39;news&#39; }, // 设置重定向，默认显示新闻
-                { path: &#39;news&#39;, component: HomeNews }, // path 不要加 /
+                // 注意子路由的 path不要添加 /，否则表示根路由，会导致路由拼接错误
+                { path: &#39;news&#39;, component: HomeNews }, 
                 { path: &#39;message&#39;, component: HomeMessage }
             ]
         }
     ]
 })</code></pre>
-<p>然后，在父级路由的模板中设置<code>&lt;router-link&gt;</code>和<code>&lt;router-view&gt;</code>。注意<code>&lt;router-link&gt;</code>里的<code>to</code>属性要定义完整的路径，因为它无法识别当前是跟路由还是子路由。</p>
-<pre><code class="html">&lt;!-- Home.vue --&gt;
-&lt;template&gt;
-    &lt;div&gt;
-        &lt;h1&gt;这里是 home 组件啦&lt;/h1&gt;
-        &lt;router-link to=&quot;/home/news&quot;&gt;新闻&lt;/router-link&gt;
-        &lt;router-link to=&quot;/home/message&quot;&gt;消息&lt;/router-link&gt;
-        &lt;router-view&gt;&lt;/router-view&gt;
-    &lt;/div&gt;
-&lt;/template&gt;</code></pre>
-<h3 id="传递参数"><a href="#传递参数" class="headerlink" title="传递参数"></a>传递参数</h3><p>前端路由在跳转到其它页面时也可以传递参数，主要有下面两种方式。</p>
-<h4 id="路由参数"><a href="#路由参数" class="headerlink" title="路由参数"></a>路由参数</h4><p>第一种方式称为路由参数，将路由规则中的<code>path</code>最后添加一个以冒号开头的自定义参数名，那么 Vue 会将这个部分识别为参数。</p>
-<pre><code class="js">/* router/index.js */
-import User from &#39;../components/User&#39;
+<p>注意，父级路由模板中的<code>&lt;router-link&gt;</code>里的<code>to</code>属性要定义完整的路径，因为它无法识别当前是跟路由还是子路由。</p>
+<pre><code class="html">&lt;router-link to=&quot;/home/news&quot;&gt;新闻&lt;/router-link&gt;</code></pre>
+<h3 id="传递参数"><a href="#传递参数" class="headerlink" title="传递参数"></a>传递参数</h3><p>前端路由在跳转到其它页面时可以传递参数，主要有下面两种方式。</p>
+<h4 id="路由参数"><a href="#路由参数" class="headerlink" title="路由参数"></a>路由参数</h4><p>第一种方式称为路由参数，在路由规则中的<code>path</code>最后添加一个以冒号开头的自定义参数名，那么 Vue 会将这个部分识别为参数，此时任何以<code>/user</code>开头的路由都会匹配该路由。然后在组件中使用<code>$route.params.自定义参数名</code>来获取路由参数的值。</p>
+<blockquote>
+<p>注意，<code>$route</code>表示<strong>当前活跃的路由对象</strong>，也就是<code>routes</code>中的路由规则对象，而之前编程式导航中的<code>$router</code>表示<code>VueRouter()</code>实例对象，一定要区分开。</p>
+</blockquote>
+<pre><code class="html">&lt;router-link to=&quot;/user/zhangsan&quot;&gt;用户&lt;/router-link&gt;</code></pre>
+<pre><code class="js">const User = Vue.component(&#39;User&#39;, {
+    template: &#39;&lt;h1&gt;用户 ID 为：{{ $route.params.id }}&lt;/h1&gt;&#39;
+})
 
-export default new VueRouter({
+const router = new VueRouter({
     routes: [
         // 冒号后面为自定义参数名
         { path: &#39;/user/:userID&#39;, component: User }
     ]
 })</code></pre>
-<p>此时任何以<code>/user/</code>开头的路由（如<code>/user/Leon</code>、<code>/user/Claire</code>）都会被渲染为<code>User</code>组件。</p>
-<pre><code class="html">&lt;!-- App.vue --&gt;
-&lt;router-link to=&quot;/user/zhangsan&quot;&gt;用户&lt;/router-link&gt;</code></pre>
-<p>如果参数为动态设置，那么需要将<code>to</code>绑定一个对象，其中<code>name</code>参数为<strong>路径规则的名称</strong>，<code>params</code>参数为一个对象，表示要传递的参数。</p>
-<pre><code class="html">&lt;!-- App.vue --&gt;
-&lt;router-link :to=&quot;{ name: &#39;User&#39;, params: { id: 666 }}&quot;&gt;用户&lt;/router-link&gt;</code></pre>
-<pre><code class="js">/* /router/index.js */
-export default new VueRouter({
+<p>路由参数也可以动态设置，此时需要将<code>to</code>绑定一个对象，其中<code>name</code>为<strong>路径规则的名称</strong>，<code>params</code>为要传递的参数对象。</p>
+<pre><code class="html">&lt;router-link :to=&quot;{ name: &#39;User&#39;, params: { id: 666 } }&quot;&gt;用户&lt;/router-link&gt;</code></pre>
+<pre><code class="js">const router = new VueRouter({
     routes: [
-        { path: &#39;/&#39;, redirect: &#39;/home&#39; },
-        { path: &#39;/home&#39;, component: Home },
-        { path: &#39;/about&#39;, component: About },
-        { path: &#39;/user/:id&#39;, component: User, name: &#39;User&#39; } // 与 router-link 中的 name 对应
+        { path: &#39;/user/:id&#39;, component: User, name: &#39;User&#39; } // 与 &lt;router-link&gt; 中的 name 对应
     ]
 })</code></pre>
-<p>然后在组件中使用<code>$route.params.自定义参数名</code>来获取路由参数的值：</p>
-<pre><code class="html">&lt;!-- User.vue --&gt;
-&lt;template&gt;
-    &lt;div&gt;
-        &lt;h1&gt;这里是用户组件啦&lt;/h1&gt;
-        &lt;!-- 与 path 中的 id 对应 --&gt;
-        &lt;h2&gt;用户 ID 为：{{ $route.params.id }}&lt;/h2&gt;
-    &lt;/div&gt;
-&lt;/template&gt;</code></pre>
-<p>注意，<code>$route</code>是<strong>当前活跃的路由对象</strong>，也就是<code>routes</code>数组中的路由对象。根据调用它的组件不同，取得的当前路由对象自然也是不同的。</p>
-<h4 id="地址栏传参"><a href="#地址栏传参" class="headerlink" title="地址栏传参"></a>地址栏传参</h4><p>第二种方式是通过传统的地址栏传参，不过这里不需要手动在路由中拼接<code>?</code>部分，而是同样将<code>to</code>绑定为一个对象，其中<code>path</code>参数依然为之前的路径，<code>query</code>参数为一个对象，表示要传递的参数。</p>
-<pre><code class="html">&lt;router-link :to=&quot;{ path: &#39;/user&#39;, query: { id: 233 }}&quot;&gt;用户&lt;/router-link&gt;</code></pre>
-<p>然后在组件中使用<code>$route.query</code>对象来获取这些参数：</p>
-<pre><code class="html">&lt;!-- User.vue --&gt;
-&lt;template&gt;
-    &lt;div&gt;
-        &lt;h1&gt;这里是用户组件啦&lt;/h1&gt;
-        &lt;h2&gt;用户 ID 为：{{ $route.query.id }}&lt;/h2&gt;
-    &lt;/div&gt;
-&lt;/template&gt;</code></pre>
-<h3 id="导航守卫"><a href="#导航守卫" class="headerlink" title="导航守卫"></a>导航守卫</h3><p>导航守卫可以监听并拦截页面跳转，以触发对应的回调函数，类似于中间件。使用<code>VueRouter()</code>实例对象的<code>beforeEach()</code>方法可以创建一个全局导航守卫，它接收一个函数参数，拥有三个参数分别表示目的路由对象、源路由对象以及用来放行的<code>next()</code>函数。</p>
-<pre><code class="js">/* /router/index.js */
-const vueRouter = new VueRouter({
+<h4 id="地址栏传参"><a href="#地址栏传参" class="headerlink" title="地址栏传参"></a>地址栏传参</h4><p>第二种方式是通过地址栏传参，不过这里不需要手动在路由中拼接<code>?</code>部分，而是同样将<code>to</code>绑定为一个对象，其中<code>path</code>参数为路径，<code>query</code>为传递的参数。然后在组件中使用<code>$route.query</code>对象来获取这些参数：</p>
+<pre><code class="html">&lt;router-link :to=&quot;{ path: &#39;/user&#39;, query: { id: 233 } }&quot;&gt;用户&lt;/router-link&gt;</code></pre>
+<pre><code class="js">const User = Vue.component(&#39;User&#39;, {
+    template: &#39;&lt;h1&gt;用户 ID 为：{{ $route.query.id }}&lt;/h1&gt;&#39;
+})</code></pre>
+<h3 id="导航守卫"><a href="#导航守卫" class="headerlink" title="导航守卫"></a>导航守卫</h3><p>导航守卫可以拦截页面跳转并触发对应的回调函数，类似于中间件。</p>
+<pre><code class="js">const router = new VueRouter({
     routes: [
         { path: &#39;/home&#39;, component: Home },
         { path: &#39;/about&#39;, component: About }
     ]
 })
 
+// 创建全局导航守卫
 vueRouter.beforeEach((to, from, next) =&gt; {
-    next() // 拦截之后，必须手动调用 next() 以放行，否则无法正常跳转
+    to      // 目的路由规则对象
+    from    // 源路由规则对象
+    next()  // 拦截之后，必须手动调用 next() 以放行，否则无法正常跳转
 })</code></pre>
-<p>在下面的代码中，通过在路由对象中定义元信息，可以实现跳转后修改当前页面的标题。</p>
+<h3 id="元数据"><a href="#元数据" class="headerlink" title="元数据"></a>元数据</h3><p>在路由规则对象中可以定义<strong>元数据</strong>，用来对路由进行解释说明。比如下面的代码可以实现跳转后修改当前页面的标题。</p>
 <pre><code class="js">const vueRouter = new VueRouter({
     routes: [
         { path: &#39;/home&#39;, component: Home, meta: { title: &#39;首页&#39; } },
@@ -1312,90 +896,77 @@ vueRouter.beforeEach((to, from, next) =&gt; {
     ]
 })
 
+ // 修改页面标题
 vueRouter.beforeEach((to, from, next) =&gt; {
-    document.title = to.meta.title // 修改页面标题
-    next()
-})</code></pre>
-<p>但是，如果路由对象中包含子路由，那么需要使用<code>matched</code>属性获取到所有匹配的路由对象，通过索引<code>0</code>取出其中第一个，才能使父路由正确得到<code>meta</code>属性。</p>
-<pre><code class="js">vueRouter.beforeEach((to, from, next) =&gt; {
+    document.title = to.meta.title
+    // 如果路由规则对象包含子路由，那么需要使用 matched 数组获取到所有匹配的路由对象
     document.title = to.matched[0].meta.title
     next()
 })</code></pre>
-<h2 id="Vuex"><a href="#Vuex" class="headerlink" title="Vuex"></a>Vuex</h2><p><a href="https://vuex.vuejs.org/zh/" target="_blank" rel="noopener">Vuex</a>是 Vue 提供的一个集中管理组件状态（变量）的工具，通俗来讲，就是将所有组件都需要用到的数据放置到一起统一管理，比如用户登录状态、地理位置等等。</p>
-<p>Vuex 可以使用 CDN 直接引入，也可以使用 npm 的方式导入模块。</p>
-<pre><code class="powershell">npm install vuex</code></pre>
-<p>如果采用模块方式，那么与 vue-router 一样，也需要使用<code>Vue.use()</code>加载。然后，创建一个<code>Vuex.Store()</code>实例对象，并在<code>Vue()</code>实例中挂载：</p>
-<pre><code class="js">/* 新建 store 文件夹用来保存 Vuex 相关文件，/store/index.js */
-import Vuex from &#39;vuex&#39;
+<h2 id="Vuex"><a href="#Vuex" class="headerlink" title="Vuex"></a>Vuex</h2><p><a href="https://vuex.vuejs.org/zh/" target="_blank" rel="noopener">Vuex</a>是 Vue 提供的一个集中管理组件状态（变量）的工具，通俗来讲，就是将所有组件都需要用到的数据（状态）放置到一起统一管理，比如用户登录状态、地理位置等等。</p>
+<pre><code class="html">&lt;script src=&quot;https://cdn.staticfile.org/vuex/3.1.3/vuex.js&quot;&gt;&lt;/script&gt;</code></pre>
+<p>将公共数据放到<code>Vuex.Store()</code>实例对象的<code>state</code>属性中，就可以在任何一个组件通过<code>$store.state</code>对象获取公共数据了：</p>
+<pre><code class="js">// 注册两个组件
+Vue.component(&#39;home&#39;, {
+    // 使用 $store 获取 Vuex 实例
+    template: &#39;&lt;h1&gt;主页 {{ $store.state.msg }}&lt;/h1&gt;&#39;
+})
+Vue.component(&#39;about&#39;, {
+    template: &#39;&lt;h1&gt;关于 {{ $store.state.msg }}&lt;/h1&gt;&#39;,
+})
 
-Vue.use(Vuex) // 加载插件
-export default new Vuex.Store({
-    // 相关数据和操作
+// 实例化 Vuex
+const store = new Vuex.Store({
+    state: { msg: &#39;这是公共状态啦&#39; }
+})
+
+const vue = new Vue({
+    el: &#39;#app&#39;,
+    store // 注册 Vuex 实例
 })</code></pre>
-<pre><code class="js">/* main.js */
-import store from &#39;./store&#39;
-
-new Vue({
-    store,
-    render: h =&gt; h(App)
-}).$mount(&#39;#app&#39;)</code></pre>
-<p>然后将公共数据放到<code>Vuex.Store()</code>的<code>state</code>属性中，就可以在任何一个组件通过<code>$store.state</code>对象获取了：</p>
-<pre><code class="js">/* /store/index.js */
-export default new Vuex.Store({
-    state: {
-        msg: &#39;这是公共状态啦&#39;
+<h3 id="mutations"><a href="#mutations" class="headerlink" title="mutations"></a>mutations</h3><p>注意，不要在组件中使用<code>$store.state</code>修改状态，这样会导致 Vue 无法跟踪状态变化。官方建议在<code>Vuex.Store()</code>实例的<code>mutations</code>属性中定义修改状态的方法，而组件中只需要调用这些方法即可。这些方法默认会传入一个<code>state</code>参数，通过它可以直接获取<code>state</code>中的属性。</p>
+<p>在组件中需要通过<code>$store.commit()</code>方法调用，其中第一个参数为<code>mutations</code>中定义的方法名，第二个参数为本身需要传递的参数，<strong>如果需要传递多个参数，则可以通过对象来传递</strong>，因此它也被称为载荷（Payload）。</p>
+<pre><code class="js">Vue.component(&#39;home&#39;, {
+    template: &#39;&lt;h1 @click=&quot;homeClick&quot;&gt;{{ $store.state.msg }}&lt;/h1&gt;&#39;,
+    methods: {
+        // 调用 mutations 方法
+        homeClick() { this.$store.commit(&#39;change&#39;, { changedMsg: &#39;修改状态！&#39; }) }
     }
-})</code></pre>
-<pre><code class="html">&lt;!-- Home.vue --&gt;
-&lt;h2&gt;这是首页组件啦{{ $store.state.msg }}&lt;/h2&gt;</code></pre>
-<h3 id="mutations"><a href="#mutations" class="headerlink" title="mutations"></a>mutations</h3><p>要修改<code>state</code>中保存的状态，不能在组件中直接使用<code>$store.state</code>来修改。虽然这样做确实可以修改成功，但是会导致 Vue 无法跟踪状态变化。</p>
-<p>因此，官方建议在<code>Vuex.Store()</code>中的另一个属性<code>mutations</code>中定义修改的方法，使用它来修改<code>state</code>，而组件中只需要调用<code>mutations</code>中的方法即可。这些方法默认会传入一个<code>state</code>参数，通过它可以直接获取<code>state</code>中的属性。</p>
-<pre><code class="js">/* /store/index.js */
-export default new Vuex.Store({
-    state: {
-        msg: &#39;这是公共状态啦&#39;
-    },
+})
+
+const store = new Vuex.Store({
+    state: { msg: &#39;这是公共状态啦&#39; },
     mutations: {
-        // 定义方法，供组件调用，并传入参数
-        change(state, param) {
-            state.msg = param // 通过 state 直接获取 msg，并进行修改
-        }
+        // 用来修改 state
+        change(state, payload) { state.msg = payload.changedMsg }
     }
 })</code></pre>
-<p>在组件中，则需要通过<code>$store.commit()</code>方法调用，其中第一个参数为<code>mutations</code>中定义的方法名，第二个参数为本身需要传递的参数，<strong>如果需要传递多个参数，则可以通过对象来传递</strong>，因此它也被称为载荷（Payload）。</p>
-<pre><code class="html">&lt;!-- Home.vue --&gt;
-&lt;h2&gt;这是首页组件啦{{ $store.state.msg }}&lt;/h2&gt;
-&lt;button @click=&quot;$store.commit(&#39;change&#39;, &#39;状态被修改了！&#39;)&quot;&gt;改变状态&lt;/button&gt;</code></pre>
-<h4 id="类型常量"><a href="#类型常量" class="headerlink" title="类型常量"></a>类型常量</h4><p>对于<code>mutations</code>中的方法名称，官方也称为「类型」。实际开发中，建议类型统一定义为常量，并保存到一个配置文件中，以方便管理。</p>
-<pre><code class="js">/* /store/mutations-types.js */
-export const CHANGE = &#39;change&#39;</code></pre>
-<pre><code class="js">/* /store/index.js */
-import { CHANGE } from &#39;./mutations-types.js&#39; // 导入常量配置文件
+<p><code>mutations</code>的方法名称也称为「类型」，实际开发中，建议将类型统一定义为常量，以方便管理。为此<code>mutations</code>中的方法名可以用特殊的方括号语法来定义：</p>
+<pre><code class="js">// 将类型统一定义为常量
+const CHANGE = &#39;change&#39;
 
-export default new Vuex.Store({
+Vue.component(&#39;home&#39;, {
+    methods: {
+        // 调用时传入常量即可
+        homeClick() { this.$store.commit(CHANGE) }
+    }
+})
+
+const store = new Vuex.Store({
     state: { msg: &#39;这是公共状态啦&#39; },
     mutations: {
         // 以方括号的特殊语法来使用常量
-        [CHANGE](state, payload) {
-            state.msg = payload
-        }
+        [CHANGE](state) {}
     }
 })</code></pre>
-<pre><code class="js">/* Home.vue */
-import { CHANGE } from &#39;../store/mutations-types.js&#39;
-
-export default {
-    methods: {
-        change() {
-            // 调用时同样使用常量
-            this.$store.commit(CHANGE, &#39;新状态&#39;)
-        }
-    }
-}</code></pre>
-<h3 id="getters"><a href="#getters" class="headerlink" title="getters"></a>getters</h3><p><code>getters</code>类似于之前的计算属性，通过函数的返回值对状态作出进一步处理。与<code>mutations</code>一样，它的第一个参数同样为<code>state</code>，而它的第二个参数为<code>getters</code>本身，可以用来获取其它<code>getters</code>。</p>
+<h3 id="getters"><a href="#getters" class="headerlink" title="getters"></a>getters</h3><p><code>getters</code>类似于之前的计算属性，通过函数的返回值对状态作出进一步处理。它的第一个参数同样为<code>state</code>，第二个参数为<code>getters</code>本身，可以用来获取其它<code>getters</code>。</p>
 <p>在下面的代码中，使用<code>getters</code>过滤了价格较贵的书籍，并获取了这些书籍的数量，然后在组件中直接调用<code>getters</code>获取过滤后的结果：</p>
-<pre><code class="js">/* /store/index.js */
-export default new Vuex.Store({
+<pre><code class="js">Vue.component(&#39;home&#39;, {
+    // 调用 getters
+    template: &#39;&lt;h1&gt;{{ $store.getters.expensiveBooks }}&lt;/h1&gt;&#39;,
+})
+
+const store = new Vuex.Store({
     state: {
         books: [
             { id: 1000, name: &#39;北欧神话&#39;, price: 21 },
@@ -1404,22 +975,22 @@ export default new Vuex.Store({
         ]
     },
     getters: {
+        // 获取较贵的书籍
         expensiveBooks(state) {
-            // 过滤较贵的书籍
             return state.books.filter(el =&gt; el.price &gt; 100)
         },
+        // 通过 expensiveBooks 获取较贵书籍的数量
         expensiveBooksLength(state, getters) {
-            // 调用过滤后的 expensiveBooks 再获取数量
             return getters.expensiveBooks.length
         }
     }
 })</code></pre>
-<pre><code class="html">&lt;!-- Home.vue --&gt;
-&lt;h2&gt;{{ $store.getters.expensiveBooks }}&lt;/h2&gt;
-&lt;h2&gt;{{ $store.getters.expensiveBooksLength }}&lt;/h2&gt;</code></pre>
-<p>但是与<code>mutations</code>不同的一点是，它不能接收参数。因此，如果希望数据是在调用时传入的，则需要将<code>getters</code>返回一个函数。</p>
-<pre><code class="js">/* /store/index.js */
-export default new Vuex.Store({
+<p>由于它的第二个参数为<code>getters</code>，因此不能像<code>mutations</code>一样接收参数。因此，如果希望数据是在调用时传入的，则需要将<code>getters</code>返回一个函数。</p>
+<pre><code class="js">Vue.component(&#39;home&#39;, {
+    template: &#39;&lt;h1&gt;{{ $store.getters.expensiveBooks(200) }}&lt;/h1&gt;&#39;,
+})
+
+const store = new Vuex.Store({
     getters: {
         expensiveBooks(state) {
             return function(price) {
@@ -1428,8 +999,82 @@ export default new Vuex.Store({
         }
     }
 })</code></pre>
-<pre><code class="html">&lt;!-- Home.vue --&gt;
-&lt;h2&gt;{{ $store.getters.expensiveBooks(200) }}&lt;/h2&gt;</code></pre>
+<h2 id="Vue-CLI"><a href="#Vue-CLI" class="headerlink" title="Vue-CLI"></a>Vue-CLI</h2><p>之前均是使用<code>Vue.component()</code>或者<code>components</code>来定义组件，然后将组件相关的数据、模板定义到实例中。但是随着项目变得复杂，这种方式定义的组件阅读起来会非常的麻烦。</p>
+<p>因此，Vue 提供了<strong>单文件组件</strong>的方式来管理组件，可以将一个组件的模板、脚本和样式抽离到一个单独的<code>.vue</code>文件中管理。不过，此时必须要将组件作为一个模块导入才可以使用，为此，则必须使用<a href="/posts/1zcig0yl.html">webpack</a>来提供模块化支持。</p>
+<p>为了简化 webpack 的复杂配置，Vue 提供了命令行工具<a href="https://cli.vuejs.org/zh/guide/" target="_blank" rel="noopener">Vue-CLI</a>（Vue Command-Line Interface，俗称脚手架）用来快速搭建 Vue 项目开发环境，从而快速生成目录结构、配置 webpack 等。</p>
+<pre><code class="powershell">npm install -g @vue/cli</code></pre>
+<pre><code class="powershell">vue create hello-world # 创建项目，运行命令后可以根据需要选择不同的配置
+vue ui # 开启 GUI 项目管理工具，可以用来修改配置、管理依赖等</code></pre>
+<p>创建项目后，会生成大致如下的项目结构：</p>
+<pre><code class="powershell">hello-world
+├─ public                       # 静态资源目录，所有的内容会被原封不动打包到 dist 目录中
+│    ├─ favicon.ico
+│    └─ index.html              # htmlWebpackPlugin 载入的模板，以此创建 index.html 文件
+└─ src                          # 源代码目录
+       ├─ App.vue               # 根组件，之前 Vue() 实例中的模板和样式单独抽离到该组件中了
+       ├─ assets                # 资源文件目录，如图片、样式文件等
+       │    └─ logo.png
+       ├─ views                 # 路由对应的页面大型组件目录
+       │    └─ Home.vue
+       │    └─ About.vue
+       ├─ components            # 功能性的小型组件目录
+       │    └─ HelloWorld.vue
+       ├─ router                # 如果选择了路由模块，则会自动生成，用来保存路由相关模块
+       │    └─ index.js
+       ├─ store                 # 如果选择了 Vuex 模块，则会自动生成，用来保存 Vuex 相关模块
+       │    └─ index.js
+       └─ main.js               # 项目入口，实例化 Vue() 实例，载入 App.vue 组件</code></pre>
+<h3 id="入口文件"><a href="#入口文件" class="headerlink" title="入口文件"></a>入口文件</h3><p>打开入口文件<code>main.js</code>，发现实例化<code>Vue()</code>的代码与之前略有不同。</p>
+<pre><code class="js">import Vue from &#39;vue&#39;
+import App from &#39;./App.vue&#39;
+import router from &#39;./router&#39; // 自动寻找目录下的 index.js
+import store from &#39;./store&#39; // 自动寻找目录下的 index.js
+
+Vue.config.productionTip = false // 设置为 false 表示阻止生产环境下发出的警告或错误提示
+
+new Vue({
+    router,
+    store,
+    render: h =&gt; h(App)
+}).$mount(&#39;#app&#39;) // 与 el: &#39;#app&#39; 效果相同</code></pre>
+<p>首先，所有的<code>.vue</code>组件都是以 ES6 模块化的方式导入。其次，<code>Vue()</code>实例中没有使用<code>template</code>引用模板，而是使用了<code>render</code>属性，这是因为 Vue 分为两个不同的版本：runtime-only（仅运行时）与 runtime-only + compiler（运行时 + 编译器）。</p>
+<p>要了解它们的区别，首先要简单了解 Vue <strong>运行时</strong>的工作原理，也就是浏览器运行代码时，而非 webpack 编译时。当创建<code>Vue()</code>实例时，Vue 首先会将实例中的<code>template</code>属性模板进行编译，生成<abbr title="AST(Abstract Syntax Tree)">抽象语法树</abbr>，这是一个编译原理的概念，不作展开讨论，有兴趣可以看看<a href="https://segmentfault.com/a/1190000016231512" target="_blank" rel="noopener">这篇文章</a>。</p>
+<p>然后 Vue 会将 AST 传入一个渲染函数，通过渲染函数来创建虚拟 DOM。该函数可以通过实例中的<code>render</code>属性的参数（即代码中的<code>h</code>）来手动调用，它可以接收诸如元素名称、元素属性、元素内容等参数，也可以直接<strong>接收一个组件</strong>，从而根据这些参数创建出虚拟 DOM。最后，再将虚拟 DOM 转换成真实 DOM，并根据<code>el</code>属性找到页面上对应的元素，然后使用 DOM 的内容将其替换，从而呈现到页面上。</p>
+<p>而这两个版本的区别，就在于 runtime-only 版本没有将<code>template</code>属性模板编译为 AST 这一功能，而是直接从渲染函数开始的，其目的是为了减少打包后的代码体积。为此，只能将根组件直接传入渲染函数中，就可以省略模板编译，完成渲染了。</p>
+<p>这时你可能有一个疑问，组件中也有<code>&lt;template&gt;</code>模板，那么 Vue 是怎么处理的呢？原因是，这些模板早在 webpack <strong>编译时</strong>就已经被处理成渲染函数了，它们<strong>没有发生在运行时</strong>。如果<a href="/posts/1zcig0yl.html#Vue-单文件组件">手动配置</a> webpack 时，会发现除了 vue-loader，还需要安装了另外一个 vue-template-compiler，它的作用就是在编译时将<code>&lt;template&gt;</code>处理成渲染函数，这样就不需要运行时再次处理了。并且，可以看到参数中使用了<code>-D</code>即开发时依赖，也证明了它们不是工作在运行时的。</p>
+<h3 id="载入插件"><a href="#载入插件" class="headerlink" title="载入插件"></a>载入插件</h3><p>对于通过模块化导入的路由和 Vuex 来说，需要使用<code>Vue.use()</code>来加载模块插件，为了结构清晰，通常将它们抽取到各自的<code>index.js</code>文件中。</p>
+<pre><code class="powershell">npm install vue-router
+npm install vuex</code></pre>
+<pre><code class="js">/* /router/index.js */
+import Vue from &#39;vue&#39;
+import VueRouter from &#39;vue-router&#39;
+
+Vue.use(VueRouter) // 模块导入 VueRouter 的话必须加载插件
+
+// 将模块对象导出，供 main.js 调用
+export default new VueRouter({
+    routes: []
+})</code></pre>
+<pre><code class="js">/* /store/index.js */
+import Vue from &#39;vue&#39;
+import Vuex from &#39;vuex&#39;
+
+Vue.use(Vuex)
+
+export default new Vuex.Store({
+    state: {}
+})</code></pre>
+<h3 id="路由懒加载"><a href="#路由懒加载" class="headerlink" title="路由懒加载"></a>路由懒加载</h3><p>随着业务代码越来越多，如果当用户第一次打开时就将所有页面对应的组件全部载入，可能速度会非常慢，影响用户体验。为此 Vue 提供了路由懒加载，它可以将原本打包成一个文件的业务代码分成多个文件，每个路由对应其中一个，当用户真正跳转到这个页面时，对应的组件文件才会被下载。</p>
+<p>要实现路由懒加载，只需将原本组件对象的位置，替换成一个箭头函数即可：</p>
+<pre><code class="js">const Home = () =&gt; import(&#39;../components/Home&#39;)
+const About = () =&gt; import(&#39;../components/About&#39;)
+
+export default new VueRouter({
+    routes: [
+        { path: &#39;/home&#39;, component: Home },
+        { path: &#39;/about&#39;, component: About }
+    ]
+})</code></pre>
 </div>
     </div>
 </div>
