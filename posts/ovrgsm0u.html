@@ -108,33 +108,22 @@
         }
     }
 })</code></pre>
-<h3 id="过滤器"><a href="#过滤器" class="headerlink" title="过滤器"></a>过滤器</h3><p>过滤器用于文本格式化显示，它只能使用在<strong>双花括号的插值表达式</strong>和<code>v-bind</code>指令中，分为全局和局部两种。</p>
-<p>使用<code>Vue.filter()</code>方法可以定义一个全局过滤器，注意，全局过滤器只能定义在实例化<code>Vue()</code>之前。</p>
-<table>
-<thead>
-<tr>
-<th>参数</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>字符串</td>
-<td>过滤器名称</td>
-</tr>
-<tr>
-<td>处理函数</td>
-<td>它的参数为要过滤的数据，即显示数据时，管道符前面的值；返回值为过滤后的数据</td>
-</tr>
-</tbody></table>
-<pre><code class="js">// 将所有的 Fuck 替换成 F**k
-Vue.filter(&#39;msgFilter&#39;, function(msg) {
-    return msg.replace(/Fuck/, &#39;F**k&#39;)
-})
+<h3 id="过滤器"><a href="#过滤器" class="headerlink" title="过滤器"></a>过滤器</h3><p>过滤器用于文本格式化显示，它只能使用在<strong>双花括号的插值表达式</strong>和接下来的<code>v-bind</code>指令中。</p>
+<p>使用<code>Vue.filter()</code>方法可以定义一个全局过滤器，注意，全局过滤器必须定义在实例化<code>Vue()</code>之前。它的第一个参数为过滤器名称，第二个参数为处理函数，返回值为过滤后的数据。</p>
+<p>在渲染数据时，可以在原本数据最后添加一个管道符<code>|</code>，然后跟过滤器的名称。调用过滤器的同时也可以传递参数，并且可以连续调用：</p>
+<pre><code class="js">// 全局过滤器，将所有的 Fuck 替换成 F**k，word 为调用过滤器时传递的参数
+Vue.filter(&#39;msgFilter&#39;, function(msg, word) {
+    return msg.replace(/Fuck/, word)
+})</code></pre>
+<pre><code class="html">&lt;p&gt;{{ msg | msgFilter }}&lt;/p&gt;
 
-var vue = new Vue({}) // 然后才能实例化 Vue 对象</code></pre>
-<p>在<code>Vue()</code>实例对象内部也可以定义私有过滤器，表示只有该实例内部才能使用。如果与全局过滤器重名，那么优先调用私有过滤器。</p>
-<pre><code class="js">var vue = new Vue({
-    el: &#39;#app&#39;, // 只有在 #app 下的元素才能调用该过滤器
+&lt;!-- 调用过滤器的同时传递了参数 --&gt;
+&lt;p&gt;{{ msg | msgFilter('F**k') }}&lt;/p&gt;
+
+&lt;!-- 将前面过滤器的结果交给下一个过滤器 --&gt;
+&lt;p&gt;{{ msg | msgFilter | otherFilter }}&lt;/p&gt;</code></pre>
+<p>在<code>Vue()</code>实例对象内部也可以定义私有过滤器。如果与全局过滤器重名，那么优先调用私有过滤器。</p>
+<pre><code class="js">const vue = new Vue({
     filters: {
         // 注意这里的属性名包含 s
         msgFilter(msg) {
@@ -142,24 +131,12 @@ var vue = new Vue({}) // 然后才能实例化 Vue 对象</code></pre>
         }
     }
 })</code></pre>
-<p>在显示数据时，可以在原本数据最后添加一个管道符<code>|</code>，然后跟过滤器的名称：</p>
-<pre><code class="html">&lt;p&gt;{{ msg | msgFilter }}&lt;/p&gt;</code></pre>
-<p>过滤器也可以传递参数，比如将要替换的固定值<code>F**k</code>改成通过参数传入：</p>
-<pre><code class="html">&lt;p&gt;{{ msg | msgFilter('F**k') }}&lt;/p&gt;</code></pre>
-<pre><code class="js">Vue.filter(&#39;msgFilter&#39;, function(msg, words) {
-    return msg.replace(/Fuck/, words)
-})</code></pre>
-<p>过滤器也可以调用多次，Vue 将从左到右依次将前面的结果交给后面的过滤器。</p>
-<pre><code class="html">&lt;p&gt;{{ msg | msgFilter | otherFilter }}&lt;/p&gt;</code></pre>
-<h3 id="侦听器"><a href="#侦听器" class="headerlink" title="侦听器"></a>侦听器</h3><p>使用<code>Vue()</code>实例中的<code>watch</code>属性可以定义侦听器，用于监听数据变化。一旦数据发生变化，则立刻触发对应的监听函数。监听函数中还可以传入两个参数，分别表示变化之后和变化之前的值。</p>
-<pre><code class="html">&lt;input type=&quot;text&quot; v-model=&quot;msg&quot; /&gt;</code></pre>
-<pre><code class="js">var vue = new Vue({
-    data: {
-        msg: &#39;&#39;
-    },
+<h3 id="侦听器"><a href="#侦听器" class="headerlink" title="侦听器"></a>侦听器</h3><p>使用<code>Vue()</code>实例中的<code>watch</code>属性定义侦听器，用于监听数据变化，一旦数据发生变化，则立刻触发对应的监听函数。监听函数中还可以传入两个参数，分别表示变化之后和变化之前的值。</p>
+<pre><code class="js">const vue = new Vue({
+    data: { msg: &#39;&#39; },
     watch: {
+        // 当 msg 被修改时，会调用侦听器
         msg(newVal, oldVal) {
-            // 当 msg 被修改时，会调用 msg() 侦听器
             console.log(&#39;msg 发生了变化！&#39;)
         }
     }
@@ -999,6 +976,68 @@ const store = new Vuex.Store({
         }
     }
 })</code></pre>
+<h3 id="actions"><a href="#actions" class="headerlink" title="actions"></a>actions</h3><p>如果 Vuex 中有异步操作，那么需要将其放到<code>actions</code>属性中，通过它再来调用<code>mutations</code>，从而改变<code>state</code>状态。而组件中也需要使用<code>$store.dispatch()</code>来调用<code>actions</code>，与使用<code>$store.commit()</code>调用<code>mutations</code>类似。</p>
+<p>与<code>$store.commit()</code>不同的一点是，它不会接收<code>state</code>作为参数，取而代之的是的<code>context</code>对象。它类似于<code>$store</code>，可以调用其中的属性和实例方法，但是又略有不同（见下文）。</p>
+<pre><code class="js">Vue.component(&#39;home&#39;, {
+    template: &#39;&lt;div&gt;&lt;button @click=&quot;btnClick&quot;&gt;1 秒后改变状态&lt;/button&gt; {{ $store.state.msg }} &lt;/div&gt;&#39;,
+    methods: {
+        btnClick() {
+            // 调用 actions 方法，也有 payload 参数
+            this.$store.dispatch(&#39;actionChange&#39;, {})
+        }
+    }
+})
+
+const store = new Vuex.Store({
+    state: { msg: &#39;这是公共状态啦&#39; },
+    mutations: {
+        // 通过 mutations 修改状态
+        mutationChange(state) {
+            state.msg = &#39;改变状态！&#39;
+        }
+    },
+    actions: {
+        actionChange(context, payload) {
+            // 异步任务
+            setTimeout(() =&gt; {
+                // 通过 context 调用 mutations
+                context.commit(&#39;mutationChange&#39;)
+            }, 1000)
+        }
+    }
+})</code></pre>
+<h3 id="modules"><a href="#modules" class="headerlink" title="modules"></a>modules</h3><p>Vuex 使用了单一状态树，也就是说，<code>Vuex.Store()</code>实例只能有一个，因此所有状态都会保存到这一个对象中。但是，当应用变得非常复杂时，<code>store</code>对象就有可能变得相当臃肿。</p>
+<p>为了解决以上问题，Vuex 允许在<code>store</code>对象中继续定义模块，每个模块都可以拥有自己的<code>state</code>、<code>mutations</code>、<code>actions</code>、<code>getters</code>，甚至是嵌套子模块（虽然不建议这么用，这会使得代码非常难以理解）：</p>
+<pre><code class="js">Vue.component(&#39;home&#39;, {
+    // 通过 $store.state.模块名 获取模块的 state
+    template: &#39;&lt;h1&gt;主页 {{ $store.state.HomeModule.msg }} &lt;/h1&gt;&#39;,
+    methods: {
+        // mutations、getters、actions 的调用方式与之前一样，Vuex 会先在根对象中寻找，没有则会去模块下寻找
+        change() { $store.commit(&#39;change&#39;) }
+    }
+})
+
+const store = new Vuex.Store({
+    // 定义模块
+    modules: {
+        HomeModule: {
+            state: { msg: &#39;这是主页的公共状态啦&#39; },
+            mutations: {
+                mutationChange(state) {} 
+            },
+            // 模块中 getters 第三个参数可以获取根状态下的 state
+            getters: {
+                getterMsg(state, getters, rootState) {}
+            }
+            // 模块中 actions 的 context 只包含该模块中的状态，这就是 context 与 $store 的区别
+            actions: {
+                actionChange(context) {
+                    context.getters // 获取根状态中的 getters
+                }
+            }
+        }
+    }
+})</code></pre>
 <h2 id="Vue-CLI"><a href="#Vue-CLI" class="headerlink" title="Vue-CLI"></a>Vue-CLI</h2><p>之前均是使用<code>Vue.component()</code>或者<code>components</code>来定义组件，然后将组件相关的数据、模板定义到实例中。但是随着项目变得复杂，这种方式定义的组件阅读起来会非常的麻烦。</p>
 <p>因此，Vue 提供了<strong>单文件组件</strong>的方式来管理组件，可以将一个组件的模板、脚本和样式抽离到一个单独的<code>.vue</code>文件中管理。不过，此时必须要将组件作为一个模块导入才可以使用，为此，则必须使用<a href="/posts/1zcig0yl.html">webpack</a>来提供模块化支持。</p>
 <p>为了简化 webpack 的复杂配置，Vue 提供了命令行工具<a href="https://cli.vuejs.org/zh/guide/" target="_blank" rel="noopener">Vue-CLI</a>（Vue Command-Line Interface，俗称脚手架）用来快速搭建 Vue 项目开发环境，从而快速生成目录结构、配置 webpack 等。</p>
@@ -1075,6 +1114,54 @@ export default new VueRouter({
         { path: &#39;/about&#39;, component: About }
     ]
 })</code></pre>
+<h2 id="axios"><a href="#axios" class="headerlink" title="axios"></a>axios</h2><p>Vue 官方推荐使用<a href="https://github.com/axios/axios" target="_blank" rel="noopener">axios</a>发送 Ajax 请求。</p>
+<pre><code class="powershell">npm i axios</code></pre>
+<pre><code class="js">const axios = require(&#39;axios&#39;)
+
+// axios(config) 通用的发送方式
+axios({
+    url: &#39;https://httpbin.org/post&#39;,    // 请求地址
+    method: &#39;post&#39;,                     // 请求方式，默认 get
+    data: { msg: &#39;hello&#39; }              // 请求体的数据，只对 PUT、POST、PATCH 三种请求方式有效
+    params: { id: 233 }                 // URL 请求参数，会自动拼接为 ? 后面的部分
+})
+    .then(res =&gt; {})                    // 请求成功获取结果
+    .catch(err =&gt; {})                   // 请求失败获取错误信息
+
+// axios.get(url [,config]) 快速发送 get 请求
+axios.get(&#39;https://httpbin.org/get&#39;, {
+    params: { id: 233 }
+})
+    .then(res =&gt; {})
+    .catch(err =&gt; {})
+
+// axios.post(url [,data [,config]])
+axios.post(&#39;https://httpbin.org/post&#39;, {
+    username: &#39;hello@163.com&#39;
+})
+    .then(res =&gt; {})
+    .catch(err =&gt; {})
+
+// axios.all() 传入一个数组，每个数组项为一个请求，只有当全部请求成功后才会调用 then()
+axios.all([
+    axios.get(&#39;https://httpbin.org/get&#39;),
+    axios.post(&#39;https://httpbin.org/post&#39;)
+])
+    .then(res =&gt; {})</code></pre>
+<p>axios 还可以对请求进行一些自定义配置。</p>
+<pre><code class="js">// 全局配置
+axios.defaults.baseURL = &#39;http://192.168.50.205/&#39;   // 配置接口的根路径，每个 url 前会自动添加该根路径
+axios.defaults.timeout = 5000                       // 最长等待时间，单位毫秒，如果超过该时间则判定为请求超时
+
+// 还可以创建单独的 axios 实例进行局部配置
+const axios1 = axios.create({
+    baseURL: &#39;http://192.168.50.205/&#39;, 
+})
+const axios2 = axios.create({
+    baseURL: &#39;https://httpbin.org/&#39;, 
+})
+
+axios1({}) // 使用 axios1 的配置</code></pre>
 </div>
     </div>
 </div>
