@@ -6,13 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>这是一个神奇的主题</title>
-    <link rel="stylesheet" href="//cdn.yesuanzao.cn/blog/chicken.css">
+    <!-- <link rel="stylesheet" href="//cdn.yesuanzao.cn/blog/chicken.css"> -->
     <link rel="stylesheet" href="//cdn.yesuanzao.cn/blog/atom-one-dark.css">
     <link rel="stylesheet" href="https://cdn.staticfile.org/KaTeX/0.11.1/katex.min.css">
     <link rel="stylesheet" href="https://cdn.staticfile.org/tocbot/4.10.0/tocbot.css">
     <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/5.12.1/css/all.min.css">
     <!-- 本地静态文件测试 -->
-    <!-- <link rel="stylesheet" href="/css/chicken.css"> -->
+    <link rel="stylesheet" href="/css/chicken.css">
 <meta name="generator" content="Hexo 4.2.0"></head>
 
 <body>
@@ -34,198 +34,7 @@
                 
             </ul>
         </div>
-        <div class="post-content"><h1 id="大前端笔记之12-📝-JavaScript-数据类型"><a href="#大前端笔记之12-📝-JavaScript-数据类型" class="headerlink" title="大前端笔记之12 📝 JavaScript 数据类型"></a>大前端笔记之12 📝 JavaScript 数据类型</h1><p>JavaScript 中的值分为六种数据类型，其中除了<code>Object</code>之外均为基本类型，而<code>Object</code>又包含三种类型，狭义的对象、数组和函数。</p>
-<h2 id="基本数据类型"><a href="#基本数据类型" class="headerlink" title="基本数据类型"></a>基本数据类型</h2><p>基本数据类型包括<code>Undefined</code>、<code>Null</code>、<code>Boolean</code>、<code>String</code>和<code>Number</code>。</p>
-<blockquote>
-<p>虽然<code>Boolean</code>、<code>String</code>和<code>Number</code>是基本数据类型，但是它们均有对应的<strong>包装类</strong>对象。当它们调用方法时，这些值会被临时转换为包装类对象，调用结束后就会被立刻销毁。</p>
-</blockquote>
-<h3 id="Undefined-和-Null"><a href="#Undefined-和-Null" class="headerlink" title="Undefined 和 Null"></a>Undefined 和 Null</h3><p>JavaScript 中这两个类型均表示「空」，它们都只有一个值，即小写的<code>undefined</code>和<code>null</code>。</p>
-<p>对于<code>undefined</code>来说，它不能手动定义，只会在下列情况下出现：</p>
-<ul>
-<li>声明了变量，但没有赋值，该变量为<code>undefined</code></li>
-<li>数组中的空元素（修改数组长度、跨索引添加元素等）为<code>undefined</code></li>
-<li>调用函数时，没有传入实参，那么形参为<code>undefined</code></li>
-<li>访问<strong>对象</strong>中未声明的属性，该属性为<code>undefined</code>。如果访问一个未声明的变量，那么会报错</li>
-<li>函数没有返回值，则返回<code>undefined</code></li>
-</ul>
-<p>对于<code>null</code>来说，如果一个对象类型的变量没有指向任何一个实际对象，那么该变量的值就是<code>null</code>。</p>
-<h3 id="Boolean"><a href="#Boolean" class="headerlink" title="Boolean"></a>Boolean</h3><p>布尔类型<code>Boolean</code>只有<code>true</code>和<code>false</code>两个值。</p>
-<h3 id="String"><a href="#String" class="headerlink" title="String"></a>String</h3><p>字符串类型<code>String</code>使用单引号<code>&#39;&#39;</code>或双引号<code>&quot;&quot;</code>均可创建。不过由于 JSON 格式内部只能使用双引号，因此建议使用单引号创建字符串，否则就要使用转义字符<code>\</code>。</p>
-<pre><code class="js">var str = &#39;helloworld&#39;</code></pre>
-<p>使用<code>length</code>属性可以获取字符串长度。</p>
-<pre><code class="js">&#39;helloworld&#39;.length // =&gt; 10</code></pre>
-<h3 id="Number"><a href="#Number" class="headerlink" title="Number"></a>Number</h3><p>数值类型<code>Number</code>采用<a href="/posts/xp50sskp.html">IEEE 754</a>标准，不区分整数值和小数值，所有数值都是以 64 位浮点数存储，即便是整数也是如此。</p>
-<p>全局属性<code>NaN</code>表示非数字（Not a Number），当某些计算失败时（如负数开偶次方），返回的结果可能为<code>NaN</code>。它并不是独立的数据类型，而是<code>Number</code>类型的一个特殊值。</p>
-<p>此外，<code>NaN</code>不等于任何值，包括<strong>它本身</strong>。由于这个特性，JavaScript 提供了全局方法<code>isNaN()</code>用来判断一个值是否为<code>NaN</code>。</p>
-<pre><code class="js">isNaN(NaN) // =&gt; true</code></pre>
-<h2 id="数组"><a href="#数组" class="headerlink" title="数组"></a>数组</h2><p>数组以<code>Array</code>内置对象表示。它可以同时存放不同类型的数据，但通常没有必要，因为这样无法对数据进行统一的处理。数组的本质其实是有序的键值对，但是它的特殊之处在于，它的键是有序的数字，而非具体的名称。</p>
-<h3 id="创建数组"><a href="#创建数组" class="headerlink" title="创建数组"></a>创建数组</h3><p>要创建数组，主要通过字面量方括号<code>[]</code>语法。</p>
-<pre><code class="js">var arr = [&#39;a&#39;, &#39;b&#39;, &#39;c&#39;]</code></pre>
-<blockquote>
-<p>通过<code>Array</code>对象的构造函数<code>Array()</code>也可以创建数组，但是根据传入的参数不同，其行为并不一致，因此并不推荐。</p>
-</blockquote>
-<h3 id="访问数组"><a href="#访问数组" class="headerlink" title="访问数组"></a>访问数组</h3><p>使用<code>数组名[索引]</code>的方式可以获取数组中对应索引的元素，因此通过<code>for</code>循环可以遍历数组。</p>
-<pre><code class="js">var arr = [&#39;a&#39;, &#39;b&#39;, &#39;c&#39;]
-arr[1] // =&gt; b
-
-for (var i = 0; i &lt; arr.length; i++) {
-    arr[i]
-}</code></pre>
-<blockquote>
-<p>除了使用<code>for</code>循环以外，也可以使用数组的<a href="(/posts/i82icjg7.html#Array)">相关方法</a>或者<a href="/posts/j5h1kgw7.html#for-of-循环"><code>for of</code>循环</a>遍历。</p>
-</blockquote>
-<h3 id="数组长度"><a href="#数组长度" class="headerlink" title="数组长度"></a>数组长度</h3><p>使用<code>length</code>属性获取数组的长度。JavaScript 中的数组长度是<strong>动态</strong>和<strong>可写</strong>的，因此将数组长度设置为<code>0</code>可以清空数组。</p>
-<pre><code class="js">var arr = [&#39;a&#39;, &#39;b&#39;, &#39;c&#39;]
-arr.length // =&gt; 3
-arr.length = 2 // 数组 arr 会变为 [&#39;a&#39;, &#39;b&#39;]</code></pre>
-<h2 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h2><p>JavaScript 中的函数以<code>Function</code>内置对象表示。</p>
-<h3 id="创建函数"><a href="#创建函数" class="headerlink" title="创建函数"></a>创建函数</h3><p>第一种方式称为<strong>函数声明</strong>：</p>
-<pre><code class="js">function sendMsg() { console.log(&#39;S.H.E.I.L.D&#39;) }</code></pre>
-<p>第二种方式称为<strong>函数表达式</strong>，函数表达式大多是没有函数名称的，这样的函数也被称为<strong>匿名函数</strong>：</p>
-<pre><code class="js">var print = function() { console.log(&#39;S.H.E.I.L.D&#39;) }</code></pre>
-<p>JavaScript 会根据代码本行的开头是否为<code>function</code>来区分函数声明和函数表达式。</p>
-<blockquote>
-<p>由于函数也是对象，其实也可以通过<code>new Function()</code>构造函数的方式来创建，但这种方式并不直观，因此没有人使用。</p>
-</blockquote>
-<h3 id="调用函数"><a href="#调用函数" class="headerlink" title="调用函数"></a>调用函数</h3><p>在函数声明的名称，或者保存函数表达式的变量后面添加一对圆括号<code>()</code>表示调用该函数。</p>
-<pre><code class="js">function sendMsg() { console.log(&#39;S.H.E.I.L.D&#39;) }
-sendMsg() // 调用函数</code></pre>
-<h3 id="参数"><a href="#参数" class="headerlink" title="参数"></a>参数</h3><p>调用函数的同时也可以传入参数。在 JavaScript 中即使在创建函数时定义了形参，但调用时并<strong>不要求</strong>提供所有的参数，省略的参数的值为<code>undefined</code>，多余的参数会被忽略。</p>
-<pre><code class="js">function print(a, b){
-    a // =&gt; 10
-    b // =&gt; undefined
-}
-print(10) // 只传入了一个参数</code></pre>
-<p>由于参数的数量不确定，因此<code>Function</code>对象中提供了<code>arguments</code>伪数组，用来在函数体内部读取所有参数。</p>
-<pre><code class="js">function foo() {
-    arguments[0] // =&gt; 10
-    arguments[1] // =&gt; 20
-    arguments.length // =&gt; 2
-}
-foo(10, 20)</code></pre>
-<h3 id="返回值"><a href="#返回值" class="headerlink" title="返回值"></a>返回值</h3><p>使用<code>return</code>语句设置函数的返回值，函数在执行时遇到<code>return</code>语句会立刻终止。如果没有返回值，或者<code>return</code>后面没有内容，那么返回<code>undefined</code>。</p>
-<pre><code class="js">function getSum(a, b) { return a + b }</code></pre>
-<h3 id="函数是一等公民"><a href="#函数是一等公民" class="headerlink" title="函数是一等公民"></a>函数是一等公民</h3><p>如果一个函数可以存储在变量或数据结构中，并且可以进行引用传递，那么称这样的函数为<strong>一等公民</strong>，表示它和其它类型享有同样的待遇。因此，JavaScript 中的函数可以直接赋值给一个变量，也可以作为函数的结果返回。也就是说，函数声明的名称本质就是一个<strong>保存了函数代码的变量</strong>。</p>
-<p>在下面的代码中，将函数的代码传递给了其它变量，通过该变量依然可以调用函数：</p>
-<pre><code class="js">function print() { console.log(&#39;我是一等公民啦!&#39;) }
-var other = print
-other() // =&gt; 我是一等公民啦! </code></pre>
-<h3 id="立即执行函数"><a href="#立即执行函数" class="headerlink" title="立即执行函数"></a>立即执行函数</h3><p>如果希望函数声明后立刻调用，而不是单独写一条调用语句，或许会尝试下面的写法：</p>
-<pre><code class="js">function sendMsg() { console.log(&#39;S.H.E.I.L.D&#39;) }() // =&gt; SyntaxError: Unexpected token (</code></pre>
-<p>但是这样是错误的，因为代码的首行开头是<code>function</code>，编译器会认为这是一个函数声明，不能以圆括号结尾。那么解决的办法就是不要让<code>function</code>出现在行首，让引擎将其理解成一个表达式。下面是两种比较常见的写法：</p>
-<pre><code class="js">(function() { // 由于已经成为了表达式，函数名称可以省略
-    console.log(&#39;S.H.E.I.L.D&#39;)
-})();
-
-// 或者
-(function() {
-    console.log(&#39;S.H.E.I.L.D&#39;)
-}());</code></pre>
-<p>这样引擎就会将其作为一个表达式来执行，它的最大作用是<strong>创建一个独自的作用域，避免命名发生冲突</strong>。</p>
-<blockquote>
-<p>如果采用了无分号的代码风格，那么立即执行函数的前面应当添加一个分号<code>;(function(){})()</code>，防止解析出错。</p>
-</blockquote>
-<h3 id="作用域"><a href="#作用域" class="headerlink" title="作用域"></a>作用域</h3><p>作用域指的是变量所在的范围，它会把自己范围内的变量收集起来并统一管理。作用域分为两种（ES6 中还新增了块级作用域）：</p>
-<ul>
-<li>全局作用域：在整个运行过程中一直存在的作用域。JavaScript 会将一个页面中的全部<code>&lt;script&gt;</code>标签和单独的<code>.js</code>文件都合并成一个整体，因此即便是<strong>多个文件也是共享一个全局作用域</strong>。在全局作用域中声明的变量称为<strong>全局变量</strong>，在程序任何位置都可以访问。</li>
-<li>局部作用域（函数作用域）：每声明一个函数，就会在<strong>函数内部</strong>创建一个新的局部作用域。在局部作用域中声明的变量称为<strong>局部变量</strong>，只能在该函数内部访问。此外，JavaScript 采用的为<strong>词法作用域</strong>，也就是说<strong>作用域由函数声明</strong>时的位置决定，与调用的位置无关。</li>
-</ul>
-<pre><code class="js">/* 全局作用域 */
-var num = 10
-console.log(num) // =&gt; 10
-
-function foo() {
-    /* 局部作用域 */
-    var num = 20
-    console.log(num) // =&gt; 20
-}</code></pre>
-<h4 id="作用域链"><a href="#作用域链" class="headerlink" title="作用域链"></a>作用域链</h4><p>当函数发生嵌套时，其对应的局部作用域也会嵌套。因此作用域除了保存范围内的变量之外，还会<strong>保存外部的作用域</strong>。因此，在当前的作用域中无法找到某个变量时，就会在嵌套的上一级作用域中继续查找该变量，直到全局作用域为止。这一连串的作用域被称为<strong>作用域链</strong>。</p>
-<pre><code class="js">/* 全局作用域 */
-var num = 10
-
-function outer() {
-    /* outer 的局部作用域 */
-    var num = 20
-
-    function inner() {
-        /* inner 的局部作用域 */
-        console.log(num) // =&gt; 20，inner 作用域内没有 num 变量，因此去上一级 outer的作用域中找
-    }
-}</code></pre>
-<h4 id="提升"><a href="#提升" class="headerlink" title="提升"></a>提升</h4><p>JavaScript 在所有代码执行前会首先收集所有<strong>变量声明</strong>和<strong>函数声明</strong>（不包括函数表达式），然后将它们提升到<strong>所在作用域</strong>的开头。例如：</p>
-<pre><code class="js">console.log(a) // =&gt; undefined
-var a = 2
-
-// 等价于
-var a
-console.log(a)
-a = 2</code></pre>
-<p>函数声明也会被提升：</p>
-<pre><code class="js">fun() // =&gt; 我被提升啦
-function fun() { console.log(&#39;我被提升啦&#39;) }</code></pre>
-<h3 id="闭包"><a href="#闭包" class="headerlink" title="闭包"></a>闭包</h3><p>当内部函数通过作用域链访问了外部函数的变量，则称外部函数为一个闭包，通过 Chrome 设置断点可以查看：</p>
-<pre><code class="js">function father() {
-    var num = 1
-    function son() { console.log(num) } // 访问了外部函数的 num 变量
-    son()
-}
-
-father()</code></pre>
-<p><img src="https://pic3.superbed.cn/item/5dfc573776085c32890afa0b.jpg" alt=""></p>
-<p>不过这样的闭包并没有意义，它的最主要作用在于<strong>延长变量的生命周期</strong>。在下面的代码中，每次调用<code>father()</code>函数，<code>num</code>的值都是<code>1</code>，因为当调用结束后，<code>father()</code>的作用域就被销毁了。</p>
-<pre><code class="js">function father() {
-    var num = 1
-    function son() { console.log(num++) }
-    son()
-}
-
-father() // =&gt; 1
-father() // =&gt; 1</code></pre>
-<p>但是，如果将内部函数作为返回值，传递到外部，再由外部调用，结果就不一样了：</p>
-<pre><code class="js">function father() {
-    var num = 1
-    function son() { console.log(num++) }
-    return son
-}
-
-var fn = father()
-fn() // =&gt; 1
-fn() // =&gt; 2</code></pre>
-<p>这是因为，虽然<code>father()</code>调用结束了，但是它其中的函数被传递到了外部，由于内部函数依然在使用，所以<code>father()</code>的作用域也被保存了下来。</p>
-<blockquote>
-<p>可以这么理解：我叫独孤求败（内部函数），我在一个山洞（闭包）里，里面有世界上最好的剑法和武器（内部变量）。我学习了里面的剑法，拿走了最好的剑，离开了这里（闭包返回了函数）。我来到这个江湖，快意恩仇，但是从来没有人知道我这把剑，和我这一身的武功的来历（外部无法访问闭包内部的变量，只有内部函数才可以）。</p>
-</blockquote>
-<h2 id="对象"><a href="#对象" class="headerlink" title="对象"></a>对象</h2><p>这里的对象指的是狭义的对象，它的本质是无序的键值对。</p>
-<h3 id="创建对象"><a href="#创建对象" class="headerlink" title="创建对象"></a>创建对象</h3><p>使用字面量花括号<code>{}</code>语法创建一个对象。对象的属性名称可以加引号，也可以不加，通常建议<strong>不加引号</strong>。但是，如果属性名称不符合标识符规则（如包含短横线<code>-</code>或空格、以数字开头等），那么必须加引号。</p>
-<pre><code class="js">var person = { 
-    name : &#39;Claire&#39;,
-    age : 19,
-    eat: function() { console.log(&#39;吃呀吃&#39;) }
-}</code></pre>
-<blockquote>
-<p>通过<code>Object</code>对象的构造函数<code>Object()</code>也可以创建对象，但是在这种方式下只能通过单独的赋值语句为对象添加属性，因此不推荐使用。</p>
-</blockquote>
-<h3 id="访问属性"><a href="#访问属性" class="headerlink" title="访问属性"></a>访问属性</h3><p>使用<code>.</code>运算符获取对象的属性：</p>
-<pre><code class="js">var person = { age: 18 }
-person.age // =&gt; 18</code></pre>
-<p>除此之外，也可以使用方括号<code>[]</code>语法，这种方式可以使用变量作为属性名：</p>
-<pre><code class="js">var person = { age: 18 }
-var attr = &#39;age&#39;
-
-person[&#39;age&#39;] // =&gt; 18
-person[attr] // =&gt; 18，此时的 attr 是一个变量，而非属性名</code></pre>
-<p>由于对象为键值对，因此没法使用普通<code>for</code>循环来遍历对象，取而代之的是<code>for in</code>循环。</p>
-<pre><code class="js">var person = { name: &#39;Claire&#39;, age: 19 }
-
-for (var key in person) { // 设置一个临时变量 key，命名随意
-    key // 遍历键
-    person[key] // 用方括号语法遍历值
-}</code></pre>
-<h3 id="判断属性存在"><a href="#判断属性存在" class="headerlink" title="判断属性存在"></a>判断属性存在</h3><p>使用<code>in</code>可以判断对象中是否存在某个属性。</p>
-<pre><code class="js">var person = { name: &#39;Claire&#39;, age: 19 }
-
-&#39;name&#39; in person // =&gt; true</code></pre>
-<h2 id="自动类型转换"><a href="#自动类型转换" class="headerlink" title="自动类型转换"></a>自动类型转换</h2><p>在某些特殊情况下，JavaScript 中的数据类型会发生自动类型转换。</p>
+        <div class="post-content"><h1 id="大前端笔记之12-📝-JavaScript-数据类型"><a href="#大前端笔记之12-📝-JavaScript-数据类型" class="headerlink" title="大前端笔记之12 📝 JavaScript 数据类型"></a>大前端笔记之12 📝 JavaScript 数据类型</h1><h2 id="自动类型转换"><a href="#自动类型转换" class="headerlink" title="自动类型转换"></a>自动类型转换</h2><p>在某些特殊情况下，JavaScript 中的数据类型会发生自动类型转换。</p>
 <h3 id="转换为布尔型"><a href="#转换为布尔型" class="headerlink" title="转换为布尔型"></a>转换为布尔型</h3><p>在某些情况下（比如将值用于<code>if</code>条件判断），JavaScript 会自动调用构造函数<code>Boolean()</code>将一些值转换为<code>Boolean</code>类型。转换规则如下：</p>
 <table>
 <thead>

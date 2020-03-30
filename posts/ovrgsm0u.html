@@ -6,13 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>这是一个神奇的主题</title>
-    <link rel="stylesheet" href="//cdn.yesuanzao.cn/blog/chicken.css">
+    <!-- <link rel="stylesheet" href="//cdn.yesuanzao.cn/blog/chicken.css"> -->
     <link rel="stylesheet" href="//cdn.yesuanzao.cn/blog/atom-one-dark.css">
     <link rel="stylesheet" href="https://cdn.staticfile.org/KaTeX/0.11.1/katex.min.css">
     <link rel="stylesheet" href="https://cdn.staticfile.org/tocbot/4.10.0/tocbot.css">
     <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/5.12.1/css/all.min.css">
     <!-- 本地静态文件测试 -->
-    <!-- <link rel="stylesheet" href="/css/chicken.css"> -->
+    <link rel="stylesheet" href="/css/chicken.css">
 <meta name="generator" content="Hexo 4.2.0"></head>
 
 <body>
@@ -1122,7 +1122,7 @@ export default new VueRouter({
 axios({
     url: &#39;https://httpbin.org/post&#39;,    // 请求地址
     method: &#39;post&#39;,                     // 请求方式，默认 get
-    data: { msg: &#39;hello&#39; }              // 请求体的数据，只对 PUT、POST、PATCH 三种请求方式有效
+    data: { msg: &#39;hello&#39; },             // 请求体的数据，只对 PUT、POST、PATCH 三种请求方式有效
     params: { id: 233 }                 // URL 请求参数，会自动拼接为 ? 后面的部分
 })
     .then(res =&gt; {})                    // 请求成功获取结果
