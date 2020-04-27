@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>小鸡米花的知识库</title>
+    <link rel="stylesheet" href="//cdn.yesuanzao.cn/blog/atom-one-dark.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/KaTeX/0.11.1/katex.min.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/tocbot/4.10.0/tocbot.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/5.12.1/css/all.min.css">
+    <!-- 本地静态文件测试 -->
+    <link rel="stylesheet" href="/css/chicken.css">
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+    <header>
+    <div class="container">
+        <div class="site-title"><a href="/">小鸡米花的知识库</a></div>
+        <nav>
+            <a class="nav-item " href="/">主页</a>
+            <a class="nav-item " href="/archives">时光轴</a>
+        </nav>
+    </div>
+</header>
+    <div id="write">
+    <div class="container">
+        <div class="post-info">
+            <ul class="tag-list">
+                
+                    <a class="tag-list-item" href="/tags/JavaScript/">JavaScript</a>
+                
+                    <a class="tag-list-item" href="/tags/Vue-js/">Vue.js</a>
+                
+            </ul>
+        </div>
+        <div class="post-content"><h1 id="🍀-使用-Vuex-集中管理组件状态"><a href="#🍀-使用-Vuex-集中管理组件状态" class="headerlink" title="🍀 使用 Vuex 集中管理组件状态"></a>🍀 使用 Vuex 集中管理组件状态</h1><p><a href="https://vuex.vuejs.org/zh/" target="_blank" rel="noopener">Vuex</a>是 Vue 提供的一个集中管理组件状态（变量）的工具，通俗来讲，就是将所有组件都需要用到的数据（状态）放置到一起统一管理，比如用户登录状态、地理位置等等。</p>
+<pre><code class="html">&lt;script src=&quot;https://cdn.staticfile.org/vuex/3.1.3/vuex.js&quot;&gt;&lt;/script&gt;</code></pre>
+<p>将公共数据放到<code>Vuex.Store()</code>实例对象的<code>state</code>属性中，就可以在任何一个组件通过<code>$store.state</code>对象获取公共数据了：</p>
+<pre><code class="js">// 注册两个组件
+Vue.component(&#39;home&#39;, {
+    // 使用 $store 获取 Vuex 实例
+    template: &#39;&lt;h1&gt;主页 {{ $store.state.msg }}&lt;/h1&gt;&#39;
+})
+Vue.component(&#39;about&#39;, {
+    template: &#39;&lt;h1&gt;关于 {{ $store.state.msg }}&lt;/h1&gt;&#39;,
+})
+
+// 实例化 Vuex
+const store = new Vuex.Store({
+    state: { msg: &#39;这是公共状态啦&#39; }
+})
+
+const vue = new Vue({
+    el: &#39;#app&#39;,
+    store // 注册 Vuex 实例
+})</code></pre>
+<h2 id="mutations"><a href="#mutations" class="headerlink" title="mutations"></a>mutations</h2><p>注意，不要在组件中使用<code>$store.state</code>修改状态，这样会导致 Vue 无法跟踪状态变化。官方建议在<code>Vuex.Store()</code>实例的<code>mutations</code>属性中定义修改状态的方法，而组件中只需要调用这些方法即可。这些方法默认会传入一个<code>state</code>参数，通过它可以直接获取<code>state</code>中的属性。</p>
+<p>在组件中需要通过<code>$store.commit()</code>方法调用，其中第一个参数为<code>mutations</code>中定义的方法名，第二个参数为本身需要传递的参数，<strong>如果需要传递多个参数，则可以通过对象来传递</strong>，因此它也被称为载荷（Payload）。</p>
+<pre><code class="js">Vue.component(&#39;home&#39;, {
+    template: &#39;&lt;h1 @click=&quot;homeClick&quot;&gt;{{ $store.state.msg }}&lt;/h1&gt;&#39;,
+    methods: {
+        // 调用 mutations 方法
+        homeClick() { this.$store.commit(&#39;change&#39;, { changedMsg: &#39;修改状态！&#39; }) }
+    }
+})
+
+const store = new Vuex.Store({
+    state: { msg: &#39;这是公共状态啦&#39; },
+    mutations: {
+        // 用来修改 state
+        change(state, payload) { state.msg = payload.changedMsg }
+    }
+})</code></pre>
+<p><code>mutations</code>的方法名称也称为「类型」，实际开发中，建议将类型统一定义为常量，以方便管理。为此<code>mutations</code>中的方法名可以用特殊的方括号语法来定义：</p>
+<pre><code class="js">// 将类型统一定义为常量
+const CHANGE = &#39;change&#39;
+
+Vue.component(&#39;home&#39;, {
+    methods: {
+        // 调用时传入常量即可
+        homeClick() { this.$store.commit(CHANGE) }
+    }
+})
+
+const store = new Vuex.Store({
+    state: { msg: &#39;这是公共状态啦&#39; },
+    mutations: {
+        // 以方括号的特殊语法来使用常量
+        [CHANGE](state) {}
+    }
+})</code></pre>
+<h2 id="getters"><a href="#getters" class="headerlink" title="getters"></a>getters</h2><p><code>getters</code>类似于之前的计算属性，通过函数的返回值对状态作出进一步处理。它的第一个参数同样为<code>state</code>，第二个参数为<code>getters</code>本身，可以用来获取其它<code>getters</code>。</p>
+<p>在下面的代码中，使用<code>getters</code>过滤了价格较贵的书籍，并获取了这些书籍的数量，然后在组件中直接调用<code>getters</code>获取过滤后的结果：</p>
+<pre><code class="js">Vue.component(&#39;home&#39;, {
+    // 调用 getters
+    template: &#39;&lt;h1&gt;{{ $store.getters.expensiveBooks }}&lt;/h1&gt;&#39;,
+})
+
+const store = new Vuex.Store({
+    state: {
+        books: [
+            { id: 1000, name: &#39;北欧神话&#39;, price: 21 },
+            { id: 1001, name: &#39;JOJO的奇妙冒险&#39;, price: 199 },
+            { id: 1002, name: &#39;从零开始的异世界生活&#39;, price: 233 }
+        ]
+    },
+    getters: {
+        // 获取较贵的书籍
+        expensiveBooks(state) {
+            return state.books.filter(el =&gt; el.price &gt; 100)
+        },
+        // 通过 expensiveBooks 获取较贵书籍的数量
+        expensiveBooksLength(state, getters) {
+            return getters.expensiveBooks.length
+        }
+    }
+})</code></pre>
+<p>由于它的第二个参数为<code>getters</code>，因此不能像<code>mutations</code>一样接收参数。因此，如果希望数据是在调用时传入的，则需要将<code>getters</code>返回一个函数。</p>
+<pre><code class="js">Vue.component(&#39;home&#39;, {
+    template: &#39;&lt;h1&gt;{{ $store.getters.expensiveBooks(200) }}&lt;/h1&gt;&#39;,
+})
+
+const store = new Vuex.Store({
+    getters: {
+        expensiveBooks(state) {
+            return function(price) {
+                return state.books.filter(el =&gt; el.price &gt; price)
+            }
+        }
+    }
+})</code></pre>
+<h2 id="actions"><a href="#actions" class="headerlink" title="actions"></a>actions</h2><p>如果 Vuex 中有异步操作，那么需要将其放到<code>actions</code>属性中，通过它再来调用<code>mutations</code>，从而改变<code>state</code>状态。而组件中也需要使用<code>$store.dispatch()</code>来调用<code>actions</code>，与使用<code>$store.commit()</code>调用<code>mutations</code>类似。</p>
+<p>与<code>$store.commit()</code>不同的一点是，它不会接收<code>state</code>作为参数，取而代之的是的<code>context</code>对象。它类似于<code>$store</code>，可以调用其中的属性和实例方法，但是又略有不同（见下文）。</p>
+<pre><code class="js">Vue.component(&#39;home&#39;, {
+    template: &#39;&lt;div&gt;&lt;button @click=&quot;btnClick&quot;&gt;1 秒后改变状态&lt;/button&gt; {{ $store.state.msg }} &lt;/div&gt;&#39;,
+    methods: {
+        btnClick() {
+            // 调用 actions 方法，也有 payload 参数
+            this.$store.dispatch(&#39;actionChange&#39;, {})
+        }
+    }
+})
+
+const store = new Vuex.Store({
+    state: { msg: &#39;这是公共状态啦&#39; },
+    mutations: {
+        // 通过 mutations 修改状态
+        mutationChange(state) {
+            state.msg = &#39;改变状态！&#39;
+        }
+    },
+    actions: {
+        actionChange(context, payload) {
+            // 异步任务
+            setTimeout(() =&gt; {
+                // 通过 context 调用 mutations
+                context.commit(&#39;mutationChange&#39;)
+            }, 1000)
+        }
+    }
+})</code></pre>
+<h2 id="modules"><a href="#modules" class="headerlink" title="modules"></a>modules</h2><p>Vuex 使用了单一状态树，也就是说，<code>Vuex.Store()</code>实例只能有一个，因此所有状态都会保存到这一个对象中。但是，当应用变得非常复杂时，<code>store</code>对象就有可能变得相当臃肿。</p>
+<p>为了解决以上问题，Vuex 允许在<code>store</code>对象中继续定义模块，每个模块都可以拥有自己的<code>state</code>、<code>mutations</code>、<code>actions</code>、<code>getters</code>，甚至是嵌套子模块（虽然不建议这么用，这会使得代码非常难以理解）：</p>
+<pre><code class="js">Vue.component(&#39;home&#39;, {
+    // 通过 $store.state.模块名 获取模块的 state
+    template: &#39;&lt;h1&gt;主页 {{ $store.state.HomeModule.msg }} &lt;/h1&gt;&#39;,
+    methods: {
+        // mutations、getters、actions 的调用方式与之前一样，Vuex 会先在根对象中寻找，没有则会去模块下寻找
+        change() { $store.commit(&#39;change&#39;) }
+    }
+})
+
+const store = new Vuex.Store({
+    // 定义模块
+    modules: {
+        HomeModule: {
+            state: { msg: &#39;这是主页的公共状态啦&#39; },
+            mutations: {
+                mutationChange(state) {} 
+            },
+            // 模块中 getters 第三个参数可以获取根状态下的 state
+            getters: {
+                getterMsg(state, getters, rootState) {}
+            }
+            // 模块中 actions 的 context 只包含该模块中的状态，这就是 context 与 $store 的区别
+            actions: {
+                actionChange(context) {
+                    context.getters // 获取根状态中的 getters
+                }
+            }
+        }
+    }
+})</code></pre>
+</div>
+    </div>
+</div>
+
+<div class="toc"></div>
+    <footer>
+    <p>© 2020</p>
+    <p>Theme chicken by 小鸡米花, Powered by Hexo</p>
+</footer>
+    <a class="back-to-top" href="javascript:;"></a>
+
+    <script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js"></script>
+    <script defer src="https://cdn.staticfile.org/KaTeX/0.11.1/katex.min.js"></script>
+    <script defer src="https://cdn.staticfile.org/KaTeX/0.11.1/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body, { strict: false, delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}] });"></script>
+    <script src="https://cdn.staticfile.org/tocbot/4.10.0/tocbot.min.js"></script>
+    <script src="https://cdn.staticfile.org/highlight.js/9.18.1/highlight.min.js"></script>
+
+    <script>
+        // 为标签追加字体图标
+        $('.tag-list-item').prepend('<i class="fas fa-tag"></i>')
+
+        // 回到顶部的猫
+        $('.back-to-top').click(function () {
+            $('html, body').animate({
+                scrollTop: 0
+            }, 500)
+        })
+
+        // 监听 回到顶部的猫 是否显示
+        $(document).scroll(function () {
+            if ($(document).scrollTop() > 50) {
+                $('.back-to-top').addClass('show')
+            } else {
+                $('.back-to-top').removeClass('show')
+            }
+        })
+
+        // 在表格外包裹一层，用来生成滚动条
+        $('.post-content > table').wrap('<div class="table-container"></div>')
+
+        // Tocbot 实例化，用来快速生成文档目录
+        tocbot.init({
+            tocSelector: '.toc', // 渲染目录的容器
+            contentSelector: '.post-content', // 标题所在的容器
+            headingSelector: 'h2, h3', // 要渲染的目录层级,
+            headingsOffset: -50, // 微调目录高亮的显示位置（偏移量），防止点击的链接和高亮的链接不一致
+        })
+
+        // 初始化代码高亮 highlight.js
+        hljs.initHighlightingOnLoad()
+
+        // 自动加载 waifu
+        try {
+            $("<link>").attr({ href: "//cdn.yesuanzao.cn/blog/live2d/waifu.min.css", rel: "stylesheet", type: "text/css" }).appendTo('head');
+            $('body').append('<div class="waifu"><div class="waifu-tips"></div><canvas id="live2d" class="live2d"></canvas><div class="waifu-tool"><span class="fui-home"></span> <span class="fui-chat"></span> <span class="fui-eye"></span> <span class="fui-user"></span> <span class="fui-photo"></span> <span class="fui-info-circle"></span> <span class="fui-cross"></span></div></div>');
+            $.ajax({ url: '//cdn.yesuanzao.cn/blog/live2d/waifu-tips.js', dataType: "script", cache: true, async: false });
+            $.ajax({ url: '//cdn.yesuanzao.cn/blog/live2d/live2d.min.js', dataType: "script", cache: true, async: false, success: function() {
+                initModel('//cdn.yesuanzao.cn/blog/live2d/waifu-tips.json');
+            } });
+        } catch (err) { console.log(err) }
+    </script>
+    <!-- 
+        添加控制台，测试移动端
+        <script src="http://cdn.jsdelivr.net/npm/eruda"></script>
+        <script>eruda.init();</script>
+    -->
+</body>
+
+</html>

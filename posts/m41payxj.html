@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>小鸡米花的知识库</title>
+    <link rel="stylesheet" href="//cdn.yesuanzao.cn/blog/atom-one-dark.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/KaTeX/0.11.1/katex.min.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/tocbot/4.10.0/tocbot.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/5.12.1/css/all.min.css">
+    <!-- 本地静态文件测试 -->
+    <link rel="stylesheet" href="/css/chicken.css">
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+    <header>
+    <div class="container">
+        <div class="site-title"><a href="/">小鸡米花的知识库</a></div>
+        <nav>
+            <a class="nav-item " href="/">主页</a>
+            <a class="nav-item " href="/archives">时光轴</a>
+        </nav>
+    </div>
+</header>
+    <div id="write">
+    <div class="container">
+        <div class="post-info">
+            <ul class="tag-list">
+                
+                    <a class="tag-list-item" href="/tags/JavaScript/">JavaScript</a>
+                
+            </ul>
+        </div>
+        <div class="post-content"><h1 id="🔔-JavaScript-判断数据类型"><a href="#🔔-JavaScript-判断数据类型" class="headerlink" title="🔔 JavaScript 判断数据类型"></a>🔔 JavaScript 判断数据类型</h1><p>JavaScript 中的值分为六种数据类型，其中除了 Object 之外均为基本类型，包括<code>Undefined</code>、<code>Null</code>、<code>Boolean</code>、<code>String</code>和<code>Number</code>，而<code>Object</code>又包含三种类型，狭义的对象、数组和函数。使用下面的方式可以判断一个值的数据类型。</p>
+<h2 id="typeof"><a href="#typeof" class="headerlink" title="typeof"></a>typeof</h2><p>使用<code>typeof</code>运算符可以获取一个值的基本数据类型。其中的函数并非数据类型，但有特殊返回值。</p>
+<table>
+<thead>
+<tr>
+<th>数据类型</th>
+<th>返回值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Undefined</code></td>
+<td><code>undefined</code></td>
+</tr>
+<tr>
+<td><code>Null</code></td>
+<td><code>object</code></td>
+</tr>
+<tr>
+<td><code>Boolean</code></td>
+<td><code>boolean</code></td>
+</tr>
+<tr>
+<td><code>String</code></td>
+<td><code>string</code></td>
+</tr>
+<tr>
+<td><code>Number</code></td>
+<td><code>number</code></td>
+</tr>
+<tr>
+<td><code>Object</code></td>
+<td><code>object</code></td>
+</tr>
+<tr>
+<td>函数</td>
+<td><code>function</code></td>
+</tr>
+</tbody></table>
+<pre><code class="js">typeof &#39;abc&#39;    // =&gt; string
+typeof 123      // =&gt; number</code></pre>
+<h2 id="instanceof"><a href="#instanceof" class="headerlink" title="instanceof"></a>instanceof</h2><p>虽然<code>typeof</code>可以检测基本类型，但是对于引用类型，无论什么类型的对象都会返回<code>object</code>。因此要判断一个对象是不是某个类型的实例时，可以使用<code>instanceof</code>，它根据原型链来识别该实例是否属于某个对象。</p>
+<pre><code class="js">[1, 2, 3] instanceof Array    // =&gt; true</code></pre>
+<h2 id="toString-NaN"><a href="#toString-NaN" class="headerlink" title="toString()"></a>toString()</h2><p>由于任何对象调用<code>toString()</code>方法默认会返回表示该对象类型的字符串，因此可以利用这一特性判断对象的数据类型。不过因为某些对象的<code>toString()</code>方法已经被覆盖，因此要通过<code>Object</code>来调用该方法，然后将要判断的对象作为<code>call()</code>的参数传进去。</p>
+<pre><code class="js">let arr = [1, 2, 3]
+Object.prototype.toString.call(arr)     // =&gt; [object Array]</code></pre>
+<p>常见对象的返回值如下，其它对象均返回<code>[object Object]</code>：</p>
+<table>
+<thead>
+<tr>
+<th>对象</th>
+<th>返回值</th>
+<th>对象</th>
+<th>返回值</th>
+<th>对象</th>
+<th>返回值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Number</code></td>
+<td><code>[object Number]</code></td>
+<td><code>String</code></td>
+<td><code>[object String]</code></td>
+<td><code>Boolean</code></td>
+<td><code>[object Boolean]</code></td>
+</tr>
+<tr>
+<td><code>Undefined</code></td>
+<td><code>[object Undefined]</code></td>
+<td><code>Null</code></td>
+<td><code>[object Null]</code></td>
+<td><code>Array</code></td>
+<td><code>[object Array]</code></td>
+</tr>
+<tr>
+<td><code>Arguments</code></td>
+<td><code>[object Arguments]</code></td>
+<td><code>Function</code></td>
+<td><code>[object Function]</code></td>
+<td><code>Date</code></td>
+<td><code>[object Date]</code></td>
+</tr>
+</tbody></table>
+</div>
+    </div>
+</div>
+
+<div class="toc"></div>
+    <footer>
+    <p>© 2020</p>
+    <p>Theme chicken by 小鸡米花, Powered by Hexo</p>
+</footer>
+    <a class="back-to-top" href="javascript:;"></a>
+
+    <script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js"></script>
+    <script defer src="https://cdn.staticfile.org/KaTeX/0.11.1/katex.min.js"></script>
+    <script defer src="https://cdn.staticfile.org/KaTeX/0.11.1/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body, { strict: false, delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}] });"></script>
+    <script src="https://cdn.staticfile.org/tocbot/4.10.0/tocbot.min.js"></script>
+    <script src="https://cdn.staticfile.org/highlight.js/9.18.1/highlight.min.js"></script>
+
+    <script>
+        // 为标签追加字体图标
+        $('.tag-list-item').prepend('<i class="fas fa-tag"></i>')
+
+        // 回到顶部的猫
+        $('.back-to-top').click(function () {
+            $('html, body').animate({
+                scrollTop: 0
+            }, 500)
+        })
+
+        // 监听 回到顶部的猫 是否显示
+        $(document).scroll(function () {
+            if ($(document).scrollTop() > 50) {
+                $('.back-to-top').addClass('show')
+            } else {
+                $('.back-to-top').removeClass('show')
+            }
+        })
+
+        // 在表格外包裹一层，用来生成滚动条
+        $('.post-content > table').wrap('<div class="table-container"></div>')
+
+        // Tocbot 实例化，用来快速生成文档目录
+        tocbot.init({
+            tocSelector: '.toc', // 渲染目录的容器
+            contentSelector: '.post-content', // 标题所在的容器
+            headingSelector: 'h2, h3', // 要渲染的目录层级,
+            headingsOffset: -50, // 微调目录高亮的显示位置（偏移量），防止点击的链接和高亮的链接不一致
+        })
+
+        // 初始化代码高亮 highlight.js
+        hljs.initHighlightingOnLoad()
+
+        // 自动加载 waifu
+        try {
+            $("<link>").attr({ href: "//cdn.yesuanzao.cn/blog/live2d/waifu.min.css", rel: "stylesheet", type: "text/css" }).appendTo('head');
+            $('body').append('<div class="waifu"><div class="waifu-tips"></div><canvas id="live2d" class="live2d"></canvas><div class="waifu-tool"><span class="fui-home"></span> <span class="fui-chat"></span> <span class="fui-eye"></span> <span class="fui-user"></span> <span class="fui-photo"></span> <span class="fui-info-circle"></span> <span class="fui-cross"></span></div></div>');
+            $.ajax({ url: '//cdn.yesuanzao.cn/blog/live2d/waifu-tips.js', dataType: "script", cache: true, async: false });
+            $.ajax({ url: '//cdn.yesuanzao.cn/blog/live2d/live2d.min.js', dataType: "script", cache: true, async: false, success: function() {
+                initModel('//cdn.yesuanzao.cn/blog/live2d/waifu-tips.json');
+            } });
+        } catch (err) { console.log(err) }
+    </script>
+    <!-- 
+        添加控制台，测试移动端
+        <script src="http://cdn.jsdelivr.net/npm/eruda"></script>
+        <script>eruda.init();</script>
+    -->
+</body>
+
+</html>

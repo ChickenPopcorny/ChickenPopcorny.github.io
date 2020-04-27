@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>小鸡米花的知识库</title>
+    <link rel="stylesheet" href="//cdn.yesuanzao.cn/blog/atom-one-dark.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/KaTeX/0.11.1/katex.min.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/tocbot/4.10.0/tocbot.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/5.12.1/css/all.min.css">
+    <!-- 本地静态文件测试 -->
+    <link rel="stylesheet" href="/css/chicken.css">
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+    <header>
+    <div class="container">
+        <div class="site-title"><a href="/">小鸡米花的知识库</a></div>
+        <nav>
+            <a class="nav-item " href="/">主页</a>
+            <a class="nav-item " href="/archives">时光轴</a>
+        </nav>
+    </div>
+</header>
+    <div id="write">
+    <div class="container">
+        <div class="post-info">
+            <ul class="tag-list">
+                
+                    <a class="tag-list-item" href="/tags/JavaScript/">JavaScript</a>
+                
+            </ul>
+        </div>
+        <div class="post-content"><h1 id="🔔-JavaScript-中的函数"><a href="#🔔-JavaScript-中的函数" class="headerlink" title="🔔 JavaScript 中的函数"></a>🔔 JavaScript 中的函数</h1><p>JavaScript 中的函数分为函数声明和函数表达式两种形式：</p>
+<pre><code class="js">function foo() {}           // 函数声明
+
+let foo = function() {}     // 函数表达式</code></pre>
+<h2 id="函数是一等公民"><a href="#函数是一等公民" class="headerlink" title="函数是一等公民"></a>函数是一等公民</h2><p>如果函数可以存储在变量或数据结构中，并可以进行引用传递，那么称这样的函数为一等公民，表示它和其它类型享有同样的待遇。因此，JavaScript 中的函数可以直接赋值给一个变量，也可以作为函数的结果返回。也就是说，函数声明的名称本质就是一个<strong>保存了函数代码的变量</strong>。</p>
+<pre><code class="js">function foo() { return &#39;我是一等公民啦!&#39; }
+
+let other = foo
+other()                     // =&gt; 我是一等公民啦! </code></pre>
+<h2 id="立即执行函数"><a href="#立即执行函数" class="headerlink" title="立即执行函数"></a>立即执行函数</h2><p>JavaScript 会根据代码本行的开头是否为<code>function</code>来区分函数声明和函数表达式。因此，如果希望一个函数声明后立刻调用，而不是单独写一条调用语句，只需要让<code>function</code>不出现在行首，使引擎将其解析成一个表达式即可：</p>
+<pre><code class="js">// 由于已经成为了表达式，函数名称可以省略
+(function() { 
+    console.log(&#39;S.H.E.I.L.D&#39;)
+})()
+
+// 或者
+(function() {
+    console.log(&#39;S.H.E.I.L.D&#39;)
+}())</code></pre>
+<p>这样引擎就会将其作为一个表达式来执行，它的最大作用是<strong>创建一个独自的作用域，避免命名发生冲突</strong>。</p>
+<blockquote>
+<p>如果采用了无分号的代码风格，那么立即执行函数的前面应当添加一个分号<code>;(function(){})()</code>，防止解析出错。</p>
+</blockquote>
+<h2 id="作用域"><a href="#作用域" class="headerlink" title="作用域"></a>作用域</h2><p>作用域指的是变量所在的范围，它会把自己范围内的变量收集起来并统一管理。作用域分为两种（ES6 中还新增了块级作用域）：</p>
+<ul>
+<li>全局作用域：在整个运行过程中一直存在的作用域。JavaScript 会将一个页面中的全部<code>&lt;script&gt;</code>标签和单独的<code>.js</code>文件都合并成一个整体，因此即便是<strong>多个文件也是共享一个全局作用域</strong>。在全局作用域中声明的变量称为<strong>全局变量</strong>，在程序任何位置都可以访问。</li>
+<li>局部作用域（函数作用域）：每声明一个函数，就会在<strong>函数内部</strong>创建一个新的局部作用域。在局部作用域中声明的变量称为<strong>局部变量</strong>，只能在该函数内部访问。此外，JavaScript 采用的为<strong>词法作用域</strong>，也就是说<strong>作用域由函数声明</strong>时的位置决定，与调用的位置无关。</li>
+</ul>
+<pre><code class="js">// 全局作用域
+let num = 10
+num // =&gt; 10
+
+function foo() {
+    // 局部作用域
+    let num = 20
+    num // =&gt; 20
+}</code></pre>
+<p>当函数发生嵌套时，其对应的局部作用域也会嵌套，因此一个作用域除了保存它范围内的变量之外，还会保存外部的作用域。如果在当前的作用域中无法找到某个变量，就会在外部的上级作用域中继续查找该变量，直到全局作用域为止，这一连串的作用域被称为<strong>作用域链</strong>。</p>
+<pre><code class="js">// 全局作用域
+let num = 10
+
+function outer() {
+    // outer 的局部作用域
+    let num = 20
+
+    function inner() {
+        // inner 的局部作用域
+        num // =&gt; 20，inner 作用域内没有 num 变量，因此去上一级 outer的作用域中找
+    }
+}</code></pre>
+<h2 id="提升"><a href="#提升" class="headerlink" title="提升"></a>提升</h2><p>JavaScript 在所有代码执行前会首先收集所有<strong>变量声明</strong>和<strong>函数声明</strong>（不包括函数表达式），然后将它们提升到<strong>所在作用域</strong>的开头。例如：</p>
+<pre><code class="js">// 变量声明被提升
+console.log(a) // =&gt; undefined
+var a = 233
+
+// 等价于
+var a
+console.log(a)
+a = 2
+
+// 函数声明被提升
+fun() // =&gt; 我被提升啦
+function fun() { return &#39;我被提升啦&#39; }</code></pre>
+<h2 id="闭包"><a href="#闭包" class="headerlink" title="闭包"></a>闭包</h2><p>当内部函数通过作用域链访问了外部函数的变量，则称外部函数为一个闭包，通过 Chrome 设置断点可以查看：</p>
+<pre><code class="js">function father() {
+    var num = 1
+    function son() { console.log(num) } // 访问了外部函数的 num 变量
+    son()
+}
+
+father()</code></pre>
+<p><img src="https://pic3.superbed.cn/item/5dfc573776085c32890afa0b.jpg" alt=""></p>
+<p>不过这样的闭包并没有意义，它的最主要作用在于<strong>延长变量的生命周期</strong>。在下面的代码中，每次调用<code>father()</code>函数，<code>num</code>的值都是<code>1</code>，因为当调用结束后，<code>father()</code>的作用域就被销毁了。</p>
+<pre><code class="js">function father() {
+    var num = 1
+    function son() { return num++ }
+    son()
+}
+
+father() // =&gt; 1
+father() // =&gt; 1</code></pre>
+<p>但是，如果将内部函数作为返回值，传递到外部，再由外部调用，结果就不一样了：</p>
+<pre><code class="js">function father() {
+    var num = 1
+    function son() { return num++ }
+    return son
+}
+
+var fn = father()
+fn() // =&gt; 1
+fn() // =&gt; 2</code></pre>
+<p>这是因为，虽然<code>father()</code>调用结束了，但是它其中的函数被传递到了外部，由于内部函数依然在使用，所以<code>father()</code>的作用域也被保存了下来。</p>
+</div>
+    </div>
+</div>
+
+<div class="toc"></div>
+    <footer>
+    <p>© 2020</p>
+    <p>Theme chicken by 小鸡米花, Powered by Hexo</p>
+</footer>
+    <a class="back-to-top" href="javascript:;"></a>
+
+    <script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js"></script>
+    <script defer src="https://cdn.staticfile.org/KaTeX/0.11.1/katex.min.js"></script>
+    <script defer src="https://cdn.staticfile.org/KaTeX/0.11.1/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body, { strict: false, delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}] });"></script>
+    <script src="https://cdn.staticfile.org/tocbot/4.10.0/tocbot.min.js"></script>
+    <script src="https://cdn.staticfile.org/highlight.js/9.18.1/highlight.min.js"></script>
+
+    <script>
+        // 为标签追加字体图标
+        $('.tag-list-item').prepend('<i class="fas fa-tag"></i>')
+
+        // 回到顶部的猫
+        $('.back-to-top').click(function () {
+            $('html, body').animate({
+                scrollTop: 0
+            }, 500)
+        })
+
+        // 监听 回到顶部的猫 是否显示
+        $(document).scroll(function () {
+            if ($(document).scrollTop() > 50) {
+                $('.back-to-top').addClass('show')
+            } else {
+                $('.back-to-top').removeClass('show')
+            }
+        })
+
+        // 在表格外包裹一层，用来生成滚动条
+        $('.post-content > table').wrap('<div class="table-container"></div>')
+
+        // Tocbot 实例化，用来快速生成文档目录
+        tocbot.init({
+            tocSelector: '.toc', // 渲染目录的容器
+            contentSelector: '.post-content', // 标题所在的容器
+            headingSelector: 'h2, h3', // 要渲染的目录层级,
+            headingsOffset: -50, // 微调目录高亮的显示位置（偏移量），防止点击的链接和高亮的链接不一致
+        })
+
+        // 初始化代码高亮 highlight.js
+        hljs.initHighlightingOnLoad()
+
+        // 自动加载 waifu
+        try {
+            $("<link>").attr({ href: "//cdn.yesuanzao.cn/blog/live2d/waifu.min.css", rel: "stylesheet", type: "text/css" }).appendTo('head');
+            $('body').append('<div class="waifu"><div class="waifu-tips"></div><canvas id="live2d" class="live2d"></canvas><div class="waifu-tool"><span class="fui-home"></span> <span class="fui-chat"></span> <span class="fui-eye"></span> <span class="fui-user"></span> <span class="fui-photo"></span> <span class="fui-info-circle"></span> <span class="fui-cross"></span></div></div>');
+            $.ajax({ url: '//cdn.yesuanzao.cn/blog/live2d/waifu-tips.js', dataType: "script", cache: true, async: false });
+            $.ajax({ url: '//cdn.yesuanzao.cn/blog/live2d/live2d.min.js', dataType: "script", cache: true, async: false, success: function() {
+                initModel('//cdn.yesuanzao.cn/blog/live2d/waifu-tips.json');
+            } });
+        } catch (err) { console.log(err) }
+    </script>
+    <!-- 
+        添加控制台，测试移动端
+        <script src="http://cdn.jsdelivr.net/npm/eruda"></script>
+        <script>eruda.init();</script>
+    -->
+</body>
+
+</html>

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>小鸡米花的知识库</title>
+    <link rel="stylesheet" href="//cdn.yesuanzao.cn/blog/atom-one-dark.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/KaTeX/0.11.1/katex.min.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/tocbot/4.10.0/tocbot.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/5.12.1/css/all.min.css">
+    <!-- 本地静态文件测试 -->
+    <link rel="stylesheet" href="/css/chicken.css">
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+    <header>
+    <div class="container">
+        <div class="site-title"><a href="/">小鸡米花的知识库</a></div>
+        <nav>
+            <a class="nav-item " href="/">主页</a>
+            <a class="nav-item " href="/archives">时光轴</a>
+        </nav>
+    </div>
+</header>
+    <div id="write">
+    <div class="container">
+        <div class="post-info">
+            <ul class="tag-list">
+                
+                    <a class="tag-list-item" href="/tags/JavaScript/">JavaScript</a>
+                
+            </ul>
+        </div>
+        <div class="post-content"><h1 id="🔔-JavaScript-中的-let-与-for-循环"><a href="#🔔-JavaScript-中的-let-与-for-循环" class="headerlink" title="🔔 JavaScript 中的 let 与 for 循环"></a>🔔 JavaScript 中的 let 与 for 循环</h1><p>使用<code>let</code>声明<code>for</code>循环的迭代变量是非常合适的，因为循环结束后迭代变量就会被销毁，从而释放空间。</p>
+<pre><code class="js">for (var i = 0; i &lt; 10; i++) {}
+console.log(i) // =&gt; 10
+
+for (let i = 0; i &lt; 10; i++) {}
+console.log(i) // =&gt; i is not defined</code></pre>
+<p>但是，如果<code>for</code>循环中包含异步任务，那么可能会产生令人迷惑的现象。在下面的代码中，分别使用<code>let</code>和<code>var</code>声明的<code>for</code>循环为三个按钮绑定了事件，当点击时输出绑定时的<code>i</code>，而结果是不同的：</p>
+<pre><code class="js">for (var i = 0; i &lt; btns.length; i++) {
+    btns[i].addEventListener(&#39;click&#39;, function () {
+        console.log(i)
+    })
+} // =&gt; 3 3 3
+
+for (let i = 0; i &lt; btns.length; i++) {
+    btns[i].addEventListener(&#39;click&#39;, function () {
+        console.log(i)
+    })
+} // =&gt; 0 1 2</code></pre>
+<p>异步任务是当整段代码执行完成后，才会根据情况（计时器、触发事件）触发的，这里得到的<code>i</code>应该是<code>for</code>循环执行完毕之后的。可以看到，<code>var</code>声明的<code>for</code>循环符合预期，当循环结束后，<code>i</code>的值会自增为<code>3</code>，因此点击任何一个按钮都是输出<code>3</code>。</p>
+<p>但是，<code>let</code>循环的输出结果就有些令人迷惑了，虽然它可以使自己拥有作用域，但是<code>i</code>也依然只有一个，为何最后会输出不同的值呢？</p>
+<p>原因是，<code>let</code>循环在执行过程中，不但生成了自己的作用域，而且会记录本次循环的值。因为<code>let</code>可以识别块级作用域（花括号），因此不同块里的同名变量不会发生冲突。也就是说，上面<code>let</code>循环的代码可以表示为：</p>
+<pre><code class="js">{
+    // 初始化循环变量，即圆括号中的 i
+    let i = 0
+    {
+        // 将 i 的值保存下来
+        let t = i
+        // 实际使用的不是最后的 i，而是本作用域内保存的值
+        btns[t].addEventListener(&#39;click&#39;, function () {
+            console.log(t)
+        })
+    }
+    // 循环变量自增
+    i++ 
+
+    // 第二遍循环
+    {   
+        let t = i
+        btns[t].addEventListener(&#39;click&#39;, function () {
+            console.log(t)
+        })
+    }
+    i++
+
+    // 第三遍循环
+    {   
+        let t = i
+        btns[t].addEventListener(&#39;click&#39;, function () {
+            console.log(t)
+        })
+    }
+    i++
+}</code></pre>
+<p>可以看到，此时执行事件处理函数时，寻找的其实是本作用域中保存的变量，而非外层迭代完毕的<code>i</code>。此外，还可以看到，<strong>圆括号与循环体其实分属于两个不同的作用域</strong>，而且，<strong>圆括号作用域是包裹着循环体作用域的</strong>。</p>
+<p>而对于<code>var</code>循环就简单的多了，因为无论是哪一次循环，最后只能访问全局下共同的<code>i</code>：</p>
+<pre><code class="js">// 初始化循环变量，即圆括号中的 i
+var i = 0 
+
+btns[i].addEventListener(&#39;click&#39;, function () { 
+    // 使用的依然是全局作用域下的 i
+    console.log(i)
+})
+// 循环变量自增
+i++ 
+
+// 第二遍循环
+btns[i].addEventListener(&#39;click&#39;, function () {
+    console.log(i)
+})
+i++
+
+// 第三遍循环
+btns[i].addEventListener(&#39;click&#39;, function () {
+    console.log(i)
+})
+i++</code></pre>
+<p>在下面的代码中，分别在圆括号和循环体中声明了重名的变量<code>i</code>，可见它们并不冲突：</p>
+<pre><code class="js">for (let i = 0; i &lt; 3; console.log(i++)) {
+    let i = &#39;abcd&#39;
+    console.log(i)
+} // =&gt; abcd 0 abcd 1 abcd 2</code></pre>
+<p>其中<code>abcd</code>是循环体内的<code>i</code>，数字值是圆括号内的<code>i</code>，根据上述理解，这段代码可以表示为：</p>
+<pre><code class="js">{   
+    // 初始化循环变量，即圆括号中的 i
+    let i = 0 
+    {   
+        // 循环体内的 i，由于 let 变量可以识别花括号，因此不会与外部冲突
+        let i = &#39;abcd&#39;
+        // 实际使用的是最近的，也就是说本作用域内的 i
+        btns[i].addEventListener(&#39;click&#39;, function () { 
+            console.log(i) // =&gt; &#39;abcd&#39;
+        })
+    }
+    // 输出外层作用域下的 i，也就是 0，然后自增为 1
+    console.log(i++) 
+
+    // 第二遍循环
+    {   
+        let i = &#39;abcd&#39;
+        btns[i].addEventListener(&#39;click&#39;, function () {
+            console.log(i) // =&gt; &#39;abcd&#39;
+        })
+    }
+    console.log(i++) // =&gt; 1
+
+    // 第三遍循环
+    {   
+        let i = &#39;abcd&#39;
+        btns[i].addEventListener(&#39;click&#39;, function () {
+            console.log(i) // =&gt; &#39;abcd&#39;
+        })
+    }
+    console.log(i++) // =&gt; 2
+}</code></pre>
+</div>
+    </div>
+</div>
+
+<div class="toc"></div>
+    <footer>
+    <p>© 2020</p>
+    <p>Theme chicken by 小鸡米花, Powered by Hexo</p>
+</footer>
+    <a class="back-to-top" href="javascript:;"></a>
+
+    <script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js"></script>
+    <script defer src="https://cdn.staticfile.org/KaTeX/0.11.1/katex.min.js"></script>
+    <script defer src="https://cdn.staticfile.org/KaTeX/0.11.1/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body, { strict: false, delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}] });"></script>
+    <script src="https://cdn.staticfile.org/tocbot/4.10.0/tocbot.min.js"></script>
+    <script src="https://cdn.staticfile.org/highlight.js/9.18.1/highlight.min.js"></script>
+
+    <script>
+        // 为标签追加字体图标
+        $('.tag-list-item').prepend('<i class="fas fa-tag"></i>')
+
+        // 回到顶部的猫
+        $('.back-to-top').click(function () {
+            $('html, body').animate({
+                scrollTop: 0
+            }, 500)
+        })
+
+        // 监听 回到顶部的猫 是否显示
+        $(document).scroll(function () {
+            if ($(document).scrollTop() > 50) {
+                $('.back-to-top').addClass('show')
+            } else {
+                $('.back-to-top').removeClass('show')
+            }
+        })
+
+        // 在表格外包裹一层，用来生成滚动条
+        $('.post-content > table').wrap('<div class="table-container"></div>')
+
+        // Tocbot 实例化，用来快速生成文档目录
+        tocbot.init({
+            tocSelector: '.toc', // 渲染目录的容器
+            contentSelector: '.post-content', // 标题所在的容器
+            headingSelector: 'h2, h3', // 要渲染的目录层级,
+            headingsOffset: -50, // 微调目录高亮的显示位置（偏移量），防止点击的链接和高亮的链接不一致
+        })
+
+        // 初始化代码高亮 highlight.js
+        hljs.initHighlightingOnLoad()
+
+        // 自动加载 waifu
+        try {
+            $("<link>").attr({ href: "//cdn.yesuanzao.cn/blog/live2d/waifu.min.css", rel: "stylesheet", type: "text/css" }).appendTo('head');
+            $('body').append('<div class="waifu"><div class="waifu-tips"></div><canvas id="live2d" class="live2d"></canvas><div class="waifu-tool"><span class="fui-home"></span> <span class="fui-chat"></span> <span class="fui-eye"></span> <span class="fui-user"></span> <span class="fui-photo"></span> <span class="fui-info-circle"></span> <span class="fui-cross"></span></div></div>');
+            $.ajax({ url: '//cdn.yesuanzao.cn/blog/live2d/waifu-tips.js', dataType: "script", cache: true, async: false });
+            $.ajax({ url: '//cdn.yesuanzao.cn/blog/live2d/live2d.min.js', dataType: "script", cache: true, async: false, success: function() {
+                initModel('//cdn.yesuanzao.cn/blog/live2d/waifu-tips.json');
+            } });
+        } catch (err) { console.log(err) }
+    </script>
+    <!-- 
+        添加控制台，测试移动端
+        <script src="http://cdn.jsdelivr.net/npm/eruda"></script>
+        <script>eruda.init();</script>
+    -->
+</body>
+
+</html>

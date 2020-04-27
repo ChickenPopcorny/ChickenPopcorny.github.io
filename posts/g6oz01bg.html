@@ -5,8 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>这是一个神奇的主题</title>
-    <!-- <link rel="stylesheet" href="//cdn.yesuanzao.cn/blog/chicken.css"> -->
+    <title>小鸡米花的知识库</title>
     <link rel="stylesheet" href="//cdn.yesuanzao.cn/blog/atom-one-dark.css">
     <link rel="stylesheet" href="https://cdn.staticfile.org/KaTeX/0.11.1/katex.min.css">
     <link rel="stylesheet" href="https://cdn.staticfile.org/tocbot/4.10.0/tocbot.css">
@@ -34,105 +33,64 @@
                 
             </ul>
         </div>
-        <div class="post-content"><h1 id="大前端笔记之17-🔔-JavaScript-事件"><a href="#大前端笔记之17-🔔-JavaScript-事件" class="headerlink" title="大前端笔记之17 🔔 JavaScript 事件"></a>大前端笔记之17 🔔 JavaScript 事件</h1><p>事件是程序的各个组成部分之间的一种通信方式，可以认为是元素的一种行为。将事件与监听函数绑定，当事件触发时，那么就会执行对应的监听函数。</p>
-<h2 id="绑定事件"><a href="#绑定事件" class="headerlink" title="绑定事件"></a>绑定事件</h2><p>由于元素对象会自动获取所有自带的属性，而事件属性也属于其中之一，因此可以直接通过元素的事件属性可以绑定事件。</p>
+        <div class="post-content"><h1 id="🔔-JavaScript-中的事件"><a href="#🔔-JavaScript-中的事件" class="headerlink" title="🔔 JavaScript 中的事件"></a>🔔 JavaScript 中的事件</h1><p>事件是程序的各个组成部分之间的一种通信方式，可以认为是元素的一种行为。将事件与监听函数绑定，当事件触发时，那么就会执行对应的监听函数。</p>
+<h2 id="绑定事件"><a href="#绑定事件" class="headerlink" title="绑定事件"></a>绑定事件</h2><p>由于元素对象会自动获取所有自带的属性，而事件属性也属于其中之一，因此可以直接通过元素的事件属性绑定事件。</p>
 <pre><code class="js">btn.onclick = function() { alert(&#39;事件似乎被触发了！&#39;) }</code></pre>
 <p>但是，此时每个元素的同一事件只能绑定一个监听函数，如果再次定义了同一事件，那么之前的监听函数会被覆盖，因此不推荐使用。</p>
-<p>更多情况下，都会使用元素对象的<code>addEventListener()</code>方法绑定事件。而使用该方法绑定的事件，可以使用该元素对象的<code>removeEventListener()</code>方法移除，而且它们的参数都是一样的。</p>
-<table>
-<thead>
-<tr>
-<th>参数</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>字符串</td>
-<td>事件名称，注意没有<code>on</code>前缀</td>
-</tr>
-<tr>
-<td>函数</td>
-<td>事件触发时执行的监听函数</td>
-</tr>
-</tbody></table>
-<pre><code class="js">function sendMsg() { alert(&#39;事件似乎被触发了！&#39;) }
+<p>更多情况下，都会使用元素对象的<code>addEventListener()</code>绑定事件。而使用该方法绑定的事件，可以使用对应的<code>removeEventListener()</code>移除。不过需要注意的是，由于解绑事件也需要传入监听函数，因此如果需要解绑的话，那么绑定事件时不能使用匿名函数。</p>
+<pre><code class="js">function foo() { alert(&#39;事件似乎被触发了！&#39;) }
 
-btn.addEventListener(&#39;click&#39;, sendMsg)
-btn.removeEventListener(&#39;click&#39;, sendMsg)</code></pre>
+btn.addEventListener(&#39;click&#39;, foo)
+btn.removeEventListener(&#39;click&#39;, foo)</code></pre>
 <blockquote>
 <p>IE9 之前有一个类似的绑定事件方法<code>attachEvent()</code>，但是已被从规范中移除，不要使用。</p>
 </blockquote>
-<h2 id="事件对象"><a href="#事件对象" class="headerlink" title="事件对象"></a>事件对象</h2><p>每当事件被触发时，都会产生一个事件对象作为监听函数的参数，这些事件对象均继承自<code>Event</code>对象。</p>
+<h2 id="事件对象"><a href="#事件对象" class="headerlink" title="事件对象"></a>事件对象</h2><p>每当事件被触发时，都会自动产生一个事件对象传入事件监听函数。通过事件对象可以获取一些与事件相关的信息。</p>
 <pre><code class="js">// e 为事件对象，可以是任何名称
-btn.addEventListener(&#39;click&#39;, function (e) {})</code></pre>
-<h3 id="target"><a href="#target" class="headerlink" title="target"></a>target</h3><p>获取触发事件的元素对象。注意，监听函数中的<code>this</code>指代<strong>绑定事件</strong>的对象，而<code>target</code>获取的是<strong>触发事件</strong>的对象，由于事件具有冒泡特性，因此两者未必是相同的。</p>
-<p>在下面的代码中，事件绑定在<code>&lt;ul&gt;</code>上，而点击的是<code>&lt;li&gt;</code>元素，因此<code>this</code>指代的是<code>&lt;ul&gt;</code>，而<code>target</code>指代的是<code>&lt;li&gt;</code>：</p>
-<pre><code class="html">&lt;ul&gt;
-    &lt;li&gt;冥灯龙&lt;/li&gt;
-    &lt;li&gt;灭尽龙&lt;/li&gt;
-&lt;/ul&gt;</code></pre>
-<pre><code class="js">ul.addEventListener(&#39;click&#39;, function (e) {
-    this // =&gt; ul
-    e.target // =&gt; li
-})</code></pre>
-<h3 id="type"><a href="#type" class="headerlink" title="type"></a>type</h3><p>获取触发的事件类型。</p>
-<pre><code class="js">div.addEventListener(&#39;click&#39;, function (e) {
+btn.addEventListener(&#39;click&#39;, function (e) {
+    // 获取触发的事件类型
     e.type // =&gt; click
+    // 阻止元素自带的默认事件
+    e.preventDefault() 
 })</code></pre>
-<h3 id="preventDefault"><a href="#preventDefault" class="headerlink" title="preventDefault()"></a>preventDefault()</h3><p>阻止元素自带的默认事件，比如<code>&lt;a&gt;</code>元素拥有默认事件<code>click</code>，当事件触发时会跳转到指定页面：</p>
-<pre><code class="html">&lt;a href=&quot;http://www.bilibili.com&quot;&gt;哔哩哔哩&lt;/a&gt;</code></pre>
-<pre><code class="js">a.addEventListener(&#39;click&#39;, function (e) {
-    e.preventDefault() // 阻止页面跳转
+<h3 id="获取触发事件元素"><a href="#获取触发事件元素" class="headerlink" title="获取触发事件元素"></a>获取触发事件元素</h3><p>事件监听函数中的<code>this</code>指代<strong>绑定事件</strong>的元素，而事件对象的<code>target</code>获取的是<strong>触发事件</strong>的元素。由于事件具有冒泡特性（见下文），因此两者未必是相同的。</p>
+<p>在下面的代码中，由于事件是绑定在<code>&lt;ul&gt;</code>上，因此<code>this</code>指向<code>&lt;ul&gt;</code>；但是如果点击<code>&lt;li&gt;</code>触发事件，那么<code>e.target</code>指向点击的<code>&lt;li&gt;</code>。</p>
+<pre><code class="html">&lt;ul id=&quot;list&quot;&gt;
+    &lt;li class=&quot;list-item&quot;&gt;点击触发事件啦&lt;/li&gt;
+    &lt;li class=&quot;list-item&quot;&gt;点击触发事件啦&lt;/li&gt;
+    &lt;li class=&quot;list-item&quot;&gt;点击触发事件啦&lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+<pre><code class="js">document.querySelector(&#39;#list&#39;).addEventListener(&#39;click&#39;, function(e) {
+    this        // =&gt; &lt;ul&gt;...&lt;/ul&gt;
+    e.target    // =&gt; &lt;li&gt;...&lt;/li&gt;
 })</code></pre>
-<blockquote>
-<p>除此之外，还可以在监听函数中加入<code>return false</code>语句，但是它不仅会阻止默认事件，还会<strong>阻止事件冒泡</strong>。由于它的双重作用，因此不推荐使用这种方式。</p>
-</blockquote>
-<h3 id="鼠标位置"><a href="#鼠标位置" class="headerlink" title="鼠标位置"></a>鼠标位置</h3><p>使用事件对象的下列属性可以获取鼠标位置的相关信息，它们的值均<strong>没有单位</strong>，而且为只读。</p>
-<table>
-<thead>
-<tr>
-<th>属性</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><code>offsetX</code>/<code>offsetY</code></td>
-<td>鼠标相对于<strong>触发事件元素</strong>内边距区域的水平 / 垂直方向坐标</td>
-</tr>
-<tr>
-<td><code>clientX</code>/<code>clientY</code></td>
-<td>鼠标相对于<strong>视口</strong>的水平 / 垂直方向坐标</td>
-</tr>
-<tr>
-<td><code>pageX</code>/<code>pageY</code></td>
-<td>鼠标相对于<strong>页面文档</strong>的水平 / 垂直方向坐标</td>
-</tr>
-<tr>
-<td><code>screenX</code>/<code>screenY</code></td>
-<td>鼠标相对于<strong>设备屏幕</strong>的水平 / 垂直方向坐标</td>
-</tr>
-</tbody></table>
+<h3 id="获取鼠标位置"><a href="#获取鼠标位置" class="headerlink" title="获取鼠标位置"></a>获取鼠标位置</h3><p>使用事件对象的下列属性可以获取鼠标位置的相关信息，它们的值均<strong>没有单位</strong>，而且为只读。</p>
 <pre><code class="js">document.addEventListener(&#39;mousemove&#39;, function (e) {
-    e.pageX
+    // 鼠标相对于 触发事件元素 内边距区域的水平 / 垂直方向坐标
+    e.offsetX; e.offsetY
+    // 鼠标相对于 视口 的水平 / 垂直方向坐标
+    e.clientX; e.clientY
+    // 鼠标相对于 页面文档 的水平 / 垂直方向坐标
+    e.pageX; pageY
+    // 鼠标相对于 设备屏幕 的水平 / 垂直方向坐标
+    e.screenX; e.screenY
 })</code></pre>
 <blockquote>
 <p>注意在实现跟随鼠标移动效果时，<strong>不要将鼠标完全放在跟随的元素上</strong>，这样可能会导致一些鼠标事件无法正常触发。比如点击事件正好点在跟随的元素上，而不是原本想要点击的页面元素。</p>
 </blockquote>
-<h3 id="键盘按键"><a href="#键盘按键" class="headerlink" title="键盘按键"></a>键盘按键</h3><p>使用事件对象的<code>code</code>和<code>key</code>属性可以获取用户按下的键。但是<code>code</code>属性 IE 和 Edge 不支持，<code>key</code>属性 IE8 不支持，而且它们的返回值也有所不同。</p>
-<pre><code class="js">document.onkeydown = function (e) { // 分别输入回车和字母 A
-    e.code // =&gt; Enter 和 keyA
-    e.key // =&gt; Enter 和 a
-    e.keyCode // =&gt; 13 和 65
-    e.which // =&gt; 13 和 65
-}</code></pre>
-<blockquote>
-<p>注意，<code>keyCode</code>和<code>which</code>也可以实现同样功能，但是已经被废弃，不建议使用。jQuery 中将<code>which</code>属性进行了封装，可以直接使用。</p>
-</blockquote>
-<h3 id="屏幕触摸"><a href="#屏幕触摸" class="headerlink" title="屏幕触摸"></a>屏幕触摸</h3><p>使用事件对象的<code>targetTouches</code>属性可以获取触发事件时位于<strong>触发事件元素</strong>上的触摸点，它返回一个<code>TouchList</code>集合，通过<code>length</code>和方括号<code>[]</code>可以获取其中的<code>Touch</code>对象以及数量。每个<code>Touch</code>对象代表当前手指的触摸点，其中包含<a href="#鼠标位置">鼠标位置</a>中的全部属性（<code>offsetX</code>和<code>offsetY</code>除外）。</p>
+<h3 id="获取键盘输入"><a href="#获取键盘输入" class="headerlink" title="获取键盘输入"></a>获取键盘输入</h3><p>使用事件对象的<code>code</code>和<code>key</code>属性可以获取用户按下的键。但是<code>code</code>属性 IE 和 Edge 不支持，<code>key</code>属性 IE8 不支持，而且它们的返回值也有所不同。</p>
+<pre><code class="js">// 分别输入回车和字母 A
+document.addEventListener(&#39;keydown&#39;, function (e) {
+    e.code      // =&gt; Enter 和 keyA
+    e.key       // =&gt; Enter 和 a
+    e.keyCode   // =&gt; 13 和 65
+    e.which     // =&gt; 13 和 65
+})</code></pre>
+<h3 id="获取触摸位置"><a href="#获取触摸位置" class="headerlink" title="获取触摸位置"></a>获取触摸位置</h3><p>事件对象的<code>targetTouches</code>属性表示触发事件时位于<strong>触发事件元素</strong>上的触摸点，返回<code>TouchList</code>伪数组。每个<code>Touch</code>对象代表当前手指的触摸点，其中包含鼠标位置中的全部属性（<code>offsetX</code>和<code>offsetY</code>除外）。</p>
 <pre><code class="js">div.addEventListener(&#39;touchstart&#39;, function (e) {
     e.targetTouches[0].clientX // 获取当前触摸点相对视口的 x 坐标
 })</code></pre>
-<p>使用事件对象的<code>touches</code>属性可以获取触发事件时位于<strong>整个屏幕</strong>上的触摸点，而<code>changedTouches</code>可以获取触发事件时<strong>触摸状态发生改变</strong>（之前触摸现在松开，或反之）的触摸点。它们的用法与<code>targetTouches</code>基本一致。</p>
+<p>事件对象的<code>touches</code>属性表示触发事件时位于<strong>整个屏幕</strong>上的触摸点，而<code>changedTouches</code>表示触发事件时<strong>触摸状态发生改变</strong>（之前触摸现在松开，或反之）的触摸点。它们的用法与<code>targetTouches</code>基本一致。</p>
 <h2 id="事件传播"><a href="#事件传播" class="headerlink" title="事件传播"></a>事件传播</h2><p>如果子元素与父元素重叠在一起，并且都绑定了事件，那么某些操作（比如鼠标点击、移入移出）可能会导致它们的事件同时触发，这个现象称为事件的传播。JavaScript 将事件传播分为三个阶段，使用事件对象的<code>eventParse</code>属性可以获取：</p>
 <ul>
 <li>捕获阶段：从<code>html</code>对象传递到目标节点（从顶层传递到底层），<code>eventParse</code>值为<code>1</code></li>
@@ -320,7 +278,7 @@ outer.addEventListener(&#39;click&#39;, function (e) {
 <td>当浏览器窗口发生改变时触发，必须绑定给<code>window</code>对象</td>
 </tr>
 </tbody></table>
-<h4 id="页面加载"><a href="#页面加载" class="headerlink" title="页面加载"></a>页面加载</h4><p><code>load</code>和<code>pageshow</code>事件都是在页面加载完成后触发，区别在于，火狐浏览器在页面跳转再通过后退按钮返回时，会将页面保存到缓存中，此时<code>load</code>事件不会再次触发，而<code>pageshow</code>事件则不会有这个问题。</p>
+<p><code>load</code>和<code>pageshow</code>事件都是在页面加载完成后触发，区别在于，火狐浏览器在页面跳转再通过后退按钮返回时，会将页面保存到缓存中，此时<code>load</code>事件不会再次触发，而<code>pageshow</code>事件则不会有这个问题。</p>
 <h3 id="触屏事件"><a href="#触屏事件" class="headerlink" title="触屏事件"></a>触屏事件</h3><table>
 <thead>
 <tr>
@@ -339,18 +297,6 @@ outer.addEventListener(&#39;click&#39;, function (e) {
 <tr>
 <td><code>touchend</code></td>
 <td>手指从元素上松开时触发</td>
-</tr>
-</tbody></table>
-<h3 id="其它事件"><a href="#其它事件" class="headerlink" title="其它事件"></a>其它事件</h3><table>
-<thead>
-<tr>
-<th>事件</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><code>selectstart</code></td>
-<td>当用户选择页面文字时触发，为<code>document</code>绑定并阻止默认事件可以禁止用户选择页面文字</td>
 </tr>
 </tbody></table>
 </div>

@@ -5,8 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>这是一个神奇的主题</title>
-    <!-- <link rel="stylesheet" href="//cdn.yesuanzao.cn/blog/chicken.css"> -->
+    <title>小鸡米花的知识库</title>
     <link rel="stylesheet" href="//cdn.yesuanzao.cn/blog/atom-one-dark.css">
     <link rel="stylesheet" href="https://cdn.staticfile.org/KaTeX/0.11.1/katex.min.css">
     <link rel="stylesheet" href="https://cdn.staticfile.org/tocbot/4.10.0/tocbot.css">
@@ -30,11 +29,13 @@
         <div class="post-info">
             <ul class="tag-list">
                 
+                    <a class="tag-list-item" href="/tags/Git/">Git</a>
+                
             </ul>
         </div>
-        <div class="post-content"><h1 id="大前端笔记之23-🐈-Git"><a href="#大前端笔记之23-🐈-Git" class="headerlink" title="大前端笔记之23 🐈 Git"></a>大前端笔记之23 🐈 Git</h1><p>Git 是目前最主流的分布式版本管理系统，它可以将项目多个不同的版本状态保存起来，以便随时取回之前的版本进行重写或查阅。</p>
+        <div class="post-content"><h1 id="🐈-Git-简明入门教程"><a href="#🐈-Git-简明入门教程" class="headerlink" title="🐈 Git 简明入门教程"></a>🐈 Git 简明入门教程</h1><p>Git 是目前最主流的分布式版本管理系统，它可以将项目多个不同的版本状态保存起来，以便随时取回之前的版本进行重写或查阅。</p>
 <p>既然有分布式，那么与之相对的便是集中式，比如 SVN。集中式版本管理是将版本库保存在一个统一的中央服务器，其它用户都需要通过网络连接中央服务器，如果要修改项目，则需要先从中央服务器获取到版本库的文件，修改完成后再提交回去。而分布式版本管理则是将版本库保存到用户本机上，如果有需要，则只需两个人同步，就能获取到对方更新后的版本了。</p>
-<h2 id="安装与配置"><a href="#安装与配置" class="headerlink" title="安装与配置"></a>安装与配置</h2><p>首先在<a href="https://git-scm.com/downloads" target="_blank" rel="noopener">官网</a>下载对应版本的 Git，根据提示安装即可。</p>
+<p>首先在<a href="https://git-scm.com/downloads" target="_blank" rel="noopener">官网</a>下载对应版本的 Git，根据提示安装即可。</p>
 <p>打开任意文件夹，右键选择<code>Git Bash Here</code>，打开 Git 的命令行窗口，输入<code>git --version</code>，如果出现版本号信息（如<code>git version 2.24.0.windows.2</code>），则说明安装成功。</p>
 <p>在第一次使用 Git 之前，需要先配置提交人的姓名和邮箱。其中的<code>--global</code>表示全局配置，即本地所有的仓库都采用该配置。</p>
 <pre><code class="powershell">git config --global user.name 小鸡米花         # 配置姓名

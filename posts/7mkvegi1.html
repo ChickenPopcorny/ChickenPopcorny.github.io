@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>小鸡米花的知识库</title>
+    <link rel="stylesheet" href="//cdn.yesuanzao.cn/blog/atom-one-dark.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/KaTeX/0.11.1/katex.min.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/tocbot/4.10.0/tocbot.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/5.12.1/css/all.min.css">
+    <!-- 本地静态文件测试 -->
+    <link rel="stylesheet" href="/css/chicken.css">
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+    <header>
+    <div class="container">
+        <div class="site-title"><a href="/">小鸡米花的知识库</a></div>
+        <nav>
+            <a class="nav-item " href="/">主页</a>
+            <a class="nav-item " href="/archives">时光轴</a>
+        </nav>
+    </div>
+</header>
+    <div id="write">
+    <div class="container">
+        <div class="post-info">
+            <ul class="tag-list">
+                
+                    <a class="tag-list-item" href="/tags/JavaScript/">JavaScript</a>
+                
+                    <a class="tag-list-item" href="/tags/Vue-js/">Vue.js</a>
+                
+            </ul>
+        </div>
+        <div class="post-content"><h1 id="🍀-使用-Vue-router-实现前端路由"><a href="#🍀-使用-Vue-router-实现前端路由" class="headerlink" title="🍀 使用 Vue-router 实现前端路由"></a>🍀 使用 Vue-router 实现前端路由</h1><p>前端路由指的是在客户端维护 URL 和页面之间的对应关系，无论用户向服务器请求什么 URL，返回的都只有一套 HTML + CSS + JS，这样的技术称为<abbr title="SPA，Single Page Application"><strong>单页面应用</strong></abbr>。JavaScript 通过监听 URL 的变化，从这些资源中找到对应的部分（组件）进行渲染，但是不需要再向服务器请求静态资源了（接口动态数据还是得正常请求）。单页面应用的优点在于，它仅在用户首次访问时需要稍长的加载时间，但是之后切换页面不需要再次发送请求，这样增加了用户体验，也减轻了服务器压力。</p>
+<p>此时，URL 只是一个页面的标识，并不需要真正发送请求。因此，我们必须通过一些方式使得 URL 发生改变，但是又不发送请求。第一种方式是修改 URL 中的 hash 部分（<code>#</code>之后），然后通过监听<code>hashchange</code>事件来重新渲染页面。</p>
+<p>第二种方式是通过 HTML5 新增的<a href="/posts/gjqbkyw3.html#History">History</a>对象中的方法来修改 URL，这些方法也不会导致重新发送请求。但如果用户刷新了页面，那么浏览器还是会将其当作正常的 URL 向服务端发送请求，因此需要后端配合。</p>
+<p>而 Vue 通过<a href="https://router.vuejs.org/zh/installation.html" target="_blank" rel="noopener">Vue-Router</a>扩展提供了对前端路由的支持，它的实现原理也是上述两种方式。</p>
+<p>要使用 Vue-Router，需要另外引入一个单独的文件：</p>
+<pre><code class="html">&lt;script src=&quot;https://unpkg.com/vue-router/dist/vue-router.js&quot;&gt;&lt;/script&gt;</code></pre>
+<p>然后实例化一个<code>VueRouter()</code>路由对象，用来配置路由规则，并通过<code>Vue()</code>实例挂载。接下来在页面上使用<code>&lt;router-view&gt;</code>作为占位符，一旦找到匹配的路由，就会将该元素替换为对应的组件。这时将 URL 修改成<code>http://localhost/#/home</code>就可以跳转到首页组件了，当然让用户修改 URL 肯定是不现实的，为此 Vue 提供了<code>&lt;router-link&gt;</code>元素，将要跳转的路由添加到<code>to</code>属性中，Vue 会自动将该元素渲染为仅改变 Hash 值的<code>&lt;a&gt;</code>标签。</p>
+<blockquote>
+<p>注意，<code>&lt;router-view&gt;</code>和<code>&lt;router-link&gt;</code>本身也是两个全局组件。</p>
+</blockquote>
+<pre><code class="html">&lt;div id=&quot;app&quot;&gt;
+    &lt;router-link to=&quot;/home&quot;&gt;首页&lt;/router-link&gt;
+    &lt;router-link to=&quot;/about&quot;&gt;关于&lt;/router-link&gt;
+    &lt;router-view&gt;&lt;/router-view&gt;
+&lt;/div&gt;</code></pre>
+<pre><code class="js">// 注册两个组件对象
+const Home = Vue.component(&#39;Home&#39;, {
+    template: &#39;&lt;h1&gt;主页&lt;/h1&gt;&#39;
+})
+const About = Vue.component(&#39;About&#39;, {
+    template: &#39;&lt;h1&gt;关于&lt;/h1&gt;&#39;
+})
+
+// 实例化路由对象，通过 Vue() 实例挂载
+const router = new VueRouter({
+    // 配置路由，即路径和组件的对应关系
+    routes: [ 
+        // 每个对象表示一条路由规则，path 为路径，component 为组件对象
+        { path: &#39;/home&#39;, component: Home },
+        { path: &#39;/about&#39;, component: About }
+    ]
+})
+
+const vue = new Vue({
+    el: &#39;#app&#39;,
+    router: router // 挂载路由对象
+})</code></pre>
+<h2 id="禁止组件复用"><a href="#禁止组件复用" class="headerlink" title="禁止组件复用"></a>禁止组件复用</h2><p>如果多个路由绑定的是同一个组件，那么在跳转时由于组件复用，会保留之前组件的信息。</p>
+<p><img src="http://cdn.yesuanzao.cn/superbed/2020/04/08/5e8d84ab504f4bcb04121202.gif" alt=""></p>
+<p>如果希望组件在跳转时重新渲染，可以为<code>&lt;router-view&gt;</code>绑定一个<code>key</code>属性（与<code>v-for</code>的原理一样），它的值可以设置为当前路由对象的路径。<strong>这里的<code>$route</code>指代的就是当前路由对象</strong>，也就是<code>routes</code>数组中的每一个对象。</p>
+<pre><code class="html">&lt;router-view :key=&quot;$route.path&quot;&gt;&lt;/router-view&gt;</code></pre>
+<h2 id="将链接渲染为其它元素"><a href="#将链接渲染为其它元素" class="headerlink" title="将链接渲染为其它元素"></a>将链接渲染为其它元素</h2><p>如果希望<code>&lt;router-link&gt;</code>渲染为其它的元素，那么为其添加一个<code>tag</code>属性即可。注意，无论渲染为任何元素，它都是可以点击跳转的。</p>
+<pre><code class="html">&lt;!-- 会渲染为一个 &lt;button&gt; 元素 --&gt;
+&lt;router-link to=&quot;home&quot; tag=&quot;button&quot;&gt;首页&lt;/router-link&gt;</code></pre>
+<h2 id="重定向"><a href="#重定向" class="headerlink" title="重定向"></a>重定向</h2><p>将路由规则对象中的<code>component</code>替换为<code>redirect</code>，可以使该路由重定向到另外的路由：</p>
+<pre><code class="js">const router = new VueRouter({
+    routes: [
+        { path: &#39;/&#39;, redirect: &#39;/home&#39; }, // 访问根路径时，重定向到首页
+        { path: &#39;/home&#39;, component: Home },
+        { path: &#39;/about&#39;, component: About }
+    ]
+})</code></pre>
+<h2 id="History-模式"><a href="#History-模式" class="headerlink" title="History 模式"></a>History 模式</h2><p>使用<code>mode</code>属性可以用<code>History</code>方式实现前端路由，从而去掉 URL 中的<code>#</code>，但是该方式需要后端配合实现。</p>
+<pre><code class="js">const router = new VueRouter({
+    mode: &#39;history&#39;, // 设置为 History 实现前端路由
+    routes: []
+})</code></pre>
+<h2 id="取消历史记录"><a href="#取消历史记录" class="headerlink" title="取消历史记录"></a>取消历史记录</h2><p>默认情况下，点击浏览器的后退按钮是可以返回上一条历史记录的，为<code>&lt;router-link&gt;</code>添加<code>replace</code>属性则可以直接将当前记录替换，而非压入一条新记录。</p>
+<pre><code class="html">&lt;router-link to=&quot;/home&quot; replace&gt;首页&lt;/router-link&gt;
+&lt;router-link to=&quot;/about&quot; replace&gt;关于&lt;/router-link&gt;</code></pre>
+<h2 id="当前链接样式"><a href="#当前链接样式" class="headerlink" title="当前链接样式"></a>当前链接样式</h2><p>当前选中的链接会自动添加<code>.router-link-active</code>类，通过它可以设置当前链接的样式。在路由实例中设置<code>linkActiveClass</code>属性可以修改这个类名。</p>
+<pre><code class="js">const router = new VueRouter({
+    routes: [],
+    linkActiveClass: &#39;active&#39; // 修改默认的选中类
+})</code></pre>
+<h2 id="编程式导航"><a href="#编程式导航" class="headerlink" title="编程式导航"></a>编程式导航</h2><p>除了使用<code>&lt;router-link&gt;</code>创建标签来定义导航链接，也可以使用<code>$router</code>调用方法实现跳转，<strong>它指代的是<code>VueRouter()</code>实例对象</strong>，注意与之前的<code>$route</code>区别开。</p>
+<p>注意对于<code>push()</code>和<code>replace()</code>两个方法来说，如果当前已经是该组件，那么重复跳转会导致<code>NavigationDuplicated</code>错误，好在它们均返回<code>Promise</code>对象，可以用于捕获异常。</p>
+<pre><code class="html">&lt;button @click=&quot;goIndex&quot;&gt;首页&lt;/button&gt;
+&lt;button @click=&quot;goAbout&quot;&gt;关于&lt;/button&gt;</code></pre>
+<pre><code class="js">const vue = new Vue({
+    methods: {
+        goIndex() {
+            // 跳转到 /home
+            this.$router.push(&#39;/home&#39;).catch(err =&gt; {}) 
+            // 不添加新的历史记录，而是直接替换
+            this.$router.replace(&#39;/home&#39;).catch(err =&gt; {}) 
+            // 跳转到某个历史记录，如果不存在则无效
+            this.$router.go(-1)
+        },
+        goAbout() {
+            this.$router.push(&#39;/about&#39;).catch(err =&gt; {})
+        }
+    }
+})</code></pre>
+<h2 id="嵌套路由"><a href="#嵌套路由" class="headerlink" title="嵌套路由"></a>嵌套路由</h2><p>Vue 支持在路由下继续定义子路由。</p>
+<pre><code class="js">const router = new VueRouter({
+    routes: [
+        {
+            path: &#39;/home&#39;,
+            component: Home,
+            // 子路由规则
+            children: [
+                // 注意子路由的 path不要添加 /，否则表示根路由，会导致路由拼接错误
+                { path: &#39;news&#39;, component: HomeNews }, 
+                { path: &#39;message&#39;, component: HomeMessage }
+            ]
+        }
+    ]
+})</code></pre>
+<p>注意，父级路由模板中的<code>&lt;router-link&gt;</code>里的<code>to</code>属性要定义完整的路径，因为它无法识别当前是跟路由还是子路由。</p>
+<pre><code class="html">&lt;router-link to=&quot;/home/news&quot;&gt;新闻&lt;/router-link&gt;</code></pre>
+<h2 id="传递参数"><a href="#传递参数" class="headerlink" title="传递参数"></a>传递参数</h2><p>前端路由在跳转到其它页面时可以传递参数，主要有下面两种方式。</p>
+<h3 id="路由参数"><a href="#路由参数" class="headerlink" title="路由参数"></a>路由参数</h3><p>第一种方式称为路由参数，在路由规则中的<code>path</code>中添加以冒号开头的自定义参数名，那么 Vue 会将这个部分识别为参数，此时任何以<code>/user</code>开头的路由都会匹配该路由。然后在组件中使用<code>$route.params.自定义参数名</code>来获取路由参数的值。</p>
+<pre><code class="html">&lt;router-link to=&quot;/user/zhangsan&quot;&gt;用户&lt;/router-link&gt;</code></pre>
+<pre><code class="js">const User = Vue.component(&#39;User&#39;, {
+    template: &#39;&lt;h1&gt;用户 ID 为：{{ $route.params.userId }}&lt;/h1&gt;&#39;
+})
+
+const router = new VueRouter({
+    routes: [
+        // 冒号后面为自定义参数名
+        { path: &#39;/user/:userId&#39;, component: User }
+    ]
+})</code></pre>
+<p>路由参数也可以动态设置，此时需要将<code>to</code>绑定一个对象，其中<code>name</code>为<strong>路径规则的名称</strong>，<code>params</code>为要传递的参数对象。</p>
+<pre><code class="html">&lt;router-link :to=&quot;{ name: &#39;User&#39;, params: { id: 666 } }&quot;&gt;用户&lt;/router-link&gt;</code></pre>
+<pre><code class="js">const router = new VueRouter({
+    routes: [
+        { path: &#39;/user/:id&#39;, component: User, name: &#39;User&#39; } // 与 &lt;router-link&gt; 中的 name 对应
+    ]
+})</code></pre>
+<h3 id="地址栏传参"><a href="#地址栏传参" class="headerlink" title="地址栏传参"></a>地址栏传参</h3><p>第二种方式是通过地址栏传参，不过这里不需要手动在路由中拼接<code>?</code>部分，而是同样将<code>to</code>绑定为一个对象，其中<code>path</code>参数为路径，<code>query</code>为传递的参数。然后在组件中使用<code>$route.query</code>对象来获取这些参数：</p>
+<pre><code class="html">&lt;router-link :to=&quot;{ path: &#39;/user&#39;, query: { id: 233 } }&quot;&gt;用户&lt;/router-link&gt;</code></pre>
+<pre><code class="js">const User = Vue.component(&#39;User&#39;, {
+    template: &#39;&lt;h1&gt;用户 ID 为：{{ $route.query.id }}&lt;/h1&gt;&#39;
+})</code></pre>
+<h2 id="导航守卫"><a href="#导航守卫" class="headerlink" title="导航守卫"></a>导航守卫</h2><p>导航守卫可以拦截页面跳转并触发对应的回调函数。</p>
+<pre><code class="js">const router = new VueRouter({
+    routes: [
+        { path: &#39;/home&#39;, component: Home },
+        { path: &#39;/about&#39;, component: About }
+    ]
+})
+
+// 创建全局导航守卫
+router.beforeEach((to, from, next) =&gt; {
+    to      // 目的路由规则对象
+    from    // 源路由规则对象
+    next()  // 拦截之后，如果希望继续跳转，则必须手动调用 next() 以放行
+})</code></pre>
+<h2 id="元数据"><a href="#元数据" class="headerlink" title="元数据"></a>元数据</h2><p>在路由规则对象中可以定义<strong>元数据</strong>，用来对路由进行解释说明。比如下面的代码可以实现跳转后修改当前页面的标题。</p>
+<pre><code class="js">const vueRouter = new VueRouter({
+    routes: [
+        { path: &#39;/home&#39;, component: Home, meta: { title: &#39;首页&#39; } },
+        { path: &#39;/about&#39;, component: About, meta: { title: &#39;关于&#39; } }
+    ]
+})
+
+ // 修改页面标题
+vueRouter.beforeEach((to, from, next) =&gt; {
+    document.title = to.meta.title
+    // 如果路由规则对象包含子路由，那么需要使用 matched 数组获取到所有匹配的路由对象
+    document.title = to.matched[0].meta.title
+    next()
+})</code></pre>
+</div>
+    </div>
+</div>
+
+<div class="toc"></div>
+    <footer>
+    <p>© 2020</p>
+    <p>Theme chicken by 小鸡米花, Powered by Hexo</p>
+</footer>
+    <a class="back-to-top" href="javascript:;"></a>
+
+    <script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js"></script>
+    <script defer src="https://cdn.staticfile.org/KaTeX/0.11.1/katex.min.js"></script>
+    <script defer src="https://cdn.staticfile.org/KaTeX/0.11.1/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body, { strict: false, delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}] });"></script>
+    <script src="https://cdn.staticfile.org/tocbot/4.10.0/tocbot.min.js"></script>
+    <script src="https://cdn.staticfile.org/highlight.js/9.18.1/highlight.min.js"></script>
+
+    <script>
+        // 为标签追加字体图标
+        $('.tag-list-item').prepend('<i class="fas fa-tag"></i>')
+
+        // 回到顶部的猫
+        $('.back-to-top').click(function () {
+            $('html, body').animate({
+                scrollTop: 0
+            }, 500)
+        })
+
+        // 监听 回到顶部的猫 是否显示
+        $(document).scroll(function () {
+            if ($(document).scrollTop() > 50) {
+                $('.back-to-top').addClass('show')
+            } else {
+                $('.back-to-top').removeClass('show')
+            }
+        })
+
+        // 在表格外包裹一层，用来生成滚动条
+        $('.post-content > table').wrap('<div class="table-container"></div>')
+
+        // Tocbot 实例化，用来快速生成文档目录
+        tocbot.init({
+            tocSelector: '.toc', // 渲染目录的容器
+            contentSelector: '.post-content', // 标题所在的容器
+            headingSelector: 'h2, h3', // 要渲染的目录层级,
+            headingsOffset: -50, // 微调目录高亮的显示位置（偏移量），防止点击的链接和高亮的链接不一致
+        })
+
+        // 初始化代码高亮 highlight.js
+        hljs.initHighlightingOnLoad()
+
+        // 自动加载 waifu
+        try {
+            $("<link>").attr({ href: "//cdn.yesuanzao.cn/blog/live2d/waifu.min.css", rel: "stylesheet", type: "text/css" }).appendTo('head');
+            $('body').append('<div class="waifu"><div class="waifu-tips"></div><canvas id="live2d" class="live2d"></canvas><div class="waifu-tool"><span class="fui-home"></span> <span class="fui-chat"></span> <span class="fui-eye"></span> <span class="fui-user"></span> <span class="fui-photo"></span> <span class="fui-info-circle"></span> <span class="fui-cross"></span></div></div>');
+            $.ajax({ url: '//cdn.yesuanzao.cn/blog/live2d/waifu-tips.js', dataType: "script", cache: true, async: false });
+            $.ajax({ url: '//cdn.yesuanzao.cn/blog/live2d/live2d.min.js', dataType: "script", cache: true, async: false, success: function() {
+                initModel('//cdn.yesuanzao.cn/blog/live2d/waifu-tips.json');
+            } });
+        } catch (err) { console.log(err) }
+    </script>
+    <!-- 
+        添加控制台，测试移动端
+        <script src="http://cdn.jsdelivr.net/npm/eruda"></script>
+        <script>eruda.init();</script>
+    -->
+</body>
+
+</html>

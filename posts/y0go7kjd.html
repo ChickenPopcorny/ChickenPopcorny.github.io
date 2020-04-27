@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>小鸡米花的知识库</title>
+    <link rel="stylesheet" href="//cdn.yesuanzao.cn/blog/atom-one-dark.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/KaTeX/0.11.1/katex.min.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/tocbot/4.10.0/tocbot.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/5.12.1/css/all.min.css">
+    <!-- 本地静态文件测试 -->
+    <link rel="stylesheet" href="/css/chicken.css">
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+    <header>
+    <div class="container">
+        <div class="site-title"><a href="/">小鸡米花的知识库</a></div>
+        <nav>
+            <a class="nav-item " href="/">主页</a>
+            <a class="nav-item " href="/archives">时光轴</a>
+        </nav>
+    </div>
+</header>
+    <div id="write">
+    <div class="container">
+        <div class="post-info">
+            <ul class="tag-list">
+                
+                    <a class="tag-list-item" href="/tags/Node-js/">Node.js</a>
+                
+                    <a class="tag-list-item" href="/tags/JavaScript/">JavaScript</a>
+                
+            </ul>
+        </div>
+        <div class="post-content"><h1 id="🔔-JavaScript-中的模块化"><a href="#🔔-JavaScript-中的模块化" class="headerlink" title="🔔 JavaScript 中的模块化"></a>🔔 JavaScript 中的模块化</h1><p>JavaScript 自从诞生以来，一直没有类似于模块（Module）的体系，它无法将大型程序拆分成多个小文件，再拼装起来。比如在浏览器端，虽然一个页面可以引入多个 JavaScript 文件，但是它们其实会被浏览器合并成一个大文件，因此会出现命名冲突的问题。</p>
+<p>而所谓模块化，就是将每个<code>.js</code>文件视为一个模块，每个模块会形成一个独立的模块作用域，它们彼此之间不能访问，因此不会出现命名冲突等问题。如果模块之间需要互相访问，则只需在一个模块中导入另一个模块即可；如果要访问其它模块中的具体数据，则要在被访问的模块中先导出数据，再从另一个模块中导入。</p>
+<p>为了实现模块化，JavaScript 社区提供了一些解决方案，如浏览器端的 AMD（require.js）和 CMD（Sea.js）等，而服务端的 Node.js 也提出了 CommonJS，并沿用至今。之后，JavaScript 也在 ES6 中实现了模块化的功能，但是由于历史原因，Node.js 目前还无法支持，因此目前主要分为 ES6 模块化和 CommonJS 两种。</p>
+<h2 id="ES6-模块化"><a href="#ES6-模块化" class="headerlink" title="ES6 模块化"></a>ES6 模块化</h2><p>使用<code>import</code>关键字可以导入一个模块。注意，<strong>导入模块会执行其中的代码，但是不能访问其中的变量、函数等数据，因为它们拥有独立的作用域</strong>。</p>
+<pre><code class="js">// index.js
+import &#39;./includes.js&#39; // 将 includes.js 文件作为模块导入 index.js</code></pre>
+<p>此外，如果是直接通过<code>&lt;script&gt;</code>标签导入模块，那么必须为标签添加<code>type=&quot;module&quot;</code>属性，否则会报错。当然如果是使用 webpack 等工具打包则没有这种限制。</p>
+<pre><code class="html">&lt;script type=&quot;module&quot;&gt;
+    import &#39;./includes.js&#39;
+&lt;/script&gt;</code></pre>
+<h3 id="按需导入与导出"><a href="#按需导入与导出" class="headerlink" title="按需导入与导出"></a>按需导入与导出</h3><p>在模块中使用<code>export</code>关键字导出指定的数据，数据需要使用花括号包裹，多个数据以逗号分隔：</p>
+<pre><code class="js">// includes.js
+const num = 233
+function foo() {}
+
+export { num, foo }</code></pre>
+<p>也可以使用多个<code>export</code>将数据在定义时直接导出：</p>
+<pre><code class="js">// includes.js
+export const num = 233
+export function foo() {}</code></pre>
+<p>导入模块时，要获取这些数据，也需要通过花括号包裹，并且导出和导入时的<strong>数据名称要保持一致</strong>：</p>
+<pre><code class="js">// index.js
+import { num, foo } from &#39;./includes.js&#39;
+num // =&gt; 233
+foo()</code></pre>
+<h3 id="默认导入与导出"><a href="#默认导入与导出" class="headerlink" title="默认导入与导出"></a>默认导入与导出</h3><p>但是在加载模块时，去逐一了解需要导入哪些数据实在有些困难。因此在导出模块时，可以使用<code>default</code>关键字指定<strong>默认导出</strong>的数据。这样在导入模块时，就不需要确切地声明要导入的数据了，只要任意起名即可。注意，此时导入语句中的数据名<strong>不能加大括号</strong>：</p>
+<pre><code class="js">// includes.js
+const num = 233
+export default num</code></pre>
+<pre><code class="js">// index.js
+import something from &#39;./includes.js&#39; // something 不需要加大括号
+something // =&gt; 233</code></pre>
+<p>与按需导入导出不同的是，<code>export default</code>后可以跟任意数据类型，但是不能跟赋值语句。并且，<code>export default</code>在模块中<strong>只能出现一次，不允许多次使用</strong>。</p>
+<pre><code class="js">// 报错
+export default const num = 233</code></pre>
+<h2 id="CommonJS"><a href="#CommonJS" class="headerlink" title="CommonJS"></a>CommonJS</h2><p>CommonJS 是 Node.js 支持的模块化方式，与 ES6 模块化略有不同。CommonJS 的模块之间是通过<code>module.exports</code>这个对象来传递数据：</p>
+<pre><code class="js">// includes.js
+const num = 233
+
+module.exports = {
+    num: num // 可以使用 ES6 语法进行简写
+}</code></pre>
+<p>使用<code>require()</code>方法可以导入模块，该模块的返回值就是模块导出的<code>module.exports</code>对象：</p>
+<pre><code class="js">const includes = require(&#39;./includes.js&#39;) // =&gt; { num: 233 }</code></pre>
+<p>其中<code>require()</code>方法根据参数不同，查找模块的方式也略有不同。如果传入的是一个路径，则：</p>
+<ul>
+<li>如果是完整路径，则直接查找该文件</li>
+<li>如果省略了后缀名，那么会先查找同名的<code>.js</code>文件，再查找同名文件夹</li>
+<li>如果找到了文件夹，则找其中的<code>index.js</code>文件</li>
+<li>如果没有找到，则找其中的<code>package.json</code>文件，寻找<code>main</code>属性配置的入口文件</li>
+<li>如果没有找到配置文件或入口文件，则报错</li>
+</ul>
+<p>如果传入的是一个名称，那么引擎会认为这是一个系统模块或第三方模块，并在当前的<code>node_modules</code>文件夹中先查找同名文件，再查找同名文件夹，之后的步骤与上面一样。因此，<strong>如果要加载的是当前路径下的模块，必须要传入<code>./</code>表示当前路径，否则会被识别成模块名。</strong></p>
+</div>
+    </div>
+</div>
+
+<div class="toc"></div>
+    <footer>
+    <p>© 2020</p>
+    <p>Theme chicken by 小鸡米花, Powered by Hexo</p>
+</footer>
+    <a class="back-to-top" href="javascript:;"></a>
+
+    <script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js"></script>
+    <script defer src="https://cdn.staticfile.org/KaTeX/0.11.1/katex.min.js"></script>
+    <script defer src="https://cdn.staticfile.org/KaTeX/0.11.1/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body, { strict: false, delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}] });"></script>
+    <script src="https://cdn.staticfile.org/tocbot/4.10.0/tocbot.min.js"></script>
+    <script src="https://cdn.staticfile.org/highlight.js/9.18.1/highlight.min.js"></script>
+
+    <script>
+        // 为标签追加字体图标
+        $('.tag-list-item').prepend('<i class="fas fa-tag"></i>')
+
+        // 回到顶部的猫
+        $('.back-to-top').click(function () {
+            $('html, body').animate({
+                scrollTop: 0
+            }, 500)
+        })
+
+        // 监听 回到顶部的猫 是否显示
+        $(document).scroll(function () {
+            if ($(document).scrollTop() > 50) {
+                $('.back-to-top').addClass('show')
+            } else {
+                $('.back-to-top').removeClass('show')
+            }
+        })
+
+        // 在表格外包裹一层，用来生成滚动条
+        $('.post-content > table').wrap('<div class="table-container"></div>')
+
+        // Tocbot 实例化，用来快速生成文档目录
+        tocbot.init({
+            tocSelector: '.toc', // 渲染目录的容器
+            contentSelector: '.post-content', // 标题所在的容器
+            headingSelector: 'h2, h3', // 要渲染的目录层级,
+            headingsOffset: -50, // 微调目录高亮的显示位置（偏移量），防止点击的链接和高亮的链接不一致
+        })
+
+        // 初始化代码高亮 highlight.js
+        hljs.initHighlightingOnLoad()
+
+        // 自动加载 waifu
+        try {
+            $("<link>").attr({ href: "//cdn.yesuanzao.cn/blog/live2d/waifu.min.css", rel: "stylesheet", type: "text/css" }).appendTo('head');
+            $('body').append('<div class="waifu"><div class="waifu-tips"></div><canvas id="live2d" class="live2d"></canvas><div class="waifu-tool"><span class="fui-home"></span> <span class="fui-chat"></span> <span class="fui-eye"></span> <span class="fui-user"></span> <span class="fui-photo"></span> <span class="fui-info-circle"></span> <span class="fui-cross"></span></div></div>');
+            $.ajax({ url: '//cdn.yesuanzao.cn/blog/live2d/waifu-tips.js', dataType: "script", cache: true, async: false });
+            $.ajax({ url: '//cdn.yesuanzao.cn/blog/live2d/live2d.min.js', dataType: "script", cache: true, async: false, success: function() {
+                initModel('//cdn.yesuanzao.cn/blog/live2d/waifu-tips.json');
+            } });
+        } catch (err) { console.log(err) }
+    </script>
+    <!-- 
+        添加控制台，测试移动端
+        <script src="http://cdn.jsdelivr.net/npm/eruda"></script>
+        <script>eruda.init();</script>
+    -->
+</body>
+
+</html>

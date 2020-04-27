@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>小鸡米花的知识库</title>
+    <link rel="stylesheet" href="//cdn.yesuanzao.cn/blog/atom-one-dark.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/KaTeX/0.11.1/katex.min.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/tocbot/4.10.0/tocbot.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/5.12.1/css/all.min.css">
+    <!-- 本地静态文件测试 -->
+    <link rel="stylesheet" href="/css/chicken.css">
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+    <header>
+    <div class="container">
+        <div class="site-title"><a href="/">小鸡米花的知识库</a></div>
+        <nav>
+            <a class="nav-item " href="/">主页</a>
+            <a class="nav-item " href="/archives">时光轴</a>
+        </nav>
+    </div>
+</header>
+    <div id="write">
+    <div class="container">
+        <div class="post-info">
+            <ul class="tag-list">
+                
+                    <a class="tag-list-item" href="/tags/Node-js/">Node.js</a>
+                
+                    <a class="tag-list-item" href="/tags/MongoDB/">MongoDB</a>
+                
+                    <a class="tag-list-item" href="/tags/Mongoose/">Mongoose</a>
+                
+                    <a class="tag-list-item" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a>
+                
+            </ul>
+        </div>
+        <div class="post-content"><h1 id="🔐-MongoDB-简明入门教程"><a href="#🔐-MongoDB-简明入门教程" class="headerlink" title="🔐 MongoDB 简明入门教程"></a>🔐 MongoDB 简明入门教程</h1><p>MongoDB 与传统的关系型数据库区别在于，它不需要设计表结构，存取数据更加灵活。它保存的不是表，而是一种称为 BSON 的数据结构，它与 JSON 非常相似，但是比 JSON 强大的一点在于，它可以保存二进制数据，其它与 JSON 区别不大。正是由于这一点，MongoDB 的一些概念与关系型数据库有所不同：</p>
+<table>
+<thead>
+<tr>
+<th>SQL</th>
+<th>MongoDB</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>数据库（database）</td>
+<td>数据库（database）</td>
+</tr>
+<tr>
+<td>表（table）</td>
+<td>集合（collection）</td>
+</tr>
+<tr>
+<td>行（row）</td>
+<td>文档（document）</td>
+</tr>
+</tbody></table>
+<p>要使用 MongoDB，需要在<a href="https://www.mongodb.com/download-center/community" target="_blank" rel="noopener">官网</a>下载社区版（非企业级商用）。</p>
+<p><img src="http://cdn.yesuanzao.cn/superbed/2020/04/08/5e8d5a94504f4bcb04ec05ff.jpg" alt=""></p>
+<p>安装过程中会提示安装 MongoDB Compass 图形化界面，但是这个并不好用，建议直接使用 Navicat（最新版本支持 MongoDB）。安装完成后，将安装路径下的<code>bin</code>路径配置到环境变量中（如<code>C:\MongoDB\Server\bin</code>），以便命令行调用。系统服务下的<code>MongoDB Server</code>为 MongoDB 的服务，在使用 MongoDB 之前记得先启动它。最后，开启终端输入<code>mongo</code>即可进入 MongoDB 的命令行工具。</p>
+<p>安装目录下的<code>data</code>文件夹保存了数据库文件，如果要修改保存位置，需要打开<code>bin\mongod.cfg</code>，修改其中的<code>dbPath</code>一项。该文件是数据库的配置文件，很多选项都可以在这里修改。</p>
+<h2 id="CRUD"><a href="#CRUD" class="headerlink" title="CRUD"></a>CRUD</h2><p>注意，MongoDB 中的数据库和集合<strong>不需要手动创建</strong>，当第一次向集合中插入文档时，对应的数据库和集合会自动创建。因此即便是当前切换的数据库是不存在的，也没有关系。</p>
+<pre><code class="powershell">show databases      # 查看所有的数据库
+use test            # 切换当前使用的数据库
+show collections    # 查看当前数据库中所有的集合</code></pre>
+<h3 id="插入文档"><a href="#插入文档" class="headerlink" title="插入文档"></a>插入文档</h3><p>使用<code>db.集合名</code>可以调用各种方法对数据库进行操作，其中<code>db</code>指向当前数据库名。注意，这些方法仅适用于终端，而不是供后端语言调用。</p>
+<p>接下来使用<code>insert()</code>向集合中插入文档：</p>
+<pre><code class="js">// 插入一条文档
+db.users.insert({ name: &#39;御坂美琴&#39;, age: 16 })
+// 插入多条文档
+db.users.insert([
+    { name: &#39;JOJO&#39;, age: 17 },
+    { name: &#39;Wendy&#39;, age: 14 }
+])</code></pre>
+<p>此时就可以看到自动创建的数据库和集合了。</p>
+<p>注意，可以看到每一条文档前自动添加了一个<code>_id</code>字段，它是文档的唯一标识，但是其类型为比较特殊的<code>ObjectId</code>。该类型并不是普通的字符串，而是一个自定义对象，因此在其它语言查询数据库时，可能需要额外处理。</p>
+<h3 id="查询文档"><a href="#查询文档" class="headerlink" title="查询文档"></a>查询文档</h3><p>注意，MongoDB 中没有<code>WHERE</code>语句来限定查询条件，取而代之的是<a href="https://docs.mongodb.com/manual/reference/operator/query/" target="_blank" rel="noopener">查询操作符</a>语法。</p>
+<pre><code class="js">// 查询 name 为 &#39;JoJo&#39; 的文档
+db.users.find({ name: &#39;JoJo&#39; })
+// 查询 name 为 &#39;JoJo&#39; ，且 age 为 16 的文档
+db.users.find({ name: &#39;JoJo&#39;, age: 16 })
+// 查询 age 大于 15 小于 30 的文档
+db.users.find({ age: { $gt: 15, $lt: 30 }})
+// 查询 age 不等于 20 的文档
+db.users.find({ age: { $ne: 20 }})
+// 查询 age 为 10 或 14 或 20 的文档 
+db.users.find({ age: { $in: [10, 14, 20] }})
+// 查询全部文档
+db.users.find()
+// 查询特定 ID 的文档
+db.users.find({ _id: ObjectId(&#39;5de238bbb52000002c000d74&#39;) })
+// 查询第一条符合条件的文档
+db.users.findOne({ age: 17 })
+// 对返回的结果继续调用 count()可以获取结果数
+db.users.find().count() // =&gt; 5</code></pre>
+<h3 id="更新文档"><a href="#更新文档" class="headerlink" title="更新文档"></a>更新文档</h3><pre><code class="js">// 将第一条 age 为 14 的数据的 age 属性值更新为 23
+db.students.updateOne({ age: 14 }, {
+    $set: { age: 23 } // $set 操作符用来更新属性值
+})
+
+db.students.updateMany({ age: 14 }, {
+    $set: { age: 23 } // $set 操作符用来更新属性值
+})</code></pre>
+<h3 id="删除文档"><a href="#删除文档" class="headerlink" title="删除文档"></a>删除文档</h3><pre><code class="js">// 将 _id 为 5de238bbb52000002c000d74 的文档删除
+db.users.deleteOne({ _id: ObjectId(&#39;5de238bbb52000002c000d74&#39;) })
+// 将所有 age 为 16 的文档删除
+db.users.deleteMany({ age: 16 })</code></pre>
+<h2 id="Mongoose"><a href="#Mongoose" class="headerlink" title="Mongoose"></a>Mongoose</h2><p>MongoDB 本身提供了连接 Node.js 的一系列接口，但是原生代码一向比较复杂，因此这里直接使用第三方包<a href="https://mongoosejs.com/" target="_blank" rel="noopener">Mongoose</a>操作 MongoDB。</p>
+<pre><code class="powershell">npm install mongoose</code></pre>
+<pre><code class="js">// 导入模块
+const mongoose = require(&#39;mongoose&#39;)
+
+// 连接数据库，MongoDB 不需要手动创建数据库，因此这里的数据库名称可以随意填写，插入文档后会自动创建
+// 参数用于清除一些警告信息，需要的时候加上即可
+mongoose.connect(&#39;mongodb://localhost/test&#39;, { useNewUrlParser: true, useUnifiedTopology: true })
+// 如果数据库有密码
+mongoose.connect(&#39;mongodb://admin:123456@localhost/test&#39;, { useNewUrlParser: true, useUnifiedTopology: true })</code></pre>
+<h3 id="创建约束"><a href="#创建约束" class="headerlink" title="创建约束"></a>创建约束</h3><p>由于 MongoDB 本身对存入的数据没有任何约束，因此即便传入错误的数据（甚至是某些字段没有传入），MongoDB 也都会将它们保存起来。为了解决这一问题，Mongoose 引入了规则（Schema）这一概念，它类似于表结构，规定了一个集合（表）的字段类型。</p>
+<pre><code class="js">// 创建了一个 游戏 的规则，用来验证字段类型
+const schema = new mongoose.Schema({
+    // MongoDB 中的 id 并不是一个简单的字符串，因此 Mongoose 提供了该类型
+    id: mongoose.ObjectId,
+    // 字符串类型，如果传入了非字符串值会自动调用 toString()
+    gameName: String, 
+    gameType: String,
+    // 布尔类型，除了下列值会自动转换以外，其它任何值都会导致转换错误
+    // true: &#39;true&#39;, 1, &#39;1&#39;, yes 
+    // false: &#39;false&#39;, 0, &#39;0&#39;, no 
+    isPublished: Boolean, 
+    // 日期类型
+    publishDate: Date,
+    // 数字类型，null, undefined 不会被转换, NaN 和没有 valueOf() 的数组或对象会导致转换错误
+    endings: Number,
+    // 字符串数组
+    tags: [String]
+})</code></pre>
+<p>字段的值还可以是一个对象，用来作出更详细的约束。这里只列出较为常见的约束，全部类型详见<a href="https://mongoosejs.com/docs/schematypes.html" target="_blank" rel="noopener">官方文档</a>。</p>
+<pre><code class="js">// 更详细的验证规则
+const schema = new mongoose.Schema({
+    gameName: {
+        // [通用]字段类型
+        type: String,
+        // [通用]要求该字段必须提供，且值不能为 null, undefined, &#39;&#39;
+        required: true,             
+        // [通用]如果 插入文档 (更新文档无效) 时该字段为 undefined （对`null`或`&#39;&#39;`无效），使用该默认值
+        default: &#39;Resident Evil&#39;, 
+        // [通用]在查询时忽略该字段
+        select: false,
+        // [字符串]最小 / 最大字符数，汉字也算 1 个字符  
+        minlength: 2,               
+        maxlength: 50,
+        // [字符串]是否自动去除字符串两端空格
+        trim: true,   
+        // [字符串]是否转换大小写
+        lowercase: true,
+        uppercase: true,
+        // [字符串]是否匹配给定的正则表达式
+        match: /\d{1, 13}/
+    },
+    gameType: {
+        // [字符串, 数值]只能是给定的值之一, 对于 null 和 undefined 无效
+        enum: [&#39;ACT&#39;, &#39;RPG&#39;]        
+    }
+    endings: {
+        // [通用]自定义验证规则
+        validate: {    
+            // v 表示要验证的值, 如果传入的值大于 3, 表示验证通过
+            validator: v =&gt; { return v &gt; 3 },
+            // 验证失败时的错误信息     
+            message: &#39;什么破游戏, 连 3 个结局都没有!&#39;    
+        },
+        // [通用]获取或存入数据时，对其进行处理
+        get: v =&gt; Math.round(v),    
+        set: v =&gt; Math.round(v),
+        // [数值]最大最小值
+        min: 3,                     // 最小值
+        max: 10,                    // 最大值
+    }
+})</code></pre>
+<p>上述<code>required</code>、<code>max</code>、<code>min</code>、<code>enum</code>、<code>match</code>、<code>minlength</code>和<code>maxlength</code>会调用内置的验证器，将这些值放到数组中，并传入第二个字符串元素，可以自定义这些验证器的错误信息。</p>
+<pre><code class="js">const schema = new mongoose.Schema({
+    endings: {
+        max: [99, &#39;最大值不能超过99啦&#39;]
+        enum: [[22, 33], &#39;只能是 22 或者 33&#39;]
+    }
+})
+
+// 在下面增删查改的方法中可以使用 错误对象.errors.字段名.message 获取到错误提示信息
+Game.create({ endings: 666 }).catch(err =&gt; {
+    err.errors.endings.message
+})</code></pre>
+<h3 id="CRUD-1"><a href="#CRUD-1" class="headerlink" title="CRUD"></a>CRUD</h3><p>将定义的规则传入<code>model()</code>方法可以创建一个模型（Model），模型是 Mongoose 特有的概念，可以理解成集合（表）对象。使用模型就可以对数据库进行增删查改操作了。</p>
+<p>它的第一个参数为集合名称，建议采用<strong>首字母大写的单数形式</strong>，Mongoose 会将其转换成<strong>全部小写的复数形式</strong>，与数据库中的集合对应。第二个参数为之前创建的规则<code>schema</code>。</p>
+<pre><code class="js">const Game = mongoose.model(&#39;Game&#39;, schema) // 数据库对应的集合名称为 games</code></pre>
+<p>接下来使用模型就可以对数据库进行操作了。注意，<strong>这些方法均返回<code>Promise</code>对象</strong>，通过<code>then()</code>参数接收查询结果，通过<code>catch()</code>参数捕获规则类型错误。之后不再赘述。</p>
+<h4 id="插入文档-1"><a href="#插入文档-1" class="headerlink" title="插入文档"></a>插入文档</h4><p>使用<code>create()</code>可以向数据库插入一条或多条文档。</p>
+<pre><code class="js">// 传入多个对象插入多条文档
+Game.create(
+    { name: &#39;Resident Evil&#39;, isPublish: true, endings: 1 },
+    { name: &#39;Enter the Gungeon&#39;, isPublish: true, endings: 8 },
+)
+
+// 传入一个数组插入多条文档
+Game.create(
+    [
+        { name: &#39;Resident Evil&#39;, isPublish: true, endings: 1 },
+        { name: &#39;Enter the Gungeon&#39;, isPublish: true, endings: 8 }
+    ],
+)</code></pre>
+<h4 id="查询文档-1"><a href="#查询文档-1" class="headerlink" title="查询文档"></a>查询文档</h4><pre><code class="js">// 查询全部文档，无论查询结果是多条、单条还是没有，均为对象数组
+Game.find()
+// 查询 name 为 Enter the Gungeon 的全部文档
+Game.find({ name: &#39;Enter the Gungeon&#39; })
+// 查询一条文档，如果有多个符合条件的文档，只返回其中的第一条，返回单个对象
+Game.findOne({ name: &#39;Enter the Gungeon&#39; })
+// 根据 id 查询一条文档，与 findOne({ _id: id }) 效果相同，返回单个对象
+Game.findById(&#39;5db6cbb42b004b2840128f79&#39;)
+// 获取文档数量
+Game.countDocuments({ ending: 3 })</code></pre>
+<h4 id="更新文档-1"><a href="#更新文档-1" class="headerlink" title="更新文档"></a>更新文档</h4><p>更新文档的方法第一个参数为查询条件，第二个参数是修改后的值，并且它们返回<strong>修改之前的文档</strong>，而非修改后的文档。</p>
+<pre><code class="js">// 将 _id: 5d9f6b147589b70e201eca72 文档的 name 修改为 Biohazard
+Game.updateOne({ _id: &#39;5d9f6b147589b70e201eca72&#39; }, { name: &#39;Biohazard&#39; })
+// 根据 id 查询一条文档并修改
+Game.findByIdAndUpdate(&#39;5db6cbb42b004b2840128f79&#39;, { name: &#39;Biohazard&#39; })
+// 修改多条文档
+Game.updateMany({ type: &#39;AVG&#39; }, { name: &#39;Biohazard&#39; })</code></pre>
+<h4 id="删除文档-1"><a href="#删除文档-1" class="headerlink" title="删除文档"></a>删除文档</h4><pre><code class="js">// 删除一条文档，参数为查询条件，如果省略则表示删除全部文档的第一条，返回删除的文档，如果没有则为 null
+Game.deleteOne({ endings: 3 })
+// 根据 id 查询一条文档并删除
+Game.findByIdAndDelete(&#39;5db6cbb42b004b2840128f79&#39;)
+// 删除多条文档，参数为查询条件，如果省略则表示不删除
+Game.deleteMany({ endings: 3 })</code></pre>
+<h3 id="过滤查询结果"><a href="#过滤查询结果" class="headerlink" title="过滤查询结果"></a>过滤查询结果</h3><p>上述的增删改查方法几乎全部返回一个<code>Query</code>对象，它是 Mongoose 提供的一个查询结果对象，其中包含了一些处理查询结果的常用方法，并且封装了<code>then()</code>和<code>catch()</code>，可以当作<code>Promise</code>来使用，但它并不是真正的<code>Promise</code>。</p>
+<pre><code class="js">// 过滤查询字段
+Game.find().select(&#39;name type&#39;)    // 仅查询所有文档的 name 和 type 字段
+Game.find().select(&#39;-name&#39;)        // 不查询所有文档的 name 字段
+
+// 排序查询结果
+Game.find().sort(&#39;endings&#39;)    // 将查询结果按照结局数 升序(由小到大) 排序
+Game.find().sort(&#39;-endings&#39;)   // 将查询结果按照结局数 降序(由大到小) 排序
+
+// 跳过特定的文档数
+// { _id: 5e4685ffd96f66282c100c61, endings: 3 },
+// { _id: 5e468608bc19a50e64ae6263, endings: 233 },
+// { _id: 5e46860c31150e222cd388f1, endings: 0 }
+Game.find().skip(1) // 跳过第一条，即没有 endings: 3 这一条
+
+// 限制查询的结果数
+Game.find().limit(1) // 只查询 1 条文档，相当于 findOne()</code></pre>
+</div>
+    </div>
+</div>
+
+<div class="toc"></div>
+    <footer>
+    <p>© 2020</p>
+    <p>Theme chicken by 小鸡米花, Powered by Hexo</p>
+</footer>
+    <a class="back-to-top" href="javascript:;"></a>
+
+    <script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js"></script>
+    <script defer src="https://cdn.staticfile.org/KaTeX/0.11.1/katex.min.js"></script>
+    <script defer src="https://cdn.staticfile.org/KaTeX/0.11.1/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body, { strict: false, delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}] });"></script>
+    <script src="https://cdn.staticfile.org/tocbot/4.10.0/tocbot.min.js"></script>
+    <script src="https://cdn.staticfile.org/highlight.js/9.18.1/highlight.min.js"></script>
+
+    <script>
+        // 为标签追加字体图标
+        $('.tag-list-item').prepend('<i class="fas fa-tag"></i>')
+
+        // 回到顶部的猫
+        $('.back-to-top').click(function () {
+            $('html, body').animate({
+                scrollTop: 0
+            }, 500)
+        })
+
+        // 监听 回到顶部的猫 是否显示
+        $(document).scroll(function () {
+            if ($(document).scrollTop() > 50) {
+                $('.back-to-top').addClass('show')
+            } else {
+                $('.back-to-top').removeClass('show')
+            }
+        })
+
+        // 在表格外包裹一层，用来生成滚动条
+        $('.post-content > table').wrap('<div class="table-container"></div>')
+
+        // Tocbot 实例化，用来快速生成文档目录
+        tocbot.init({
+            tocSelector: '.toc', // 渲染目录的容器
+            contentSelector: '.post-content', // 标题所在的容器
+            headingSelector: 'h2, h3', // 要渲染的目录层级,
+            headingsOffset: -50, // 微调目录高亮的显示位置（偏移量），防止点击的链接和高亮的链接不一致
+        })
+
+        // 初始化代码高亮 highlight.js
+        hljs.initHighlightingOnLoad()
+
+        // 自动加载 waifu
+        try {
+            $("<link>").attr({ href: "//cdn.yesuanzao.cn/blog/live2d/waifu.min.css", rel: "stylesheet", type: "text/css" }).appendTo('head');
+            $('body').append('<div class="waifu"><div class="waifu-tips"></div><canvas id="live2d" class="live2d"></canvas><div class="waifu-tool"><span class="fui-home"></span> <span class="fui-chat"></span> <span class="fui-eye"></span> <span class="fui-user"></span> <span class="fui-photo"></span> <span class="fui-info-circle"></span> <span class="fui-cross"></span></div></div>');
+            $.ajax({ url: '//cdn.yesuanzao.cn/blog/live2d/waifu-tips.js', dataType: "script", cache: true, async: false });
+            $.ajax({ url: '//cdn.yesuanzao.cn/blog/live2d/live2d.min.js', dataType: "script", cache: true, async: false, success: function() {
+                initModel('//cdn.yesuanzao.cn/blog/live2d/waifu-tips.json');
+            } });
+        } catch (err) { console.log(err) }
+    </script>
+    <!-- 
+        添加控制台，测试移动端
+        <script src="http://cdn.jsdelivr.net/npm/eruda"></script>
+        <script>eruda.init();</script>
+    -->
+</body>
+
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>小鸡米花的知识库</title>
+    <link rel="stylesheet" href="//cdn.yesuanzao.cn/blog/atom-one-dark.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/KaTeX/0.11.1/katex.min.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/tocbot/4.10.0/tocbot.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/5.12.1/css/all.min.css">
+    <!-- 本地静态文件测试 -->
+    <link rel="stylesheet" href="/css/chicken.css">
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+    <header>
+    <div class="container">
+        <div class="site-title"><a href="/">小鸡米花的知识库</a></div>
+        <nav>
+            <a class="nav-item " href="/">主页</a>
+            <a class="nav-item " href="/archives">时光轴</a>
+        </nav>
+    </div>
+</header>
+    <div id="write">
+    <div class="container">
+        <div class="post-info">
+            <ul class="tag-list">
+                
+                    <a class="tag-list-item" href="/tags/Node-js/">Node.js</a>
+                
+            </ul>
+        </div>
+        <div class="post-content"><h1 id="⚙️-使用-Node-js-处理路径和-URL"><a href="#⚙️-使用-Node-js-处理路径和-URL" class="headerlink" title="⚙️ 使用 Node.js 处理路径和 URL"></a>⚙️ 使用 Node.js 处理路径和 URL</h1><p>Node.js 内置了<code>path</code>和<code>url</code>系统模块用来解析路径和 URL。</p>
+<h2 id="拼接路径"><a href="#拼接路径" class="headerlink" title="拼接路径"></a>拼接路径</h2><p>拼接路径经常会用到一个全局属性<code>__dirname</code>，它表示<strong>当前模块的物理路径</strong>。</p>
+<pre><code class="js">// 当前文件路径为 D:\htdocs\test.js
+__dirname // =&gt; D:\htdocs</code></pre>
+<p>然后使用<code>join()</code>或<code>resolve()</code>方法将路径拼接起来。前者会自动忽略掉每个部分两端的路径分隔符，并使用<strong>当前系统环境的分隔符</strong>拼接路径；后者可以将若干路径片段拼接成绝对路径，参数会从右向左拼接，一旦发现绝对路径（开头为<code>/</code>），则停止解析，如果没有发现绝对路径，那么以当前文件路径<code>__dirname</code>作为绝对路径拼接。</p>
+<pre><code class="js">// 当前文件路径为 D:\htdocs\test.js
+const path = require(&#39;path&#39;)
+
+path.join(__dirname, &#39;dist&#39;, &#39;index.html&#39;) // =&gt; D:\htdocs\dist\index.html
+
+path.resolve(&#39;foo&#39;, &#39;/src&#39;, &#39;dist&#39;) // =&gt; D:\src\dist
+path.resolve(&#39;dist&#39;) // =&gt; D:\htdocs\dist</code></pre>
+<h2 id="解析-URL"><a href="#解析-URL" class="headerlink" title="解析 URL"></a>解析 URL</h2><p>使用<code>url</code>模块可以方便地将一个完整 URL 的各个部分解析成一个对象：</p>
+<pre><code class="js">const url = require(&#39;url&#39;)
+
+const result = url.parse(&#39;https://user:pass@sub.example.com:8080/p/a/t/h?id=233#hash&#39;) // =&gt; {
+//   protocol: &#39;https:&#39;,
+//   slashes: true,
+//   auth: &#39;user:pass&#39;,
+//   host: &#39;sub.example.com:8080&#39;,
+//   port: &#39;8080&#39;,
+//   hostname: &#39;sub.example.com&#39;,
+//   hash: &#39;#hash&#39;,
+//   search: &#39;?id=233&#39;,
+//   query: &#39;id=233&#39;,
+//   pathname: &#39;/p/a/t/h&#39;,
+//   path: &#39;/p/a/t/h?id=233&#39;,
+//   href: &#39;https://user:pass@sub.example.com:8080/p/a/t/h?id=233#hash&#39; }</code></pre>
+<p>如果传入第二个参数<code>true</code>，则表示以对象方式获取<code>query</code>查询参数部分，而非字符串：</p>
+<pre><code class="js">const result = url.parse(&#39;https://sub.example.com:8080?id=233&#39;, true)
+result.query // =&gt; { id: 233 }</code></pre>
+</div>
+    </div>
+</div>
+
+<div class="toc"></div>
+    <footer>
+    <p>© 2020</p>
+    <p>Theme chicken by 小鸡米花, Powered by Hexo</p>
+</footer>
+    <a class="back-to-top" href="javascript:;"></a>
+
+    <script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js"></script>
+    <script defer src="https://cdn.staticfile.org/KaTeX/0.11.1/katex.min.js"></script>
+    <script defer src="https://cdn.staticfile.org/KaTeX/0.11.1/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body, { strict: false, delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}] });"></script>
+    <script src="https://cdn.staticfile.org/tocbot/4.10.0/tocbot.min.js"></script>
+    <script src="https://cdn.staticfile.org/highlight.js/9.18.1/highlight.min.js"></script>
+
+    <script>
+        // 为标签追加字体图标
+        $('.tag-list-item').prepend('<i class="fas fa-tag"></i>')
+
+        // 回到顶部的猫
+        $('.back-to-top').click(function () {
+            $('html, body').animate({
+                scrollTop: 0
+            }, 500)
+        })
+
+        // 监听 回到顶部的猫 是否显示
+        $(document).scroll(function () {
+            if ($(document).scrollTop() > 50) {
+                $('.back-to-top').addClass('show')
+            } else {
+                $('.back-to-top').removeClass('show')
+            }
+        })
+
+        // 在表格外包裹一层，用来生成滚动条
+        $('.post-content > table').wrap('<div class="table-container"></div>')
+
+        // Tocbot 实例化，用来快速生成文档目录
+        tocbot.init({
+            tocSelector: '.toc', // 渲染目录的容器
+            contentSelector: '.post-content', // 标题所在的容器
+            headingSelector: 'h2, h3', // 要渲染的目录层级,
+            headingsOffset: -50, // 微调目录高亮的显示位置（偏移量），防止点击的链接和高亮的链接不一致
+        })
+
+        // 初始化代码高亮 highlight.js
+        hljs.initHighlightingOnLoad()
+
+        // 自动加载 waifu
+        try {
+            $("<link>").attr({ href: "//cdn.yesuanzao.cn/blog/live2d/waifu.min.css", rel: "stylesheet", type: "text/css" }).appendTo('head');
+            $('body').append('<div class="waifu"><div class="waifu-tips"></div><canvas id="live2d" class="live2d"></canvas><div class="waifu-tool"><span class="fui-home"></span> <span class="fui-chat"></span> <span class="fui-eye"></span> <span class="fui-user"></span> <span class="fui-photo"></span> <span class="fui-info-circle"></span> <span class="fui-cross"></span></div></div>');
+            $.ajax({ url: '//cdn.yesuanzao.cn/blog/live2d/waifu-tips.js', dataType: "script", cache: true, async: false });
+            $.ajax({ url: '//cdn.yesuanzao.cn/blog/live2d/live2d.min.js', dataType: "script", cache: true, async: false, success: function() {
+                initModel('//cdn.yesuanzao.cn/blog/live2d/waifu-tips.json');
+            } });
+        } catch (err) { console.log(err) }
+    </script>
+    <!-- 
+        添加控制台，测试移动端
+        <script src="http://cdn.jsdelivr.net/npm/eruda"></script>
+        <script>eruda.init();</script>
+    -->
+</body>
+
+</html>

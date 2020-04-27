@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>小鸡米花的知识库</title>
+    <link rel="stylesheet" href="//cdn.yesuanzao.cn/blog/atom-one-dark.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/KaTeX/0.11.1/katex.min.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/tocbot/4.10.0/tocbot.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/5.12.1/css/all.min.css">
+    <!-- 本地静态文件测试 -->
+    <link rel="stylesheet" href="/css/chicken.css">
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+    <header>
+    <div class="container">
+        <div class="site-title"><a href="/">小鸡米花的知识库</a></div>
+        <nav>
+            <a class="nav-item " href="/">主页</a>
+            <a class="nav-item " href="/archives">时光轴</a>
+        </nav>
+    </div>
+</header>
+    <div id="write">
+    <div class="container">
+        <div class="post-info">
+            <ul class="tag-list">
+                
+                    <a class="tag-list-item" href="/tags/JavaScript/">JavaScript</a>
+                
+            </ul>
+        </div>
+        <div class="post-content"><h1 id="🔔-JavaScript-ES6-语法"><a href="#🔔-JavaScript-ES6-语法" class="headerlink" title="🔔 JavaScript ES6 语法"></a>🔔 JavaScript ES6 语法</h1><p>ECMAScript 6（简称 ES6）是 2015 年发布的最新版本，其中添加了大量的新特性。虽然之后 ECMAScript 版本依然在不断更新，但是新特性并不是很多，因此将 ES6 及之后的版本统称为 ES6。</p>
+<h2 id="变量"><a href="#变量" class="headerlink" title="变量"></a>变量</h2><p>新增了用于定义变量的<code>let</code>关键字。</p>
+<pre><code class="js">let num = 10</code></pre>
+<p>与之前的<code>var</code>相比，它主要有以下几个特点。首先，使用<code>let</code>关键字声明的变量具有<strong>块级作用域</strong>。也就是说，使用<code>let</code>在花括号内部声明的变量不能在外部访问了，因为花括号拥有了自己的作用域。</p>
+<pre><code class="js">if (true) {
+    var a = 10
+    let b = 10
+}
+
+a // =&gt; 10
+b // =&gt; b is not defined</code></pre>
+<p>第二，使用<code>let</code>定义的变量声明<strong>不会被提升</strong>。</p>
+<pre><code class="js">console.log(a) // =&gt; undefined
+var a = 2
+
+console.log(b) // =&gt; Cannot access &#39;b&#39; before initialization
+let b = 2</code></pre>
+<p>第三，虽然使用<code>let</code>定义的变量没有提升的特性，但是它会与作用域绑定，产生<strong>暂时性死区</strong>。</p>
+<p>在下面的代码中，虽然在块级作用域内先调用后定义了<code>num</code>，但是在调用时不会去访问全局作用域下的<code>num</code>，而是直接报错。这是因为虽然 JavaScript 不会把<code>let</code>变量提升，但是依然知道该作用域内有同名变量，而且将其与当前作用域进行了绑定，如果提前调用，就会直接报错。在<code>let</code>声明之前无法调用该变量的这段运行过程，称为暂时性死区。</p>
+<pre><code class="js">var num = 10
+
+if (true) {
+    console.log(num) // Cannot access &#39;num&#39; before initialization
+    let num = 20
+}</code></pre>
+<p>最后，使用<code>let</code>定义的全局变量不能使用<code>window</code>访问，因为它被存放到了单独的作用域中。</p>
+<pre><code class="js">let a = 10
+window.a // =&gt; undefined
+a // =&gt; 10</code></pre>
+<h2 id="常量"><a href="#常量" class="headerlink" title="常量"></a>常量</h2><p>新增了用于定义常量的<code>const</code>关键字。</p>
+<pre><code class="js">const PI = 3.14</code></pre>
+<p>除了以上<code>let</code>关键字的<strong>所有特性之外</strong>，它还具有下面单独的特点。首先，常量在声明的同时<strong>必须赋初始值</strong>，否则会报错。</p>
+<pre><code class="js">const PI // Missing initializer in const declaration，声明常量没有初始化</code></pre>
+<p>然后，常量的最明显特性就是值一旦确定就<strong>不可更改</strong>。注意，对于复杂数据类型来说，这里的值指的是<strong>地址</strong>而非具体的内容。</p>
+<pre><code class="js">const PI = 3.14
+PI = 100 // Assignment to constant variable，基本数据类型不能修改值
+
+const ARR = [10, 20]
+ARR[0] = 5 // =&gt; [5, 20]，可以修改具体内容
+ARR = [5, 20] // Assignment to constant variable，不能直接修改指向的地址</code></pre>
+<h2 id="对象的简洁表示法"><a href="#对象的简洁表示法" class="headerlink" title="对象的简洁表示法"></a>对象的简洁表示法</h2><p>如果对象中的属性名和属性值名称相同，那么可以合并成一个。</p>
+<pre><code class="js">let age = 18
+let person = { age: age } // 第一个 age 是属性名，第二个 age 是变量 18
+
+/* ===== 等同于 =====*/
+let age = 18
+let person = { age }</code></pre>
+<p>对象中的函数也可以简写，如：</p>
+<pre><code class="js">let person = {
+    eat: function() { console.log(&#39;吃呀吃呀吃~&#39;) }
+}
+/* ===== 等同于 =====*/
+let person = {
+    eat() { console.log(&#39;吃呀吃呀吃~&#39;) }
+}</code></pre>
+<h2 id="解构赋值"><a href="#解构赋值" class="headerlink" title="解构赋值"></a>解构赋值</h2><p>解构赋值是一种为变量赋值的新方式，可以将数组或对象中的元素直接提取出来，放到对应的变量中。</p>
+<h3 id="数组解构"><a href="#数组解构" class="headerlink" title="数组解构"></a>数组解构</h3><p>将变量名称使用方括号<code>[]</code>包裹起来，表示数组解构赋值，它的值必须为一个数组。</p>
+<pre><code class="js">let [a, b] = [1, 2]
+a // =&gt; 1
+b // =&gt; 2</code></pre>
+<p>如果两侧的值不完全对应，则未赋值的变量为<code>undefined</code>，多余的值被忽略。</p>
+<pre><code class="js">let [a, b, c] = [1, 2]
+c // =&gt; undefined
+
+let [a] = [1, 2]
+a // =&gt; 1</code></pre>
+<h3 id="对象解构"><a href="#对象解构" class="headerlink" title="对象解构"></a>对象解构</h3><p>将变量名称使用花括号<code>{}</code>包裹起来，表示对象解构赋值，它的值必须为一个对象。如果在对象中找到了与解构语法中的变量名称一致的属性，则将属性的值赋值给该变量。因此，<strong>解构语法中的变量顺序与对象中的属性顺序无关</strong>。</p>
+<pre><code class="js">let {name, age} = {name: &#39;Wendy&#39;, age: 13}
+
+name // =&gt; Wendy
+age // =&gt; 13</code></pre>
+<p>如果需要修改变量名称，则可以使用下面的解构语法：</p>
+<pre><code class="js">let {name: myName, age: myAge} = {name: &#39;Wendy&#39;, age: 13}
+
+myName // =&gt; Wendy</code></pre>
+<h2 id="箭头函数"><a href="#箭头函数" class="headerlink" title="箭头函数"></a>箭头函数</h2><p>箭头函数是函数表达式的一种简化写法，但是由于它的一些特性（主要是下文中箭头函数的<code>this</code>），并不是可以无脑的将所有函数表达式替换成箭头函数。</p>
+<p>箭头函数的格式为<code>() =&gt; {}</code>，其中圆括号为形参列表，花括号为函数体。由于箭头函数没有名称，因此可以将它放到一个变量中调用：</p>
+<pre><code class="js">let fn = function() {
+    console.log(&#39;hello&#39;)
+}
+
+// 相当于
+let fn = () =&gt; { console.log(&#39;hello&#39;) }
+fn() // =&gt; 输出 hello</code></pre>
+<p>前面的圆括号中可以传入形参：</p>
+<pre><code class="js">let fn = (num1, num2) =&gt; { return num1 + num2 }
+fn(10, 20) // =&gt; 30</code></pre>
+<p>如果参数只有一个，那么可以省略圆括号：</p>
+<pre><code class="js">let fn = num1 =&gt; { return num1 }
+fn(10) // =&gt; 10</code></pre>
+<p>如果函数体中<strong>只有一条语句</strong>，那么可以省略花括号和<code>return</code>关键字。此时函数会<strong>自动将这一行代码的执行结果作为返回值，无论这行代码是否有返回结果</strong>。因此如果省略了花括号，那么就不能再添加<code>return</code>关键字了。</p>
+<pre><code class="js">let fn = (num1, num2) =&gt; { return num1 + num2 }
+
+// 相当于
+let fn = (num1, num2) =&gt; num1 + num2
+fn(10, 20) // =&gt; 30
+
+// 即使这条语句没有返回值，也会自动返回
+let fn = () =&gt; console.log(&#39;hello&#39;)
+fn() // =&gt; 输出 hello，但是返回值为 undefined</code></pre>
+<h3 id="箭头函数中的-this"><a href="#箭头函数中的-this" class="headerlink" title="箭头函数中的 this"></a>箭头函数中的 this</h3><p>箭头函数与其它函数最大的一个区别在于，它并没有自己的<code>this</code>，而是直接使用外层作用域下的<code>this</code>，也就是说箭头函数中的<code>this</code>仅与定义位置有关，与何时调用无关。</p>
+<p>在下面的代码中，由于<code>addEventListener()</code>定义在全局作用域中，因此其中箭头函数的<code>this</code>指代的是<code>window</code>，而不是按钮元素：</p>
+<pre><code class="js">button.addEventListener(&#39;click&#39;, function() {
+    console.log(this) // =&gt; &lt;button&gt;...&lt;/button&gt;
+})
+
+button.addEventListener(&#39;click&#39;, () =&gt; {
+    console.log(this) // =&gt; window
+})
+this // =&gt; 与外层作用域中的该 this 相同</code></pre>
+<p>由于<code>this</code>的指向问题，因此如果函数体中包含<code>this</code>的话，切记依然要使用普通函数。另外，如果函数包含多条语句，而不是单纯的通过计算返回一个值，也建议使用普通函数，因为这样代码会更加清晰易读。</p>
+<h2 id="剩余参数"><a href="#剩余参数" class="headerlink" title="剩余参数"></a>剩余参数</h2><p>由于箭头函数中并不能使用<code>arguments</code>属性，因此 ES6 提供了剩余参数来解决不定参数的问题（函数声明和表达式也可以使用）。在参数列表中定义一个<code>...参数名</code>表示剩余参数，为包含所有剩余参数的数组。</p>
+<p>在下面的代码中，将所有传入的参数作为剩余参数：</p>
+<pre><code class="js">function fn(...args) {
+    console.log(args)
+}
+
+fn(10, 20) // =&gt; [10, 20]
+fn(10, 20, 30) // =&gt; [10, 20, 30]</code></pre>
+<p>之所以称之为剩余参数，是因为它除了可以接收所有参数外，也可以接收部分参数：</p>
+<pre><code class="js">function fn(p1, p2, ...args) {
+    console.log(args)
+}
+
+fn(10, 20, 30) // =&gt; [30]
+fn(10, 20, 30, 40) // =&gt; [30, 40]</code></pre>
+<h2 id="扩展运算符"><a href="#扩展运算符" class="headerlink" title="扩展运算符"></a>扩展运算符</h2><p>扩展运算符<code>...</code>可以将数组（或者任何实现了<strong>遍历器</strong>的伪数组）拆分成以逗号分隔的<strong>参数序列</strong>。</p>
+<p>在下面的代码中，<code>log()</code>的输出结果是<code>1 2 3</code>，而不是<code>1,2,3</code>。这是因为传入<code>log()</code>方法的其实是三个参数，相当于<code>console.log(1, 2, 3)</code>。由于<code>log()</code>方法可以传入多个参数，并以空格分隔后输出，才出现了这样的结果。</p>
+<pre><code class="js">let arr = [1, 2, 3]
+console.log(...arr) // =&gt; 1 2 3</code></pre>
+<p>因此，可以用它将数组直接拆分为若干参数传递：</p>
+<pre><code class="js">let arr = [10, 20]
+let fn = (x, y) =&gt; x + y
+
+fn(...arr) // =&gt; 30</code></pre>
+<p>或者用来合并数组：</p>
+<pre><code class="js">let arr1 = [10, 20]
+let arr2 = [30, 40]
+
+// ...arr1 相当于 10, 20     ...arr2 相当于 30, 40
+// 将它们放到括号中再加上中间的逗号，就实现了合并
+let result = [...arr1, ...arr2] // =&gt; [10, 20, 30, 40]</code></pre>
+<p>由于 DOM 集合中的<code>HTMLCollection</code>也实现了遍历器，因此可以使用扩展运算符将其转换成真正的数组：</p>
+<pre><code class="js">let divs = document.querySelectorAll(&#39;div&#39;)
+let result = [...divs] // =&gt; [div, div, div]，真正的 div 元素数组</code></pre>
+<blockquote>
+<p>转换真正数组也可以使用<code>Array</code>对象的<code>from()</code>方法。</p>
+</blockquote>
+<h2 id="模板字符串"><a href="#模板字符串" class="headerlink" title="模板字符串"></a>模板字符串</h2><p>模板字符串是新增的字符串定义方式，允许在字符串中直接使用变量，这些变量会自动替换成相应的值，而不需要通过<code>+</code>拼接字符串。模板字符串使用反引号包裹，里面的变量使用<code>${}</code>包裹。</p>
+<pre><code class="js">let age = 18
+let str = `今年 ${age} 岁` // =&gt; 今年 18 岁</code></pre>
+<p>模板字符串中的变量可以使用表达式，也可以直接调用函数。</p>
+<pre><code class="js">let age = 18
+let str = `今年 ${age / 2} 岁`
+
+function getSum(num1, num2) {
+    return num1 + num2
+}
+
+let str = `数字的和是 ${getAge(10, 20)}`</code></pre>
+<p>模板字符串会保留所有的空格和换行。</p>
+<pre><code class="js">let str = `
+&lt;div&gt;
+    &lt;span&gt;&lt;/span&gt;
+&lt;/div&gt;
+` // 显示的结果会保留缩进格式</code></pre>
+<h2 id="Set-集合"><a href="#Set-集合" class="headerlink" title="Set 集合"></a>Set 集合</h2><p>ES6 中新增了类似于数组的结构 Set，但是它的元素值都是唯一的，不会重复。使用构造函数<code>Set()</code>可以创建一个 Set 结构，它可以接收任何数组（伪数组）参数，将其转换为<code>Set</code>，并自动去除重复元素。</p>
+<pre><code class="js">var arr = [10, 10, 30, 50]
+new Set(arr) // =&gt; Set {10, 30, 50}</code></pre>
+<p>它包含下列的常用属性和方法：</p>
+<table>
+<thead>
+<tr>
+<th>属性或方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>size</code></td>
+<td>获取集合的长度</td>
+</tr>
+<tr>
+<td><code>add()</code></td>
+<td>向集合中添加一个值</td>
+</tr>
+<tr>
+<td><code>delete()</code></td>
+<td>删除集合中的一个值，如果删除成功则返回<code>true</code>，否则返回<code>false</code></td>
+</tr>
+<tr>
+<td><code>has()</code></td>
+<td>判断集合中是否包含某个值，如果包含则返回<code>true</code>，否则返回<code>false</code></td>
+</tr>
+<tr>
+<td><code>clear()</code></td>
+<td>清空一个集合</td>
+</tr>
+</tbody></table>
+<pre><code class="js">const arr = [10, 20, 30]
+new Set(arr).size // =&gt; 3
+new Set(arr).add(40).add(50) // =&gt; Set {10, 20, 30, 40, 50}
+new Set(arr).delete(20) // =&gt; Set {10, 30}
+new Set(arr).has(30) // =&gt; true
+new Set(arr).clear() // =&gt; Set {}</code></pre>
+<h2 id="类"><a href="#类" class="headerlink" title="类"></a>类</h2><p>ES6 中提供了类的概念，用于简化之前<del>反人类</del>的原型写法，属于<strong>原型的语法糖</strong>。</p>
+<p>使用<code>class</code>关键字可以定义一个类，其中可以包含<code>constructor()</code>构造方法、普通方法，最后通过<code>new</code>实例化即可：</p>
+<pre><code class="js">class Animal {
+    constructor (age) { this.age = age }
+    eat() { console.log(&#39;吃呀吃呀吃&#39;) }
+}
+
+var cat = new Animal(3)
+cat.age // =&gt; 3
+cat.eat() // =&gt; 吃呀吃呀吃</code></pre>
+<h3 id="类的继承"><a href="#类的继承" class="headerlink" title="类的继承"></a>类的继承</h3><p>使用<code>extends</code>关键字可以使子类继承父类所有的属性和方法。</p>
+<pre><code class="js">class Animal {
+    eat() { console.log(&#39;吃呀吃呀吃&#39;) }
+}
+
+class Cat extends Animal {
+    run() { console.log(&#39;猫在跑&#39;) }
+}
+
+let cat = new Cat()
+cat.eat() // =&gt; 吃呀吃呀吃</code></pre>
+<p>如果子类有自定义的构造函数，那么必须在其中先使用<code>super()</code>调用父类的构造函数，否则会出现语法错误。这是因为 ES6 的继承需要首先创建父类实例，然后再将子类的属性和方法添加到父类实例上，再返回子类实例，因此子类的实例化必须依赖于父类实例。如果子类没有自定义构造函数，那么引擎也会自动添加上。</p>
+<pre><code class="js">class Animal {}
+
+class Cat extends Animal {
+    constructor () {
+        super() // 必须先手动调用父类构造函数
+    }
+}</code></pre>
+<p>如果子类中定义了与父类相同的方法，那么会将父类的覆盖。</p>
+<pre><code class="js">class Animal {
+    eat() { console.log(&#39;动物在各种吃&#39;) }
+}
+
+class Cat extends Animal {
+    eat() { console.log(&#39;猫在各种吃&#39;) }
+}
+
+var cat = new Cat()
+cat.eat() // =&gt; 猫在各种吃</code></pre>
+<p>子类中的<code>super</code>关键字指向父类本身，也就是子类的原型对象，因此可以直接调用父类的方法：</p>
+<pre><code class="js">class Animal {
+    eat() { console.log(&#39;动物在各种吃&#39;) }
+}
+
+class Cat extends Animal {
+    eat() { super.eat() } // 使用 super 指向父类
+}
+
+var cat = new Cat()
+cat.eat() // =&gt; 动物在各种吃</code></pre>
+<p>但是，<code>super</code>指向的不是父类的实例对象，因此不能获取父类实例中的属性：</p>
+<pre><code class="js">class Animal {
+    constructor() { this.age = 3 } // this 指向的是实例对象，因此 age 是实例对象中的属性
+}
+
+class Cat extends Animal {
+    print() { console.log(super.age) }
+}
+
+var cat = new Cat()
+cat.print() // =&gt; undefined</code></pre>
+<h2 id="异步编程"><a href="#异步编程" class="headerlink" title="异步编程"></a>异步编程</h2><p>JavaScript 是一门<strong>单线程</strong>的语言，也就是说，同一时间只能做一件事情。这意味着，如果程序执行中遇到了耗时很长的任务，那么后面的代码都要等待。于是 JavaScript 使用了一套专门的机制，将任务分成了同步和异步。</p>
+<p>其中大部分的代码都是同步任务，它们位于<strong>主线程</strong>依次执行，只有上一个任务执行完毕后才能执行下一个任务。而一些不能立即获得结果的任务（比如定时器函数、网络请求、事件响应、IO 操作等），会被放到<strong>任务队列</strong>（也称消息队列）中。当主线程任务执行完毕后，会从任务队列中读取一条任务继续执行，完成后再次读取任务队列，这样产生的循环称为<strong>事件循环</strong>。</p>
+<p>由于异步任务的执行时间未知，没法立即返回结果，因此在 ES5 及之前，实现异步编程的主要方式为回调函数。</p>
+<p>在下面的代码中，主线程会先执行第一条语句，当执行到第二条语句时，引擎发现这是一个定时器异步任务，会将其加入任务队列并跳过（即便延迟时间为<code>0</code>），然后继续执行第三条语句。之后，主线程任务均执行完毕后，查看任务队列，然后取出定时器函数中的语句执行。</p>
+<pre><code class="js">console.log(&#39;张三&#39;)
+setTimeout(() =&gt; console.log(&#39;王五&#39;), 1000)
+console.log(&#39;李四&#39;)
+// =&gt; 张三 李四 王五</code></pre>
+<p>但回调函数带来了新的问题。</p>
+<p>在下面的代码中，先延迟<code>1s</code>输出<code>first</code>，然后再延迟<code>1s</code>输出<code>second</code>，为了确保这一点，只能将第二次输出的代码放在第一次的回调函数中，以此类推。</p>
+<pre><code class="js">setTimeout(function () {
+    console.log(&#39;first&#39;)
+    setTimeout(function () {
+        console.log(&#39;second&#39;)
+        setTimeout(function () {
+            console.log(&#39;third&#39;)
+        }, 1000)
+    }, 1000)
+}, 1000)</code></pre>
+<p>可想而知，如果要依次输出的内容更多，那么代码就会层层嵌套，完全失去可维护性，这样的情况被称为<strong>回调地狱</strong>。</p>
+<p><img src="https://ae01.alicdn.com/kf/Hcc186dddd6994505a5ad1c0beb381f23q.jpg" alt=""></p>
+<h3 id="Promise"><a href="#Promise" class="headerlink" title="Promise"></a>Promise</h3><p>为了解决这一问题，ES6 新增了一个<code>Promise</code>对象，该对象类似于一个容器，用来封装异步任务。</p>
+<p>异步任务有很多，但是它们都有一个共性：要么执行成功要么失败。因此，要实例化<code>Promise</code>对象需要传入一个函数参数，它的两个参数<code>resolve</code>和<code>reject</code>又是两个函数，分别表示成功和失败这两种状态。异步任务在执行完成后，不再通过回调函数执行具体的功能，而是通过这两个函数将执行完毕后的结果传递到外部，由外部对结果进行处理。</p>
+<pre><code class="js">const first = new Promise(function (resolve, reject) {
+    setTimeout(function () {
+        resolve(&#39;这是第一个定时器啦&#39;) // 1 秒过后，通过回调函数执行 resolve() 将结果传递出去，而不是直接输出
+    }, 1000) // 由于定时器任务没有失败的回调函数，因此不需要调用 reject()
+})</code></pre>
+<p>接下来，<code>Promise</code>对象提供了一个<code>then()</code>方法，它接收一个函数参数表示成功状态时的处理函数，该函数的形参为<code>resolve()</code>传递出来的结果，这样就实现了将异步任务结果分离到回调函数之外来处理。</p>
+<pre><code class="js">first.then(function (result) {
+    console.log(result) // 这是第一个定时器啦
+})</code></pre>
+<p>除此之外，<code>then()</code>还可以接收第二个参数作为失败状态时<code>reject()</code>的处理函数，用法与<code>resolve()</code>一样。捕获错误也可以使用单独的<code>catch()</code>方法，由于<code>then()</code>会<strong>默认自动</strong>返回调用它的<code>Promise</code>对象，因此可以链式编程。</p>
+<pre><code class="js">first.then(function (result) {
+    console.log(result) // 这是第一个定时器啦
+}, function (err) {
+    console.log(err) // 捕获错误，相当于 reject()
+})
+
+// 相当于
+first.then(function (result) {
+    console.log(result) // 这是第一个定时器啦
+}).catch(function (err) {
+    console.log(err) // 捕获错误，相当于 reject()
+})</code></pre>
+<p>接下来继续回到之前的问题，发现问题依然没有完全解决。因为一旦调用了<code>new Promise()</code>，它内部的异步任务就会立刻被执行，这样的效果就相当于同时定义了三个定时器并执行，没有先后顺序。</p>
+<p>因此为了防止它们自动执行，要先将它们放到一个函数中，等需要时手动调用，将实例化的<code>Promise</code>对象返回：</p>
+<pre><code class="js">function first() {
+    return new Promise(function (resolve, reject) {
+        setTimeout(function () {
+            resolve(&#39;这是第一个定时器啦&#39;)
+        }, 1000)
+    })
+}
+
+first().then(function (result) {
+    console.log(result) // 这是第一个定时器啦
+})</code></pre>
+<p>之前提到，默认情况下<code>then()</code>会返回调用它的<code>Promise</code>对象，但是也可以手动设置它的返回值。因为第二个定时器依赖于第一个定时器执行完毕，所以在第一个定时器中返回第二个定时器的<code>Promise</code>对象，就可以实现依次调用的效果了。</p>
+<pre><code class="js">function first() {
+    return new Promise(function (resolve, reject) {
+        setTimeout(function () {
+            resolve(&#39;这是第一个定时器啦&#39;)
+        }, 1000)
+    })
+}
+
+function second() {
+    return new Promise(function (resolve, reject) {
+        setTimeout(function () {
+            resolve(&#39;这是第二个定时器啦&#39;)
+        }, 1000)
+    })
+}
+
+function third() {
+    return new Promise(function (resolve, reject) {
+        setTimeout(function () {
+            resolve(&#39;这是第三个定时器啦&#39;)
+        }, 1000)
+    })
+}
+
+first().then(function (result) {
+    console.log(result) // 这是第一个定时器啦
+    return second() // 返回第二个 Promise，通过它再去调用第二个 then()，从而执行第二个定时器
+}).then(function (result) {
+    console.log(result) // 这是第二个定时器啦
+    return third()
+}).then(function (result) {
+    console.log(result) // 这是第三个定时器啦
+})</code></pre>
+<p>由此可见，虽然可以继续将返回<code>Promise</code>对象的函数合并封装，但是这个过程还是非常繁琐的。建议直接使用类似于<a href="/posts/0wuyppfk.html">bluebird.js</a>的第三方库。</p>
+<h3 id="异步函数"><a href="#异步函数" class="headerlink" title="异步函数"></a>异步函数</h3><p>虽然通过<code>Promise</code>解决了回调地狱的问题，但是连续的<code>then()</code>方法使得代码看起来依然不是很直观。于是 ES7 中又加入了<strong>异步函数</strong>的概念，它可以使异步的代码看起来与同步代码一样，更加直观易读。</p>
+<p>普通的函数一旦开始执行，中间是不能暂停的，而异步函数可以中途停止，等待某个任务执行完毕返回结果，再继续执行。</p>
+<p>在<code>function</code>前添加<code>async</code>关键字，可以定义一个异步函数。</p>
+<pre><code class="js">async function fn() {}</code></pre>
+<p>在其中的异步任务前添加<code>await</code>关键字，可以告知函数在此处暂停，直到异步任务返回结果。注意，<strong>异步任务必须返回<code>Promise</code>对象才能被正确处理</strong>，否则就相当于没有添加<code>await</code>。使用了<code>await</code>之后，就可以直接通过返回值来获取<code>Promise</code>对象中<code>resolve()</code>的结果，与同步代码几乎一样。</p>
+<pre><code class="js">function first() {
+    return new Promise(function (resolve, reject) {
+        setTimeout(function () {
+            resolve(&#39;这是第一个定时器啦&#39;)
+        }, 1000)
+    })
+}
+
+function second() {
+    return new Promise(function (resolve, reject) {
+        setTimeout(function () {
+            resolve(&#39;这是第二个定时器啦&#39;)
+        }, 1000)
+    })
+}
+
+function third() {
+    return new Promise(function (resolve, reject) {
+        setTimeout(function () {
+            resolve(&#39;这是第三个定时器啦&#39;)
+        }, 1000)
+    })
+}
+
+async function fn() {
+    let r1 = await first()
+    console.log(r1)
+    let r2 = await second()
+    console.log(r2)
+    let r3 = await third()
+    console.log(r3)
+}
+
+fn()</code></pre>
+<p>如果使用了<a href="/posts/0wuyppfk.md">bluebird.js</a>，那么<code>delay()</code>函数本身返回的便是<code>Promise</code>对象，因此代码可以进一步简化。</p>
+<pre><code class="js">Promise.delay(1000).then(function () {
+    console.log(&#39;这是第一个定时器啦&#39;)
+}).delay(1000).then(function () {
+    console.log(&#39;这是第二个定时器啦&#39;)
+}).delay(1000).then(function () {
+    console.log(&#39;这是第三个定时器啦&#39;)
+})
+
+// 等同于
+async function fn() {
+    await Promise.delay(1000)
+    console.log(&#39;这是第一个定时器啦&#39;)
+    await Promise.delay(1000)
+    console.log(&#39;这是第二个定时器啦&#39;)
+    await Promise.delay(1000)
+    console.log(&#39;这是第三个定时器啦&#39;)
+}
+fn()</code></pre>
+</div>
+    </div>
+</div>
+
+<div class="toc"></div>
+    <footer>
+    <p>© 2020</p>
+    <p>Theme chicken by 小鸡米花, Powered by Hexo</p>
+</footer>
+    <a class="back-to-top" href="javascript:;"></a>
+
+    <script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js"></script>
+    <script defer src="https://cdn.staticfile.org/KaTeX/0.11.1/katex.min.js"></script>
+    <script defer src="https://cdn.staticfile.org/KaTeX/0.11.1/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body, { strict: false, delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}] });"></script>
+    <script src="https://cdn.staticfile.org/tocbot/4.10.0/tocbot.min.js"></script>
+    <script src="https://cdn.staticfile.org/highlight.js/9.18.1/highlight.min.js"></script>
+
+    <script>
+        // 为标签追加字体图标
+        $('.tag-list-item').prepend('<i class="fas fa-tag"></i>')
+
+        // 回到顶部的猫
+        $('.back-to-top').click(function () {
+            $('html, body').animate({
+                scrollTop: 0
+            }, 500)
+        })
+
+        // 监听 回到顶部的猫 是否显示
+        $(document).scroll(function () {
+            if ($(document).scrollTop() > 50) {
+                $('.back-to-top').addClass('show')
+            } else {
+                $('.back-to-top').removeClass('show')
+            }
+        })
+
+        // 在表格外包裹一层，用来生成滚动条
+        $('.post-content > table').wrap('<div class="table-container"></div>')
+
+        // Tocbot 实例化，用来快速生成文档目录
+        tocbot.init({
+            tocSelector: '.toc', // 渲染目录的容器
+            contentSelector: '.post-content', // 标题所在的容器
+            headingSelector: 'h2, h3', // 要渲染的目录层级,
+            headingsOffset: -50, // 微调目录高亮的显示位置（偏移量），防止点击的链接和高亮的链接不一致
+        })
+
+        // 初始化代码高亮 highlight.js
+        hljs.initHighlightingOnLoad()
+
+        // 自动加载 waifu
+        try {
+            $("<link>").attr({ href: "//cdn.yesuanzao.cn/blog/live2d/waifu.min.css", rel: "stylesheet", type: "text/css" }).appendTo('head');
+            $('body').append('<div class="waifu"><div class="waifu-tips"></div><canvas id="live2d" class="live2d"></canvas><div class="waifu-tool"><span class="fui-home"></span> <span class="fui-chat"></span> <span class="fui-eye"></span> <span class="fui-user"></span> <span class="fui-photo"></span> <span class="fui-info-circle"></span> <span class="fui-cross"></span></div></div>');
+            $.ajax({ url: '//cdn.yesuanzao.cn/blog/live2d/waifu-tips.js', dataType: "script", cache: true, async: false });
+            $.ajax({ url: '//cdn.yesuanzao.cn/blog/live2d/live2d.min.js', dataType: "script", cache: true, async: false, success: function() {
+                initModel('//cdn.yesuanzao.cn/blog/live2d/waifu-tips.json');
+            } });
+        } catch (err) { console.log(err) }
+    </script>
+    <!-- 
+        添加控制台，测试移动端
+        <script src="http://cdn.jsdelivr.net/npm/eruda"></script>
+        <script>eruda.init();</script>
+    -->
+</body>
+
+</html>

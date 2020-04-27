@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>小鸡米花的知识库</title>
+    <link rel="stylesheet" href="//cdn.yesuanzao.cn/blog/atom-one-dark.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/KaTeX/0.11.1/katex.min.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/tocbot/4.10.0/tocbot.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/5.12.1/css/all.min.css">
+    <!-- 本地静态文件测试 -->
+    <link rel="stylesheet" href="/css/chicken.css">
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+    <header>
+    <div class="container">
+        <div class="site-title"><a href="/">小鸡米花的知识库</a></div>
+        <nav>
+            <a class="nav-item " href="/">主页</a>
+            <a class="nav-item " href="/archives">时光轴</a>
+        </nav>
+    </div>
+</header>
+    <div id="write">
+    <div class="container">
+        <div class="post-info">
+            <ul class="tag-list">
+                
+                    <a class="tag-list-item" href="/tags/Linux/">Linux</a>
+                
+            </ul>
+        </div>
+        <div class="post-content"><h1 id="💡-配置阿里云-Linux-服务器并部署项目"><a href="#💡-配置阿里云-Linux-服务器并部署项目" class="headerlink" title="💡 配置阿里云 Linux 服务器并部署项目"></a>💡 配置阿里云 Linux 服务器并部署项目</h1><p>在项目开发完成后，需要将代码部署到服务器上供用户访问。这里选择并购买了阿里云的域名和服务器，如果只是学习使用，服务器选择<strong>按量付费</strong>即可，不需要包年或包月，这样当学习完毕时关闭服务器即可，低配每小时仅 1 毛钱左右。</p>
+<h2 id="安装服务器应用"><a href="#安装服务器应用" class="headerlink" title="安装服务器应用"></a>安装服务器应用</h2><p>接下来需要在服务器上安装各种程序。可以先使用下面的命令更新一下当前系统上已有的包：</p>
+<pre><code class="powershell">apt update    # 查看可以更新的包
+apt upgrade   # 更新可用的包</code></pre>
+<h3 id="安装-Nginx"><a href="#安装-Nginx" class="headerlink" title="安装 Nginx"></a>安装 Nginx</h3><p>Nginx 是一款类似于 Apache 的服务器软件。</p>
+<pre><code class="powershell">apt install nginx -y</code></pre>
+<p>这时需要先在防火墙打开服务器的<code>80</code>端口，具体见<a href="http://www.shangaliyun.com/Article.aspx?id=12" target="_blank" rel="noopener">这篇文章</a>，然后输入域名或服务器地址应该可以看到 Welcome to nginx! 的页面了。</p>
+<h3 id="安装-MongoDB"><a href="#安装-MongoDB" class="headerlink" title="安装 MongoDB"></a>安装 MongoDB</h3><pre><code class="powershell">apt install mongodb-server -y
+mongo     # 进入 MongoDB 的命令行工具
+show dbs  # 查看数据库，证明数据库安装成功</code></pre>
+<h3 id="安装-Git"><a href="#安装-Git" class="headerlink" title="安装 Git"></a>安装 Git</h3><p>使用 Git 可以方便地直接拉取代码，而不需要使用 ftp 等工具手动拷贝：</p>
+<pre><code class="powershell">apt install git -y</code></pre>
+<p>同时需要生成一个 SSH 公钥，用于 Git 权限验证：</p>
+<pre><code class="powershell">ssh-keygen  # 全部按回车即可</code></pre>
+<p><img src="http://cdn.yesuanzao.cn/superbed/2020/04/27/5ea63e32c2a9a83be5d1a2dc.jpg" alt=""></p>
+<p>然后打开生成的公钥，复制其中的字符串：</p>
+<pre><code class="powershell">cat /root/.ssh/id_rsa.pub</code></pre>
+<p>打开线上仓库，将代码上传好之后，进入该项目的设置，将刚才的字符串添加部署公钥：</p>
+<p><img src="http://cdn.yesuanzao.cn/superbed/2020/04/27/5ea6461ac2a9a83be5d9171b.jpg" alt=""></p>
+<h3 id="安装-Node-js"><a href="#安装-Node-js" class="headerlink" title="安装 Node.js"></a>安装 Node.js</h3><p>先安装 Node.js 和 npm：</p>
+<pre><code class="powershell">apt install nodejs -y
+apt install npm -y</code></pre>
+<p>这时输入<code>node -v</code>查看版本，如果版本不符合要求或者版本过低，可以安装一个 Node.js 管理工具<a href="https://www.npmjs.com/package/n" target="_blank" rel="noopener">n</a>：</p>
+<pre><code class="powershell">npm install n -g</code></pre>
+<p>它可以方便地安装并切换各种 Node.js 版本，比如自动安装当前最新的 LTS 版本：</p>
+<pre><code class="powershell">n lts</code></pre>
+<h2 id="拉取项目代码"><a href="#拉取项目代码" class="headerlink" title="拉取项目代码"></a>拉取项目代码</h2><p>进入服务器终端，新建一个<code>www</code>文件夹（其它也可以），用于存放项目代码：</p>
+<pre><code class="powershell">mkdir www   # 新建 www 文件夹
+cd www      # 进入 www 文件夹</code></pre>
+<p>由于之前已经在 GitHub 的该项目中配置了公钥，因此使用 SSH 即可拉取代码（出现询问输入<code>yes</code>即可）：</p>
+<pre><code class="powershell">git clone git@github.com:ChickenPopcorny/vue-arknights.git</code></pre>
+<p><img src="http://cdn.yesuanzao.cn/superbed/2020/04/27/5ea64908c2a9a83be5dbf226.jpg" alt=""></p>
+<p>接下来进入项目根目录（即<code>package.json</code>所在目录），初始化项目：</p>
+<pre><code class="powershell">npm install</code></pre>
+<p>但是在服务器端不可能运行<code>nodemon app.js</code>等命令一直占用终端，因此需要安装 pm2 将进程托管到后台运行：</p>
+<pre><code class="powershell">npm i pm2 -g</code></pre>
+<p>然后使用 pm2 启动项目：</p>
+<pre><code class="powershell">pm2 start app.js</code></pre>
+<p>接下来输入<code>curl http://localhost:3000/m/</code>应该可以看到之前<code>index.html</code>中的代码，但是此时只是在服务器本地运行，因此还需要将其部署到 Nginx 才能被公网访问。</p>
+<h2 id="部署-Nginx"><a href="#部署-Nginx" class="headerlink" title="部署 Nginx"></a>部署 Nginx</h2><p>由于在服务器上直接编辑文件比较复杂（需要熟悉 Vim），建议在 VSCode 中安装一个 Remote-SSH 扩展。安装完成后，点击左下角的蓝色按钮可以运行相关指令，首先打开<code>open configuration File -&gt; .ssh\config</code>文件：</p>
+<pre><code class="powershell">Host aliyun                 # 任意名称 
+    HostName 118.190.56.46  # 主机公网地址，或者对应的域名
+    User root               # 主机用户名</code></pre>
+<p>然后再次点击蓝色按钮，选择<code>Connect to Host</code>连接服务器，其中会询问主机的系统、用户密码等，根据情况输入即可。</p>
+<p>接下来选择打开文件夹，在其中找到<code>/etc/nginx</code>目录，打开其中的<code>sites-enabled</code>文件夹，它表示当前已启用的站点。在该文件夹下新建一个配置文件如<code>vue-arknights</code>，在其中填入 Nginx 配置。</p>
+<p><img src="http://cdn.yesuanzao.cn/superbed/2020/04/27/5ea65521c2a9a83be5e808bb.jpg" alt=""></p>
+<p>不过手动书写配置比较繁琐，这时可以使用一个<a href="https://www.digitalocean.com/community/tools/nginx" target="_blank" rel="noopener">在线工具</a>直接生成：</p>
+<p><img src="http://cdn.yesuanzao.cn/superbed/2020/04/27/5ea659d5c2a9a83be5ed7133.jpg" alt=""></p>
+<p>然后将点击绿色按钮<code>Download Config</code>将生成的配置文件下载下来，将除了<code>nginx.conf</code>以外的文件复制到 Nginx 目录中。然后输入命令重新启动 Nginx 服务：</p>
+<pre><code class="powershell">service nginx reload</code></pre>
+<p>这时输入域名应该可以看到部署好的网站了。如果出现<code>502 bad gateway</code>错误，需要使用<code>pm2 start app.js</code>重新托管项目。如果依然显示 Nginx 主页，那么说明配置文件不正确，可以检查配置后重新生成。</p>
+<h2 id="导入本地数据库"><a href="#导入本地数据库" class="headerlink" title="导入本地数据库"></a>导入本地数据库</h2><p>在本地终端输入以下指令可以将指定数据库中的数据导出到当前目录：</p>
+<pre><code class="powershell">mongodump -d vue-arknights</code></pre>
+<p>然后将生成的<code>dump</code>文件夹通过刚才的 Remote-SSH 上传到服务器，如<code>/root/dump</code>。再在服务器终端输入命令将数据导入：</p>
+<pre><code class="powershell">mongodump restore</code></pre>
+<h2 id="修改代码"><a href="#修改代码" class="headerlink" title="修改代码"></a>修改代码</h2><p>如果在本地修改了代码，可以首先将本地代码推送到 GitHub，然后在服务器终端的项目路径下输入命令拉取最新代码：</p>
+<pre><code class="powershell">git pull</code></pre>
+<p>之后重新启动 pm2，使更新后的代码生效：</p>
+<pre><code class="powershell">pm2 list        # 查看当前管理的进程，记住 name 字段（如 app）
+pm2 reload app  # 重启对应 name 的进程</code></pre>
+<h2 id="启用-HTTPS-协议"><a href="#启用-HTTPS-协议" class="headerlink" title="启用 HTTPS 协议"></a>启用 HTTPS 协议</h2><p>要启用 HTTPS 协议，最重要的是需要 SSL 证书，目前可以使用<a href="https://letsencrypt.org/zh-cn/" target="_blank" rel="noopener">Let’s Encrypt</a>申请免费的 SSL 证书，不过它的有效期只有三个月，到期后需要手动更新。</p>
+<p>Let’s Encrypt 的文档建议我们使用<a href="https://certbot.eff.org/" target="_blank" rel="noopener">Certbot</a>客户端生成证书，打开网址后在屏幕中间<code>My HTTP website is running...</code>的位置选择服务器的类型和操作系统即可生成一个配置文档，根据文档输入命令即可。</p>
+<p><img src="http://cdn.yesuanzao.cn/superbed/2020/04/27/5ea67fc2c2a9a83be517412b.jpg" alt=""></p>
+<p>注意部署完成后不要忘记开启服务器防火墙的 443 端口。</p>
+</div>
+    </div>
+</div>
+
+<div class="toc"></div>
+    <footer>
+    <p>© 2020</p>
+    <p>Theme chicken by 小鸡米花, Powered by Hexo</p>
+</footer>
+    <a class="back-to-top" href="javascript:;"></a>
+
+    <script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js"></script>
+    <script defer src="https://cdn.staticfile.org/KaTeX/0.11.1/katex.min.js"></script>
+    <script defer src="https://cdn.staticfile.org/KaTeX/0.11.1/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body, { strict: false, delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}] });"></script>
+    <script src="https://cdn.staticfile.org/tocbot/4.10.0/tocbot.min.js"></script>
+    <script src="https://cdn.staticfile.org/highlight.js/9.18.1/highlight.min.js"></script>
+
+    <script>
+        // 为标签追加字体图标
+        $('.tag-list-item').prepend('<i class="fas fa-tag"></i>')
+
+        // 回到顶部的猫
+        $('.back-to-top').click(function () {
+            $('html, body').animate({
+                scrollTop: 0
+            }, 500)
+        })
+
+        // 监听 回到顶部的猫 是否显示
+        $(document).scroll(function () {
+            if ($(document).scrollTop() > 50) {
+                $('.back-to-top').addClass('show')
+            } else {
+                $('.back-to-top').removeClass('show')
+            }
+        })
+
+        // 在表格外包裹一层，用来生成滚动条
+        $('.post-content > table').wrap('<div class="table-container"></div>')
+
+        // Tocbot 实例化，用来快速生成文档目录
+        tocbot.init({
+            tocSelector: '.toc', // 渲染目录的容器
+            contentSelector: '.post-content', // 标题所在的容器
+            headingSelector: 'h2, h3', // 要渲染的目录层级,
+            headingsOffset: -50, // 微调目录高亮的显示位置（偏移量），防止点击的链接和高亮的链接不一致
+        })
+
+        // 初始化代码高亮 highlight.js
+        hljs.initHighlightingOnLoad()
+
+        // 自动加载 waifu
+        try {
+            $("<link>").attr({ href: "//cdn.yesuanzao.cn/blog/live2d/waifu.min.css", rel: "stylesheet", type: "text/css" }).appendTo('head');
+            $('body').append('<div class="waifu"><div class="waifu-tips"></div><canvas id="live2d" class="live2d"></canvas><div class="waifu-tool"><span class="fui-home"></span> <span class="fui-chat"></span> <span class="fui-eye"></span> <span class="fui-user"></span> <span class="fui-photo"></span> <span class="fui-info-circle"></span> <span class="fui-cross"></span></div></div>');
+            $.ajax({ url: '//cdn.yesuanzao.cn/blog/live2d/waifu-tips.js', dataType: "script", cache: true, async: false });
+            $.ajax({ url: '//cdn.yesuanzao.cn/blog/live2d/live2d.min.js', dataType: "script", cache: true, async: false, success: function() {
+                initModel('//cdn.yesuanzao.cn/blog/live2d/waifu-tips.json');
+            } });
+        } catch (err) { console.log(err) }
+    </script>
+    <!-- 
+        添加控制台，测试移动端
+        <script src="http://cdn.jsdelivr.net/npm/eruda"></script>
+        <script>eruda.init();</script>
+    -->
+</body>
+
+</html>

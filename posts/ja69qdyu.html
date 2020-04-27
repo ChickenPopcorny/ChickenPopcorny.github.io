@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>小鸡米花的知识库</title>
+    <link rel="stylesheet" href="//cdn.yesuanzao.cn/blog/atom-one-dark.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/KaTeX/0.11.1/katex.min.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/tocbot/4.10.0/tocbot.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/5.12.1/css/all.min.css">
+    <!-- 本地静态文件测试 -->
+    <link rel="stylesheet" href="/css/chicken.css">
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+    <header>
+    <div class="container">
+        <div class="site-title"><a href="/">小鸡米花的知识库</a></div>
+        <nav>
+            <a class="nav-item " href="/">主页</a>
+            <a class="nav-item " href="/archives">时光轴</a>
+        </nav>
+    </div>
+</header>
+    <div id="write">
+    <div class="container">
+        <div class="post-info">
+            <ul class="tag-list">
+                
+                    <a class="tag-list-item" href="/tags/JavaScript/">JavaScript</a>
+                
+            </ul>
+        </div>
+        <div class="post-content"><h1 id="🔔-使用-JavaScript-操作当前地址和历史记录"><a href="#🔔-使用-JavaScript-操作当前地址和历史记录" class="headerlink" title="🔔 使用 JavaScript 操作当前地址和历史记录"></a>🔔 使用 JavaScript 操作当前地址和历史记录</h1><p>JavaScript 主要通过<code>location</code>和<code>history</code>两个属性来操作当前页面位置和历史记录。</p>
+<h2 id="location"><a href="#location" class="headerlink" title="location"></a>location</h2><p><code>window.location</code>属性主要针对当前的页面位置进行操作。比如解析当前页面的 URL，注意这些属性都是可以修改的：</p>
+<pre><code class="js">// 当前 URL 为：http://www.example.com:4097/path/a.html?x=111#part1
+location.href      // 完整 URL：&quot;http://www.example.com:4097/path/a.html?x=111#part1&quot;
+location.protocol  // 协议：&quot;http:&quot;
+location.host      // 主机：&quot;www.example.com:4097&quot;
+location.hostname  // 主机名称：&quot;www.example.com&quot;
+location.port      // 端口号：&quot;4097&quot;
+location.pathname  // 路径：&quot;/path/a.html&quot;
+location.search    // 提交参数：&quot;?x=111&quot;
+location.hash      // 哈希值：&quot;#part1&quot;</code></pre>
+<p>浏览器的历史记录本质是一个栈结构，栈顶的值就是当前 URL。因此向栈中压入一条记录，就可以使当前的 URL 发生改变：</p>
+<pre><code class="js">location.assign(&#39;http://www.example.com&#39;)
+location.href = &#39;http://www.example.com&#39;</code></pre>
+<p>如果直接替换当前栈顶的值，那么之前的历史记录就会被覆盖，因此前进和后退按钮是不能使用的：</p>
+<pre><code class="js">location.replace(&#39;http://www.example.com&#39;)</code></pre>
+<p>也可以直接刷新当前页面：</p>
+<pre><code class="js">location.reload()</code></pre>
+<h2 id="History"><a href="#History" class="headerlink" title="History"></a>History</h2><p>HTML5 还新增一个用于操作整个历史记录的 API，通过<code>window.history</code>属性可以该对象。注意，调用这些方法修改页面地址<strong>不会导致向服务器发送请求</strong>，因此它们也是前端路由的一种实现方式。</p>
+<p>比如实现浏览器的前进后退效果，注意如果不存在上一个或下一个页面，则方法无效：</p>
+<pre><code class="js">history.back()
+history.forward()</code></pre>
+<p>或者以当前网址为基准跳转页面，负值表示后退，正值表示前进，<code>0</code>相当于刷新页面：</p>
+<pre><code class="js">history.go(-1)
+history.go(1)
+history.go(0)</code></pre>
+<p>使用它同样可以向历史记录中添加新记录，不过下列两个方法只能添加<strong>同源</strong>的地址，否则会报错。注意，它们的前两个参数固定为空即可，基本没有作用。</p>
+<pre><code class="js">// 当前页面为 http://127.0.0.1:5501/home/index.html
+history.pushState({}, &#39;&#39;, &#39;home&#39;)                               // =&gt; http://127.0.0.1:5501/home/home
+history.pushState({}, &#39;&#39;, &#39;http://127.0.0.1:5501/index.html&#39;)   // =&gt; http://127.0.0.1:5501/index.html
+
+// 替换栈顶的值
+history.replaceState({}, &#39;&#39;, &#39;about&#39;)                           // =&gt; http://127.0.0.1:5501/home/about</code></pre>
+</div>
+    </div>
+</div>
+
+<div class="toc"></div>
+    <footer>
+    <p>© 2020</p>
+    <p>Theme chicken by 小鸡米花, Powered by Hexo</p>
+</footer>
+    <a class="back-to-top" href="javascript:;"></a>
+
+    <script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js"></script>
+    <script defer src="https://cdn.staticfile.org/KaTeX/0.11.1/katex.min.js"></script>
+    <script defer src="https://cdn.staticfile.org/KaTeX/0.11.1/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body, { strict: false, delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}] });"></script>
+    <script src="https://cdn.staticfile.org/tocbot/4.10.0/tocbot.min.js"></script>
+    <script src="https://cdn.staticfile.org/highlight.js/9.18.1/highlight.min.js"></script>
+
+    <script>
+        // 为标签追加字体图标
+        $('.tag-list-item').prepend('<i class="fas fa-tag"></i>')
+
+        // 回到顶部的猫
+        $('.back-to-top').click(function () {
+            $('html, body').animate({
+                scrollTop: 0
+            }, 500)
+        })
+
+        // 监听 回到顶部的猫 是否显示
+        $(document).scroll(function () {
+            if ($(document).scrollTop() > 50) {
+                $('.back-to-top').addClass('show')
+            } else {
+                $('.back-to-top').removeClass('show')
+            }
+        })
+
+        // 在表格外包裹一层，用来生成滚动条
+        $('.post-content > table').wrap('<div class="table-container"></div>')
+
+        // Tocbot 实例化，用来快速生成文档目录
+        tocbot.init({
+            tocSelector: '.toc', // 渲染目录的容器
+            contentSelector: '.post-content', // 标题所在的容器
+            headingSelector: 'h2, h3', // 要渲染的目录层级,
+            headingsOffset: -50, // 微调目录高亮的显示位置（偏移量），防止点击的链接和高亮的链接不一致
+        })
+
+        // 初始化代码高亮 highlight.js
+        hljs.initHighlightingOnLoad()
+
+        // 自动加载 waifu
+        try {
+            $("<link>").attr({ href: "//cdn.yesuanzao.cn/blog/live2d/waifu.min.css", rel: "stylesheet", type: "text/css" }).appendTo('head');
+            $('body').append('<div class="waifu"><div class="waifu-tips"></div><canvas id="live2d" class="live2d"></canvas><div class="waifu-tool"><span class="fui-home"></span> <span class="fui-chat"></span> <span class="fui-eye"></span> <span class="fui-user"></span> <span class="fui-photo"></span> <span class="fui-info-circle"></span> <span class="fui-cross"></span></div></div>');
+            $.ajax({ url: '//cdn.yesuanzao.cn/blog/live2d/waifu-tips.js', dataType: "script", cache: true, async: false });
+            $.ajax({ url: '//cdn.yesuanzao.cn/blog/live2d/live2d.min.js', dataType: "script", cache: true, async: false, success: function() {
+                initModel('//cdn.yesuanzao.cn/blog/live2d/waifu-tips.json');
+            } });
+        } catch (err) { console.log(err) }
+    </script>
+    <!-- 
+        添加控制台，测试移动端
+        <script src="http://cdn.jsdelivr.net/npm/eruda"></script>
+        <script>eruda.init();</script>
+    -->
+</body>
+
+</html>

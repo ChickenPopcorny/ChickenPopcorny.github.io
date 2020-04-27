@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>小鸡米花的知识库</title>
+    <link rel="stylesheet" href="//cdn.yesuanzao.cn/blog/atom-one-dark.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/KaTeX/0.11.1/katex.min.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/tocbot/4.10.0/tocbot.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/5.12.1/css/all.min.css">
+    <!-- 本地静态文件测试 -->
+    <link rel="stylesheet" href="/css/chicken.css">
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+    <header>
+    <div class="container">
+        <div class="site-title"><a href="/">小鸡米花的知识库</a></div>
+        <nav>
+            <a class="nav-item " href="/">主页</a>
+            <a class="nav-item " href="/archives">时光轴</a>
+        </nav>
+    </div>
+</header>
+    <div id="write">
+    <div class="container">
+        <div class="post-info">
+            <ul class="tag-list">
+                
+                    <a class="tag-list-item" href="/tags/Node-js/">Node.js</a>
+                
+                    <a class="tag-list-item" href="/tags/Express/">Express</a>
+                
+            </ul>
+        </div>
+        <div class="post-content"><h1 id="⚙️-使用-Express-构建网络服务"><a href="#⚙️-使用-Express-构建网络服务" class="headerlink" title="⚙️ 使用 Express 构建网络服务"></a>⚙️ 使用 Express 构建网络服务</h1><p>Node.js 不需要像 PHP 一样依赖于 Apache 等服务器软件，它内置了多个模块用来处理各种形式的网络请求。由于诸如 Express 这样的主流框架已经对这些功能进行了高级封装，实际应用中也几乎不可能自己去实现一个服务器，所以本文直接使用<a href="https://expressjs.com/" target="_blank" rel="noopener">Express</a>构建网络服务。</p>
+<pre><code class="powershell">npm i express</code></pre>
+<h2 id="创建服务器"><a href="#创建服务器" class="headerlink" title="创建服务器"></a>创建服务器</h2><p>下面的代码可以创建一个最简单的服务器，Express 会自动设置 MIME 类型、编码和状态码，对于没有配置的路径，也会自动返回<code>404</code>状态码和错误页面。</p>
+<pre><code class="js">// 导入模块
+const express = require(&#39;express&#39;)
+// 创建服务器对象
+const app = express() 
+// 定义端口号
+const port = 3000 
+
+// 监听端口
+app.listen(port, function() {
+    console.log(`服务器启动成功，正在监听 ${port} 端口`)
+})</code></pre>
+<h2 id="页面路由"><a href="#页面路由" class="headerlink" title="页面路由"></a>页面路由</h2><p>路由指的是资源和路径之间的对应关系，资源可能是一个 HTML 页面、一个普通字符串或者一段 JSON 数据等等。</p>
+<p>使用<code>METHOD()</code>方法设置当客户端以特定方式（如<code>GET</code>、<code>POST</code>等）请求特定路径时所返回的内容。这里的<code>METHOD</code>需要替换成具体的方式，其详细列表见<a href="https://expressjs.com/en/4x/api.html#app.METHOD" target="_blank" rel="noopener">官网</a>。</p>
+<pre><code class="js">// 匹配 get 请求
+app.get(&#39;/home&#39;, function(req, res) {
+    // 使用响应对象的 send() 方法返回响应内容，否则客户端会一直停留在等待状态
+    // 当 send() 参数为字符串时，返回的 Content-Type 为 text/html ，否则为 application/json
+    res.send(&#39;欢迎来到首页！&#39;)
+})
+
+app.post(&#39;/login&#39;, function(req, res) {
+    res.send(&#39;登录成功！&#39;)
+})
+
+app.post(/a/, function(req, res) { // 正则表达式，表示任何包含字符 a 的路径
+    res.send(&#39;嗯？&#39;)
+})
+
+app.get(&#39;/&#39;, function(req, res) {
+    // 重定向到 /home 路由，会自动返回 302 状态码，并使客户端跳转到重定向后的页面
+    res.redirect(&#39;/home&#39;)
+})</code></pre>
+<h2 id="中间件"><a href="#中间件" class="headerlink" title="中间件"></a>中间件</h2><p>中间件是位于接收请求和发送响应之间的处理模块，它们通常不会用来处理请求和响应。可以理解成污水到最终排放之间，需要经过层层过滤和处理，这个过程就需要若干个中间件来完成。Express 本身只能完成最简单的功能，因此对于 Express 构建的后端服务来说，本质上就是一系列中间件的调用。</p>
+<p>注意，中间件会拦截所有以某路径<strong>开头</strong>的路由，而不仅仅是当前指定的路由。如配置的拦截参数是<code>/test</code>，那么它会拦截所有<code>/test/a</code>、<code>/test/a/b</code>等所有子路由。此外，一旦中间件拦截成功，需要调用<code>next()</code>才能执行后续匹配的其它中间件或路由。</p>
+<pre><code class="js">// 拦截了 /test 路由
+app.use(&#39;/test&#39;, function (req, res, next) { 
+    console.log(&#39;拦截成功！&#39;)
+    next() // 除非调用 next(), 否则不会执行下面的 get()
+})
+
+app.get(&#39;/test&#39;, function (req, res) {
+    res.send(&#39;hello&#39;)
+})</code></pre>
+<p>注意，如果将上述两个函数调换位置，那么中间件也永远不会被执行，因为路由函数<code>get()</code>表示该路由已经处理完毕，也没有<code>next()</code>函数可供调用。</p>
+<p>使用中间件可以将路由对象挂载到指定路由上，路由对象相当于一个小型的<code>app</code>服务器对象。</p>
+<pre><code class="js">// 创建路由对象
+const router = express.Router() 
+
+// 通过路由对象配置路由规则，而非 app
+router.get(&#39;/list&#39;, (req, res) =&gt; {
+    res.send(&#39;欢迎来到列表页&#39;)
+    req.app // 可以在这里获取 app 对象
+})
+
+// 使用中间件拦截所有请求，并交给路由对象处理
+app.use(&#39;/&#39;, router)
+
+// 导出路由对象
+module.exports = router</code></pre>
+<p>通过这一方式可以配置子路由：</p>
+<pre><code class="js">// 创建路由对象
+const blogRouter = express.Router() 
+
+// 该路由规则匹配 /blog/list
+blogRouter.get(&#39;/list&#39;, (req, res) =&gt; {
+    res.send(&#39;欢迎来到博客列表页&#39;)
+})
+
+// 使用中间件拦截 /blog 请求，而非全部请求
+app.use(&#39;/blog&#39;, router)
+
+// 导出路由对象
+module.exports = blogRouter</code></pre>
+<h2 id="接收参数"><a href="#接收参数" class="headerlink" title="接收参数"></a>接收参数</h2><p>获取 GET 请求参数：</p>
+<pre><code class="js">// 请求地址: localhost/index?name=daisy&amp;age=18
+app.get(&#39;/index&#39;, function(req, res) {
+    req.query // =&gt; { name: daisy, age: 18 }
+}) </code></pre>
+<p>路由参数是另一种传递 GET 参数的方式，它使参数看起来像是路由的一部分，而不是问号引导的形式。目前主流的前端框架也都实现了这种传递参数的方式，使路径看起来更加的友好。在路由后面使用<code>/:参数</code>作为占位符，当服务器接收到这样的请求时，就会将占位符的部分作为参数了。</p>
+<pre><code class="js">// 请求路径: localhost/user/add/233, 233 会被识别为 id 参数
+// 请求路径: localhost/user/add, 不会匹配到该路由, 因为没有参数部分
+app.get(&#39;/add/:id&#39;, function(req, res) {
+    req.params // =&gt; { id: 233 }
+})</code></pre>
+<p>要获取 POST / PUT 请求参数，需要先安装第三方模块<a href="https://github.com/expressjs/body-parser" target="_blank" rel="noopener">body-parser</a>用来解析 JSON 或 urlencoded 格式的数据：</p>
+<pre><code>npm i body-parser</code></pre><pre><code class="js">// 导入模块
+const bodyParser = require(&#39;body-parser&#39;)
+
+// 中间件，切记一定要定义在路由模块之前！！
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: false }))
+
+app.post(&#39;/add&#39;, function(req, res) {
+    req.body // =&gt; { name: daisy, age: 18 }
+})</code></pre>
+<h2 id="文件上传"><a href="#文件上传" class="headerlink" title="文件上传"></a>文件上传</h2><p>要接收二进制数据，需要先安装第三方模块<a href="https://www.npmjs.com/package/multer" target="_blank" rel="noopener">multer</a>：</p>
+<pre><code>npm i multer</code></pre><pre><code class="js">const multer = require(&#39;multer&#39;)
+// 设置上传路径，这里指向 public 下的 uploads
+const upload = multer({ dest: path.resolve(&#39;public&#39;, &#39;uploads&#39;) })
+
+// 为 post() 添加一个中间件，表示接收单个文件，参数为上传的属性名称
+// 此时文件会被自动保存到上面的目录中，如果前端需要预览，将该目录托管为静态资源，然后配置路由访问即可
+router.post(&#39;/upload&#39;, upload.single(&#39;file&#39;), (req, res) =&gt; {
+    res.send(req.file) // 上传的文件信息
+})</code></pre>
+<h2 id="允许跨域请求"><a href="#允许跨域请求" class="headerlink" title="允许跨域请求"></a>允许跨域请求</h2><p>使用第三方包<a href="https://www.npmjs.com/package/cors" target="_blank" rel="noopener">cors</a>可以配置允许跨域请求。</p>
+<pre><code class="powershell">npm i cors</code></pre>
+<pre><code class="js">app.use(cors()) // 切记在路由模块之前配置
+app.use(&#39;/&#39;, router)</code></pre>
+<h2 id="静态资源"><a href="#静态资源" class="headerlink" title="静态资源"></a>静态资源</h2><p>使用<code>express.static()</code>方法可以自动配置静态资源的路由，这是目前 Express 唯一的内置中间件函数，需要作为中间件使用。</p>
+<pre><code class="js">// 拼接静态资源目录, 如 D:\WorkSpace\my-project\public
+const staticPath = path.join(__dirname, &#39;public&#39;)
+// 使用 static() 管理静态资源目录，这是一个中间件函数，需要放到 use() 中执行
+app.use(express.static(staticPath))</code></pre>
+<p>此时，Express 会自动拦截如<code>/300.png</code>、<code>/css/a.css</code>、<code>/index.html</code>这些路由，并自动返回静态资源的目录下对应的文件。</p>
+<pre><code>Test
+├─ app.js
+├─ public
+│    ├─ 300.png
+│    ├─ css
+│    │    └─ layout.css
+└─   └─ index.html</code></pre><h2 id="模板引擎"><a href="#模板引擎" class="headerlink" title="模板引擎"></a>模板引擎</h2><p>实际当中，我们很少将内容完全固定的页面直接返回，而通常是先从数据库查询出需要的数据，然后填充到页面结构中，再将整个页面响应给客户端。与 PHP、JSP 等语言不同，Node.js 并没有这类将前端页面和后端语言结合的语法，因此需要借助模板引擎来实现这一功能。</p>
+<p>也就是说，我们不再写直接交给客户端的 HTML 页面，而是按照模板引擎的语法写出页面，将其交给模板引擎。模板引擎会根据其中的代码进行数据拼接等操作，然后将其处理成最终的页面响应给客户端。</p>
+<p>或者，如果你采用了「前后端分离」的开发模式（前端只通过接口获取 JSON 数据，而不是直接获取渲染后的页面），那么也可以将模板引擎部署在浏览器端。否则必须通过 JavaScript 动态创建元素，将数据存放在元素中，再追加到页面上。而这样并不利于文档结构的维护，因此同样需要借助模板引擎拼接 HTML 和数据。</p>
+<p>模板引擎有很多种，比如<a href="https://ejs.co/" target="_blank" rel="noopener">EJS</a>、<a href="http://www.nooong.com/docs/jade_chinese.htm" target="_blank" rel="noopener">Jade</a>等等，它们的用法大同小异，这里使用的是国内制作的<a href="/posts/3q4y7l2d.html">art-template</a>。</p>
+<pre><code class="powershell">npm install express-art-template art-template</code></pre>
+<p>使用下面的代码在 Express 中部署 art-template 模板引擎。这些参数均为 Express 中<a href="http://expressjs.com/en/5x/api.html#app.set" target="_blank" rel="noopener">要求配置的参数</a>，并不属于 art-template 模板引擎，因此其它模板引擎配置的方式也基本一样。</p>
+<pre><code class="js">// 设置要渲染的文件后缀名，以及对应的模板引擎，必须设置
+app.engine(&#39;html&#39;, require(&#39;express-art-template&#39;))
+
+// 设置模板的存放目录，默认值为 process.cwd() + &#39;/views&#39;
+// process.cwd() 为当前 Node.js 的进程工作目录，也就是项目根目录下的 views 文件夹
+app.set(&#39;views&#39;, path.join(__dirname, &#39;views&#39;))
+
+// 设置要渲染的文件后缀名省略时，默认补充的后缀
+app.set(&#39;view engine&#39;, &#39;html&#39;)
+
+// 使用 render() 方法响应模板内容，后面传入数据参数
+// 如果 views 下面还有子目录 home，那么要使用 res.render(&#39;home/index.html&#39;)，不要在 home 前添加斜杠了
+app.get(&#39;/&#39;, (req, res) =&gt; {
+    res.render(&#39;index.html&#39;, { name: &#39;aui&#39;, age: 18 }) // 这里使用了后缀名，如果省略，则根据 view engine 的配置自动补充
+})
+
+// 将每个模板都需要使用的公共数据放到 app.locals 对象中，这样每个模板都能直接获取到该数据
+app.locals.user = { name: &#39;啦啦啦&#39;, age: 18 } // 在模板中使用 user 即可获取到该对象</code></pre>
+<h2 id="数据加密"><a href="#数据加密" class="headerlink" title="数据加密"></a>数据加密</h2><p>将用户密码明文保存到数据库中是十分危险的，一旦数据库泄露，会严重危害用户的信息安全，因此对于用户密码通常需要加密存储。之前主要使用 MD5 方式加密，但是由于安全性不高，因此现在主要采用 bcrypt 方式加密。在 Node.js 中，使用<a href="https://www.npmjs.com/package/bcryptjs" target="_blank" rel="noopener">bcryptjs</a>模块就可以使用这种加密方式。</p>
+<pre><code>npm install bcryptjs</code></pre><pre><code class="js">const bcrypt = require(&#39;bcryptjs&#39;)
+
+// 使用同步方式生成密文，它的第一个参数是明文密码，第二个参数是加密强度，一般为 10 即可
+let hash = bcrypt.hashSync(&#39;123456&#39;, 10)
+
+// 比对明文与密文
+bcrypt.compareSync(&#39;123456&#39;, hash) // =&gt; true</code></pre>
+<h2 id="用户认证"><a href="#用户认证" class="headerlink" title="用户认证"></a>用户认证</h2><p>HTTP 协议是无状态的，当客户端与服务器的一次请求结束后，服务器就不再认识客户端了，因此必须通过一些方式保存用户的登录状态。</p>
+<h3 id="Session"><a href="#Session" class="headerlink" title="Session"></a>Session</h3><p>第一种方式称为 session，它的原理是当用户登录成功后，在服务端通过 session 对象保存一个 sessionID，并返回给客户端，客户端则将 sessionID 记录到本地（比如 cookie 中）。当用户再次发起请求时，由于浏览器会默认将本地<strong>同域</strong>的 cookie 携带在请求头中，一同发送到服务器，这样服务器就可以检查 session 对象中是否包含之前生成的 sessionID，如果有，则说明用户之前登录过。</p>
+<p>在 Node.js 中要实现服务端 session 对象，需要安装扩展包<a href="https://www.npmjs.com/package/express-session" target="_blank" rel="noopener">express-session</a>。</p>
+<pre><code class="powershell">npm i express-session</code></pre>
+<pre><code class="js">// 导入模块
+const session = require(&#39;express-session&#39;)
+
+// session() 的构造函数是中间件函数，需要传入 use() 中执行
+app.use(session({ 
+    secret: &#39;open-sesame&#39;,      // 增加生成 sessionID 的强度，防止被篡改，类似于盐值
+    resave: false,              // cookie 过期之前，客户端再次访问是否重复保存 session，建议 false
+    saveUninitialized: false    // 是否保存未添加实际内容的 session，建议 false,
+    cookie: { 
+        maxAge: 24 * 60 * 60 * 1000, // 默认关闭浏览器就会清除，因此要设置 cookie 过期时间，单位为毫秒
+    } 
+}))
+
+// 当登录成功后，可以在 session 中记录一个值，如用户名
+app.post(&#39;/login&#39;, function (req, res) {
+    // 如果登录成功
+    if (isValid) {
+        req.session.username = result.username
+        // 跳转到登录后页面
+    }
+})
+
+// 清除客户端保存的 cookie
+app.get(&#39;/&#39;, function (req, res) {
+    res.clearCookie(&#39;connect.sid&#39;) // 清除客户端保存的 sessionID
+})</code></pre>
+<h3 id="JWT"><a href="#JWT" class="headerlink" title="JWT"></a>JWT</h3><p>第二种方式称为 JWT（JSON Web Token），它主要用于需要跨域访问的场景。由于 session 是保存在服务器端，因此不容易实现 session 共享。比如两台服务器分别部署了同一家公司的不同业务网站，如果希望用户在登录了其中一个网站后，就可以自动登录另一个网站，那么通过 session 实现起来就比较困难。</p>
+<p>JWT 的原理是，用户登录成功后，会生成一个 JSON 对象（其中内容并不是很重要，通常保存用户 ID 即可），并返回给客户端保存，之后服务器端只需通过这个 JSON 对象就可以认证身份。但是很明显，如果仅传过去一个明文的 JSON 对象根本没有任何安全性可言，于是一个完整的 token 其实分为三个部分：</p>
+<pre><code>eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.
+eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.
+SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c</code></pre><p>这里为了易读将三个部分进行了换行，但其实它们是一个完整的字符串，每个部分以<code>.</code>进行分隔。这三个部分为：</p>
+<ul>
+<li>头部（Header）：包含了 JWT 的元数据，如加密算法、类型等</li>
+<li>负载（Payload）：包含了实际传递的数据，如过期时间、自定义字段等</li>
+<li>签名（Signature）：根据服务端的密钥和前两个部分生成，防止数据被篡改</li>
+</ul>
+<p>要使用 JWT，需要使用第三方包<a href="https://www.npmjs.com/package/jsonwebtoken" target="_blank" rel="noopener">jsonwebtoken</a>。</p>
+<pre><code class="powershell">npm install jsonwebtoken</code></pre>
+<pre><code class="js">const jwt = require(&#39;jsonwebtoken&#39;)
+
+// 生成一个 token，第一个参数为自定义对象，可以保存用户 id，第二个参数为密钥
+const token = jwt.sign({ _id: &#39;4894324024&#39; }, &#39;shhhhh&#39;) // =&gt; xxx.yyy.zzz
+
+// 根据 token 和 密钥 解密出存入的数据对象
+jwt.verify(token, &#39;shhhhh&#39;) // =&gt; { _id: &#39;4894324024&#39; }
+
+jwt.verify(token, &#39;shhhhh&#39;, (err, decoded) =&gt; {
+    err       // 如果传入了错误的 token 或 密钥，则为 错误信息，否则为空
+    decoded   // 如果传入了错误的 token 或 密钥，则为 undefined，否则为解密出的数据对象
+})</code></pre>
+<blockquote>
+<p><em>参考资料</em><br><a href="http://www.ruanyifeng.com/blog/2018/07/json_web_token-tutorial.html" target="_blank" rel="noopener">JSON Web Token 入门教程</a></p>
+</blockquote>
+</div>
+    </div>
+</div>
+
+<div class="toc"></div>
+    <footer>
+    <p>© 2020</p>
+    <p>Theme chicken by 小鸡米花, Powered by Hexo</p>
+</footer>
+    <a class="back-to-top" href="javascript:;"></a>
+
+    <script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js"></script>
+    <script defer src="https://cdn.staticfile.org/KaTeX/0.11.1/katex.min.js"></script>
+    <script defer src="https://cdn.staticfile.org/KaTeX/0.11.1/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body, { strict: false, delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}] });"></script>
+    <script src="https://cdn.staticfile.org/tocbot/4.10.0/tocbot.min.js"></script>
+    <script src="https://cdn.staticfile.org/highlight.js/9.18.1/highlight.min.js"></script>
+
+    <script>
+        // 为标签追加字体图标
+        $('.tag-list-item').prepend('<i class="fas fa-tag"></i>')
+
+        // 回到顶部的猫
+        $('.back-to-top').click(function () {
+            $('html, body').animate({
+                scrollTop: 0
+            }, 500)
+        })
+
+        // 监听 回到顶部的猫 是否显示
+        $(document).scroll(function () {
+            if ($(document).scrollTop() > 50) {
+                $('.back-to-top').addClass('show')
+            } else {
+                $('.back-to-top').removeClass('show')
+            }
+        })
+
+        // 在表格外包裹一层，用来生成滚动条
+        $('.post-content > table').wrap('<div class="table-container"></div>')
+
+        // Tocbot 实例化，用来快速生成文档目录
+        tocbot.init({
+            tocSelector: '.toc', // 渲染目录的容器
+            contentSelector: '.post-content', // 标题所在的容器
+            headingSelector: 'h2, h3', // 要渲染的目录层级,
+            headingsOffset: -50, // 微调目录高亮的显示位置（偏移量），防止点击的链接和高亮的链接不一致
+        })
+
+        // 初始化代码高亮 highlight.js
+        hljs.initHighlightingOnLoad()
+
+        // 自动加载 waifu
+        try {
+            $("<link>").attr({ href: "//cdn.yesuanzao.cn/blog/live2d/waifu.min.css", rel: "stylesheet", type: "text/css" }).appendTo('head');
+            $('body').append('<div class="waifu"><div class="waifu-tips"></div><canvas id="live2d" class="live2d"></canvas><div class="waifu-tool"><span class="fui-home"></span> <span class="fui-chat"></span> <span class="fui-eye"></span> <span class="fui-user"></span> <span class="fui-photo"></span> <span class="fui-info-circle"></span> <span class="fui-cross"></span></div></div>');
+            $.ajax({ url: '//cdn.yesuanzao.cn/blog/live2d/waifu-tips.js', dataType: "script", cache: true, async: false });
+            $.ajax({ url: '//cdn.yesuanzao.cn/blog/live2d/live2d.min.js', dataType: "script", cache: true, async: false, success: function() {
+                initModel('//cdn.yesuanzao.cn/blog/live2d/waifu-tips.json');
+            } });
+        } catch (err) { console.log(err) }
+    </script>
+    <!-- 
+        添加控制台，测试移动端
+        <script src="http://cdn.jsdelivr.net/npm/eruda"></script>
+        <script>eruda.init();</script>
+    -->
+</body>
+
+</html>

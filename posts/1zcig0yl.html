@@ -5,8 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>这是一个神奇的主题</title>
-    <!-- <link rel="stylesheet" href="//cdn.yesuanzao.cn/blog/chicken.css"> -->
+    <title>小鸡米花的知识库</title>
     <link rel="stylesheet" href="//cdn.yesuanzao.cn/blog/atom-one-dark.css">
     <link rel="stylesheet" href="https://cdn.staticfile.org/KaTeX/0.11.1/katex.min.css">
     <link rel="stylesheet" href="https://cdn.staticfile.org/tocbot/4.10.0/tocbot.css">
@@ -34,7 +33,7 @@
                 
             </ul>
         </div>
-        <div class="post-content"><h1 id="大前端笔记之22-📦-webpack"><a href="#大前端笔记之22-📦-webpack" class="headerlink" title="大前端笔记之22 📦 webpack"></a>大前端笔记之22 📦 webpack</h1><p><a href="https://www.webpackjs.com/concepts" target="_blank" rel="noopener">webpack</a>是一个前端项目的自动化构建工具，更确切地来说，它是一个模块打包器。模块化可以使得越来越复杂的前端项目中的文件依赖变得清晰，更容易管理。但是由于浏览器的兼容性问题，ES6、CommonJS 等模块化语法并不能得到很好的支持。而 webpack 提供了各种模块化方式的支持，可以将这些包含模块化语法的代码进行打包合并，转换成浏览器能够运行的代码。可见，虽然它也具有类似于 Gulp 提供诸如代码转换（ES6 → ES5、Less → CSS ）、代码压缩等功能，但是提供模块化支持，才是它更强大的地方。</p>
+        <div class="post-content"><h1 id="📦-webpack-简明入门教程"><a href="#📦-webpack-简明入门教程" class="headerlink" title="📦 webpack 简明入门教程"></a>📦 webpack 简明入门教程</h1><p><a href="https://www.webpackjs.com/concepts" target="_blank" rel="noopener">webpack</a>是一个前端项目的自动化构建工具，更确切地来说，它是一个模块打包器。模块化可以使得越来越复杂的前端项目中的文件依赖变得清晰，更容易管理。但是由于浏览器的兼容性问题，ES6、CommonJS 等模块化语法并不能得到很好的支持。而 webpack 提供了各种模块化方式的支持，可以将这些包含模块化语法的代码进行打包合并，转换成浏览器能够运行的代码。可见，虽然它也具有类似于 Gulp 提供诸如代码转换（ES6 → ES5、Less → CSS ）、代码压缩等功能，但是提供模块化支持，才是它更强大的地方。</p>
 <h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><p>webpack 是一个基于 Node.js 的工具，需要使用 npm 安装。由于它仅仅是一个开发工具，因此将其作为开发依赖即可：</p>
 <pre><code class="powershell">npm i webpack webpack-cli --save-dev</code></pre>
 <p>接下来在项目目录中新建一个<code>src</code>目录，用来存放源代码文件，等待 webpack 处理。</p>

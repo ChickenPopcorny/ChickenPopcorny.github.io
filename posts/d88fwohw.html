@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>小鸡米花的知识库</title>
+    <link rel="stylesheet" href="//cdn.yesuanzao.cn/blog/atom-one-dark.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/KaTeX/0.11.1/katex.min.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/tocbot/4.10.0/tocbot.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/5.12.1/css/all.min.css">
+    <!-- 本地静态文件测试 -->
+    <link rel="stylesheet" href="/css/chicken.css">
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+    <header>
+    <div class="container">
+        <div class="site-title"><a href="/">小鸡米花的知识库</a></div>
+        <nav>
+            <a class="nav-item " href="/">主页</a>
+            <a class="nav-item " href="/archives">时光轴</a>
+        </nav>
+    </div>
+</header>
+    <div id="write">
+    <div class="container">
+        <div class="post-info">
+            <ul class="tag-list">
+                
+                    <a class="tag-list-item" href="/tags/JavaScript/">JavaScript</a>
+                
+            </ul>
+        </div>
+        <div class="post-content"><h1 id="🔔-JavaScript-中的-this-关键字"><a href="#🔔-JavaScript-中的-this-关键字" class="headerlink" title="🔔 JavaScript 中的 this 关键字"></a>🔔 JavaScript 中的 this 关键字</h1><p>JavaScript 中的<code>this</code>在不同场合所指向的对象会有所不同，但是无论如何，它总是会指向一个对象。</p>
+<h2 id="不同场景下的-this-指向"><a href="#不同场景下的-this-指向" class="headerlink" title="不同场景下的 this 指向"></a>不同场景下的 this 指向</h2><h3 id="构造函数中的-this"><a href="#构造函数中的-this" class="headerlink" title="构造函数中的 this"></a>构造函数中的 this</h3><p>构造函数中的<code>this</code>指向其创建的实例对象。</p>
+<pre><code class="js">function Person(name) { 
+    this.name = name 
+}
+
+let person = new Person(&#39;Claire&#39;)
+person.name // =&gt; Claire</code></pre>
+<h3 id="全局作用域中的-this"><a href="#全局作用域中的-this" class="headerlink" title="全局作用域中的 this"></a>全局作用域中的 this</h3><p>全局作用域中的<code>this</code>指代全局对象<code>Window</code>（仅限于浏览器作为宿主环境时）。</p>
+<pre><code class="js">this // =&gt; Window</code></pre>
+<h3 id="普通函数中的-this"><a href="#普通函数中的-this" class="headerlink" title="普通函数中的 this"></a>普通函数中的 this</h3><p>普通函数中的<code>this</code>指代<strong>当前调用函数的对象</strong>，与函数的定义位置、调用位置都没有关系，只与函数的<strong>调用者</strong>有关。如果函数没有调用者，则<code>this</code>同样指代全局对象<code>Window</code>。</p>
+<p>在下面的代码中，由于<code>foo()</code>前没有具体的调用对象，因此函数中的<code>this</code>指代的是<code>Window</code>。</p>
+<pre><code class="js">function foo() { return this }
+
+foo() // =&gt; Window</code></pre>
+<p>如果函数通过某个对象调用，那么函数中的<code>this</code>指向该对象：</p>
+<pre><code class="js">function foo() { return this }
+
+let obj = { fn: foo }
+
+obj.fn() // =&gt; obj</code></pre>
+<h3 id="定时器中的-this"><a href="#定时器中的-this" class="headerlink" title="定时器中的 this"></a>定时器中的 this</h3><p>定时器中的<code>this</code>指代的是全局对象<code>Window</code>。</p>
+<pre><code class="js">setInterval(function () {
+    this // =&gt; window
+}, 1000)</code></pre>
+<h3 id="事件监听函数中的-this"><a href="#事件监听函数中的-this" class="headerlink" title="事件监听函数中的 this"></a>事件监听函数中的 this</h3><p>事件监听函数中的<code>this</code>指代的是触发事件的对象。注意这里的事件监听函数如果是箭头函数，那么会指向外层的<code>this</code>，因为箭头函数没有自己的<code>this</code>。</p>
+<pre><code class="js">btn.addEventListener(&#39;click&#39;, function () {
+    this // =&gt; &lt;button id=&quot;btn&quot;&gt;触发事件&lt;/button&gt;
+})</code></pre>
+<h2 id="改变-this-指向"><a href="#改变-this-指向" class="headerlink" title="改变 this 指向"></a>改变 this 指向</h2><p>虽然<code>this</code>的指向会随着场景不同发生变化，但是通过一些方式可以修改特定情况下<code>this</code>的指向。</p>
+<h3 id="call"><a href="#call" class="headerlink" title="call()"></a>call()</h3><p>使用函数调用<code>call()</code>，并传入一个对象作为参数，会导致函数中的<code>this</code>指向该对象参数。如果没有传参数或者传入<code>null</code>，那么相当于直接调用函数，不会改变<code>this</code>的指向。</p>
+<pre><code class="js">function say() { return this }
+let obj = {}
+
+say()           // =&gt; Window
+say.call(obj)   // =&gt; obj
+say.call()      // =&gt; Window，相当于直接调用</code></pre>
+<p>如果传入更多参数，则之后的参数表示函数本身的参数：</p>
+<pre><code class="js">function getSum(num1, num2) {
+    return num1 + num2
+}
+
+getSum.call(null, 10, 20) // =&gt; 30</code></pre>
+<h3 id="apply"><a href="#apply" class="headerlink" title="apply()"></a>apply()</h3><p>它的用法与<code>call()</code>几乎一致，区别在于<code>apply()</code>的函数参数必须是数组。</p>
+<pre><code class="js">getSum.apply(obj, [10])</code></pre>
+<h3 id="bind"><a href="#bind" class="headerlink" title="bind()"></a>bind()</h3><p>该方法会改变<code>this</code>的指向，但是不会调用函数，而是返回一个改变了<code>this</code>指向的新函数。</p>
+<pre><code class="js">function fn() { return this }
+
+let obj = {}
+let newFn = fn.bind(obj)
+
+newFn() // =&gt; obj</code></pre>
+</div>
+    </div>
+</div>
+
+<div class="toc"></div>
+    <footer>
+    <p>© 2020</p>
+    <p>Theme chicken by 小鸡米花, Powered by Hexo</p>
+</footer>
+    <a class="back-to-top" href="javascript:;"></a>
+
+    <script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js"></script>
+    <script defer src="https://cdn.staticfile.org/KaTeX/0.11.1/katex.min.js"></script>
+    <script defer src="https://cdn.staticfile.org/KaTeX/0.11.1/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body, { strict: false, delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}] });"></script>
+    <script src="https://cdn.staticfile.org/tocbot/4.10.0/tocbot.min.js"></script>
+    <script src="https://cdn.staticfile.org/highlight.js/9.18.1/highlight.min.js"></script>
+
+    <script>
+        // 为标签追加字体图标
+        $('.tag-list-item').prepend('<i class="fas fa-tag"></i>')
+
+        // 回到顶部的猫
+        $('.back-to-top').click(function () {
+            $('html, body').animate({
+                scrollTop: 0
+            }, 500)
+        })
+
+        // 监听 回到顶部的猫 是否显示
+        $(document).scroll(function () {
+            if ($(document).scrollTop() > 50) {
+                $('.back-to-top').addClass('show')
+            } else {
+                $('.back-to-top').removeClass('show')
+            }
+        })
+
+        // 在表格外包裹一层，用来生成滚动条
+        $('.post-content > table').wrap('<div class="table-container"></div>')
+
+        // Tocbot 实例化，用来快速生成文档目录
+        tocbot.init({
+            tocSelector: '.toc', // 渲染目录的容器
+            contentSelector: '.post-content', // 标题所在的容器
+            headingSelector: 'h2, h3', // 要渲染的目录层级,
+            headingsOffset: -50, // 微调目录高亮的显示位置（偏移量），防止点击的链接和高亮的链接不一致
+        })
+
+        // 初始化代码高亮 highlight.js
+        hljs.initHighlightingOnLoad()
+
+        // 自动加载 waifu
+        try {
+            $("<link>").attr({ href: "//cdn.yesuanzao.cn/blog/live2d/waifu.min.css", rel: "stylesheet", type: "text/css" }).appendTo('head');
+            $('body').append('<div class="waifu"><div class="waifu-tips"></div><canvas id="live2d" class="live2d"></canvas><div class="waifu-tool"><span class="fui-home"></span> <span class="fui-chat"></span> <span class="fui-eye"></span> <span class="fui-user"></span> <span class="fui-photo"></span> <span class="fui-info-circle"></span> <span class="fui-cross"></span></div></div>');
+            $.ajax({ url: '//cdn.yesuanzao.cn/blog/live2d/waifu-tips.js', dataType: "script", cache: true, async: false });
+            $.ajax({ url: '//cdn.yesuanzao.cn/blog/live2d/live2d.min.js', dataType: "script", cache: true, async: false, success: function() {
+                initModel('//cdn.yesuanzao.cn/blog/live2d/waifu-tips.json');
+            } });
+        } catch (err) { console.log(err) }
+    </script>
+    <!-- 
+        添加控制台，测试移动端
+        <script src="http://cdn.jsdelivr.net/npm/eruda"></script>
+        <script>eruda.init();</script>
+    -->
+</body>
+
+</html>

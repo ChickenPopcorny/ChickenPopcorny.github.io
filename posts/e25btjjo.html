@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>小鸡米花的知识库</title>
+    <link rel="stylesheet" href="//cdn.yesuanzao.cn/blog/atom-one-dark.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/KaTeX/0.11.1/katex.min.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/tocbot/4.10.0/tocbot.css">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/5.12.1/css/all.min.css">
+    <!-- 本地静态文件测试 -->
+    <link rel="stylesheet" href="/css/chicken.css">
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body>
+    <header>
+    <div class="container">
+        <div class="site-title"><a href="/">小鸡米花的知识库</a></div>
+        <nav>
+            <a class="nav-item " href="/">主页</a>
+            <a class="nav-item " href="/archives">时光轴</a>
+        </nav>
+    </div>
+</header>
+    <div id="write">
+    <div class="container">
+        <div class="post-info">
+            <ul class="tag-list">
+                
+                    <a class="tag-list-item" href="/tags/JavaScript/">JavaScript</a>
+                
+                    <a class="tag-list-item" href="/tags/Vue-js/">Vue.js</a>
+                
+            </ul>
+        </div>
+        <div class="post-content"><h1 id="🍀-使用-Vue-CLI-快速搭建项目"><a href="#🍀-使用-Vue-CLI-快速搭建项目" class="headerlink" title="🍀 使用 Vue-CLI 快速搭建项目"></a>🍀 使用 Vue-CLI 快速搭建项目</h1><p>之前均是使用<code>Vue.component()</code>或者<code>components</code>来定义组件，然后将组件相关的数据、模板定义到实例中。但是随着项目变得复杂，这种方式定义的组件阅读起来会非常的麻烦。</p>
+<p>因此，Vue 提供了<strong>单文件组件</strong>的方式来管理组件，可以将一个组件的模板、脚本和样式抽离到一个单独的<code>.vue</code>文件中管理。不过，此时必须要将组件作为一个模块导入才可以使用，为此，则必须使用<a href="/posts/1zcig0yl.html">webpack</a>来提供模块化支持。</p>
+<p>为了简化 webpack 的复杂配置，Vue 提供了命令行工具<a href="https://cli.vuejs.org/zh/guide/" target="_blank" rel="noopener">Vue-CLI</a>（Vue Command-Line Interface，俗称脚手架）用来快速搭建 Vue 项目开发环境，从而快速生成目录结构、配置 webpack 等。</p>
+<pre><code class="powershell">npm install -g @vue/cli</code></pre>
+<pre><code class="powershell">vue create hello-world  # 创建项目，运行命令后可以根据需要选择不同的配置
+vue ui                  # 开启 GUI 项目管理工具，可以用来修改配置、管理依赖等</code></pre>
+<p>创建项目后，会生成大致如下的项目结构：</p>
+<pre><code class="powershell">hello-world
+├─ public                       # 静态资源目录，所有的内容会被原封不动打包到 dist 目录中
+│    ├─ favicon.ico
+│    └─ index.html              # htmlWebpackPlugin 载入的模板，以此创建 index.html 文件
+└─ src                          # 源代码目录
+       ├─ App.vue               # 根组件，之前 Vue() 实例中的模板和样式单独抽离到该组件中了
+       ├─ assets                # 模块资源文件目录，如图片、样式文件等
+       │    └─ logo.png
+       ├─ views                 # 路由对应的页面大型组件目录
+       │    └─ Home.vue
+       │    └─ About.vue
+       ├─ components            # 功能性的小型组件目录
+       │    └─ HelloWorld.vue
+       ├─ router                # 如果选择了路由模块，则会自动生成，用来保存路由相关模块
+       │    └─ index.js
+       ├─ store                 # 如果选择了 Vuex 模块，则会自动生成，用来保存 Vuex 相关模块
+       │    └─ index.js
+       └─ main.js               # 项目入口，实例化 Vue() 实例，载入 App.vue 组件</code></pre>
+<h2 id="入口文件"><a href="#入口文件" class="headerlink" title="入口文件"></a>入口文件</h2><p>打开入口文件<code>main.js</code>，发现实例化<code>Vue()</code>的代码与之前略有不同。</p>
+<pre><code class="js">import Vue from &#39;vue&#39;
+import App from &#39;./App.vue&#39;
+import router from &#39;./router&#39;   // 自动寻找目录下的 index.js
+import store from &#39;./store&#39;     // 自动寻找目录下的 index.js
+
+Vue.config.productionTip = false // 设置为 false 表示阻止生产环境下发出的警告或错误提示
+
+new Vue({
+    router,
+    store,
+    render: h =&gt; h(App)
+}).$mount(&#39;#app&#39;) // 与 el: &#39;#app&#39; 效果相同</code></pre>
+<p>首先，所有的<code>.vue</code>组件都是以 ES6 模块化的方式导入。其次，<code>Vue()</code>实例中没有使用<code>template</code>引用模板，而是使用了<code>render</code>属性，这是因为 Vue 分为两个不同的版本：runtime-only（仅运行时）与 runtime-only + compiler（运行时 + 编译器）。</p>
+<p>要了解它们的区别，首先要简单了解 Vue <strong>运行时</strong>的工作原理，也就是浏览器运行代码时，而非 webpack 编译时。当创建<code>Vue()</code>实例时，Vue 首先会将实例中的<code>template</code>属性模板进行编译，生成<abbr title="AST(Abstract Syntax Tree)">抽象语法树</abbr>，这是一个编译原理的概念，不作展开讨论，有兴趣可以看看<a href="https://segmentfault.com/a/1190000016231512" target="_blank" rel="noopener">这篇文章</a>。</p>
+<p>然后 Vue 会将 AST 传入一个渲染函数，通过渲染函数来创建虚拟 DOM。该函数可以通过实例中的<code>render</code>属性的参数（即代码中的<code>h</code>）来手动调用，它可以接收诸如元素名称、元素属性、元素内容等参数，也可以直接<strong>接收一个组件</strong>，从而根据这些参数创建出虚拟 DOM。最后，再将虚拟 DOM 转换成真实 DOM，并根据<code>el</code>属性找到页面上对应的元素，然后使用 DOM 的内容将其替换，从而呈现到页面上。</p>
+<p>而这两个版本的区别，就在于 runtime-only 版本没有将<code>template</code>属性模板编译为 AST 这一功能，而是直接从渲染函数开始的，其目的是为了减少打包后的代码体积。为此，只能将根组件直接传入渲染函数中，就可以省略模板编译，完成渲染了。</p>
+<p>这时你可能有一个疑问，组件中也有<code>&lt;template&gt;</code>模板，那么 Vue 是怎么处理的呢？原因是，这些模板早在 webpack <strong>编译时</strong>就已经被处理成渲染函数了，它们<strong>没有发生在运行时</strong>。如果<a href="/posts/1zcig0yl.html#Vue-单文件组件">手动配置</a> webpack 时，会发现除了 vue-loader，还需要安装了另外一个 vue-template-compiler，它的作用就是在编译时将<code>&lt;template&gt;</code>处理成渲染函数，这样就不需要运行时再次处理了。并且，可以看到参数中使用了<code>-D</code>即开发时依赖，也证明了它们不是工作在运行时的。</p>
+<h2 id="载入插件"><a href="#载入插件" class="headerlink" title="载入插件"></a>载入插件</h2><p>对于通过模块化导入的路由和 Vuex 来说，需要使用<code>Vue.use()</code>来加载模块插件，为了结构清晰，通常将它们抽取到各自的<code>index.js</code>文件中。</p>
+<pre><code class="powershell">npm install vue-router
+npm install vuex</code></pre>
+<pre><code class="js">/* /router/index.js */
+import Vue from &#39;vue&#39;
+import VueRouter from &#39;vue-router&#39;
+
+Vue.use(VueRouter) // 模块导入 VueRouter 的话必须加载插件
+
+// 将模块对象导出，供 main.js 调用
+export default new VueRouter({
+    routes: []
+})</code></pre>
+<pre><code class="js">/* /store/index.js */
+import Vue from &#39;vue&#39;
+import Vuex from &#39;vuex&#39;
+
+Vue.use(Vuex)
+
+export default new Vuex.Store({
+    state: {}
+})</code></pre>
+<h2 id="路由懒加载"><a href="#路由懒加载" class="headerlink" title="路由懒加载"></a>路由懒加载</h2><p>随着业务代码越来越多，如果当用户第一次打开时就将所有页面对应的组件全部载入，可能速度会非常慢，影响用户体验。为此 Vue 提供了路由懒加载，它可以将原本打包成一个文件的业务代码分成多个文件，每个路由对应其中一个，当用户真正跳转到这个页面时，对应的组件文件才会被下载。</p>
+<p>要实现路由懒加载，只需将原本组件对象的位置，替换成一个箭头函数即可：</p>
+<pre><code class="js">const Home = () =&gt; import(&#39;../components/Home&#39;)
+const About = () =&gt; import(&#39;../components/About&#39;)
+
+export default new VueRouter({
+    routes: [
+        { path: &#39;/home&#39;, component: Home },
+        { path: &#39;/about&#39;, component: About }
+    ]
+})</code></pre>
+</div>
+    </div>
+</div>
+
+<div class="toc"></div>
+    <footer>
+    <p>© 2020</p>
+    <p>Theme chicken by 小鸡米花, Powered by Hexo</p>
+</footer>
+    <a class="back-to-top" href="javascript:;"></a>
+
+    <script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js"></script>
+    <script defer src="https://cdn.staticfile.org/KaTeX/0.11.1/katex.min.js"></script>
+    <script defer src="https://cdn.staticfile.org/KaTeX/0.11.1/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body, { strict: false, delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}] });"></script>
+    <script src="https://cdn.staticfile.org/tocbot/4.10.0/tocbot.min.js"></script>
+    <script src="https://cdn.staticfile.org/highlight.js/9.18.1/highlight.min.js"></script>
+
+    <script>
+        // 为标签追加字体图标
+        $('.tag-list-item').prepend('<i class="fas fa-tag"></i>')
+
+        // 回到顶部的猫
+        $('.back-to-top').click(function () {
+            $('html, body').animate({
+                scrollTop: 0
+            }, 500)
+        })
+
+        // 监听 回到顶部的猫 是否显示
+        $(document).scroll(function () {
+            if ($(document).scrollTop() > 50) {
+                $('.back-to-top').addClass('show')
+            } else {
+                $('.back-to-top').removeClass('show')
+            }
+        })
+
+        // 在表格外包裹一层，用来生成滚动条
+        $('.post-content > table').wrap('<div class="table-container"></div>')
+
+        // Tocbot 实例化，用来快速生成文档目录
+        tocbot.init({
+            tocSelector: '.toc', // 渲染目录的容器
+            contentSelector: '.post-content', // 标题所在的容器
+            headingSelector: 'h2, h3', // 要渲染的目录层级,
+            headingsOffset: -50, // 微调目录高亮的显示位置（偏移量），防止点击的链接和高亮的链接不一致
+        })
+
+        // 初始化代码高亮 highlight.js
+        hljs.initHighlightingOnLoad()
+
+        // 自动加载 waifu
+        try {
+            $("<link>").attr({ href: "//cdn.yesuanzao.cn/blog/live2d/waifu.min.css", rel: "stylesheet", type: "text/css" }).appendTo('head');
+            $('body').append('<div class="waifu"><div class="waifu-tips"></div><canvas id="live2d" class="live2d"></canvas><div class="waifu-tool"><span class="fui-home"></span> <span class="fui-chat"></span> <span class="fui-eye"></span> <span class="fui-user"></span> <span class="fui-photo"></span> <span class="fui-info-circle"></span> <span class="fui-cross"></span></div></div>');
+            $.ajax({ url: '//cdn.yesuanzao.cn/blog/live2d/waifu-tips.js', dataType: "script", cache: true, async: false });
+            $.ajax({ url: '//cdn.yesuanzao.cn/blog/live2d/live2d.min.js', dataType: "script", cache: true, async: false, success: function() {
+                initModel('//cdn.yesuanzao.cn/blog/live2d/waifu-tips.json');
+            } });
+        } catch (err) { console.log(err) }
+    </script>
+    <!-- 
+        添加控制台，测试移动端
+        <script src="http://cdn.jsdelivr.net/npm/eruda"></script>
+        <script>eruda.init();</script>
+    -->
+</body>
+
+</html>
